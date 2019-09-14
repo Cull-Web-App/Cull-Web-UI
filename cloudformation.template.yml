@@ -1,0 +1,58 @@
+Resources:
+
+  # Create the S3 Bucket
+  CullUiBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      DeletionPolicy: Retain
+      BucketEncryption:
+        ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # Create the CloudFront Distribution
+  CullDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+        - DomainName: !Join [ "", [ !Ref CullUiBucket, ".s3.amazonaws.com" ] ]
+          Id: cull-ui-bucket
+          S3OriginConfig:
+            OriginAccessIdentity: !Join [ "", [ "origin-access-identity/cloudfront/", !Ref CloudFrontOriginAccessIdentity ] ]
+        Enabled: 'true'
+        DefaultRootObject: index.html
+        Aliases:
+          - !Ref DomainName
+        DefaultCacheBehavior:
+          ViewerProtocolPolicy: redirect-to-https
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: 'true'
+  
+  # Bucket Policy for this S3 bucket
+  CullBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CullUiBucket
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetObject
+            Effect: Allow
+            Resource: !Join [ "", [ "arn:aws:s3:::", !Ref CullUiBucket, "/*" ] ]
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+
+  # Cloudfront OAI
+  CloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub 'CloudFront OAI for ${DomainName}'
+
+# List of parameters referenced in the template
+Parameters:
+  DomainName:
+    Description: Domain name of this website
+    Type: String
+    Default: cullinvest.com

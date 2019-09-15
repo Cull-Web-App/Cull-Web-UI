@@ -1,5 +1,17 @@
 Resources:
 
+  # User pool for the cull users
+  CullCognitoUserPool:
+    Type: "AWS::Cognito::UserPool"
+    Description: "A Cognito user pool for authenticating users"
+    Properties:
+      UserPoolName: Cull-Users
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+
   # Create the S3 Bucket
   CullUiBucket:
     Type: AWS::S3::Bucket

@@ -1,7 +1,7 @@
 import { userConstants } from '../constants';
 import { RegistrationState, IAction } from '../models';
 
-export function registration(state: RegistrationState = {}, action: IAction): RegistrationState
+export const registration = (state: RegistrationState = {}, action: IAction): RegistrationState =>
 {
     switch (action.type)
     {

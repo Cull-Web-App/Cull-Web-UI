@@ -1,14 +1,15 @@
 import Amplify from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import { User } from '../models';
-import Config from '../config';
+
+const { AUTH_API } = require('../config/env.config.json');
 
 Amplify.configure({
     Auth: {
         mandatorySignIn: true,
-        region: Config.cognito.REGION,
-        userPoolId: Config.cognito.USER_POOL_ID,
-        userPoolWebClientId: Config.cognito.APP_CLIENT_ID
+        region: AUTH_API .REGION,
+        userPoolId: AUTH_API.USER_POOL_ID,
+        userPoolWebClientId: AUTH_API.APP_CLIENT_ID
     }
 });
 
@@ -24,11 +25,7 @@ export abstract class UserService
             // return await axios.post(`${Config.apiUrl}/users/register`, requestOptions);
             return await Auth.signUp({
                 username: user.email,
-                password: user.password as string,
-                attributes: {
-                    'custom:firstname': user.firstname,
-                    'custom:lastname': user.lastname
-                }
+                password: user.password as string
             });
         }
         catch(error)
@@ -45,13 +42,11 @@ export abstract class UserService
         try
         {
             // Await the response -- Call Cognito instead?
-            const response: any = await Auth.signIn(user.email, user.password);
+            const response = await Auth.signIn(user.email, user.password);
 
             // Check for the response token -- this proves authentication
             const resUser: User = <User> {
                 email: response.attributes.email,
-                firstname: response.attributes['custom:firstname'],
-                lastname: response.attributes['custom:lastname'],
                 email_verified: response.attributes.email_verified
             };
 
@@ -60,7 +55,7 @@ export abstract class UserService
                 // Add the user to the localStorage
                 localStorage.setItem('user', JSON.stringify(resUser));
             }
-            else if (user)
+            else if (resUser)
             {
                 sessionStorage.setItem('user', JSON.stringify(resUser));
             }

@@ -17,7 +17,7 @@ export class UserRouter extends CustomRouter
             // Hash and salt the password -- make sure all the info arrived
             const user = JSON.parse(ctx.request.body.body);
 
-            if (user.email === '' || user.password === '' || user.firstname === '' || user.lastname === '')
+            if (user.email === '' || user.password === '')
             {
                 // Send no authorization response
                 ctx.status = 404;

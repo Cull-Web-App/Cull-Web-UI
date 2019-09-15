@@ -1,24 +1,8 @@
 import { alertConstants } from '../constants';
 import { IAction } from '../models';
 
-// Define interface model
-interface IAlertActions
-{
-    success: (message: string) => IAction
-    error: (message: string) => IAction
-    clear: (message: string) => IAction
-}
-
-// Define exported object
-export const alertActions: IAlertActions =
-{
-    success: success,
-    error: error,
-    clear: clear
-};
-
 // Define redux action functions
-function success(message: string): IAction
+export const successAlert = (message: string): IAction =>
 {
     return {
         type: alertConstants.SUCCESS,
@@ -26,7 +10,7 @@ function success(message: string): IAction
     };
 }
 
-function error(message: string): IAction
+export const errorAlert = (message: string): IAction =>
 {
     return {
         type: alertConstants.ERROR,
@@ -34,7 +18,7 @@ function error(message: string): IAction
     };
 }
 
-function clear(message: string): IAction
+export const clearAlert = (message: string): IAction =>
 {
     return {
         type: alertConstants.CLEAR,

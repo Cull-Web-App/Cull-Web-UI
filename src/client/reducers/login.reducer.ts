@@ -2,9 +2,9 @@ import { userConstants } from '../constants';
 import { User, LoginState, IAction } from '../models';
 
 const user: User = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : JSON.parse(sessionStorage.getItem('user') as string);
-const initialState: LoginState = user ? { loggedIn: true, user: user } : {};
+const initialState: LoginState = user ? { loggedIn: true, user: user } : { loggedIn: false };
 
-export function login(state: LoginState = initialState, action: IAction): LoginState
+export const login = (state: LoginState = initialState, action: IAction): LoginState =>
 {
     // Go through possible states for authentication
     switch (action.type)

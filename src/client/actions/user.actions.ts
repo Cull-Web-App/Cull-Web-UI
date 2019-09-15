@@ -1,28 +1,11 @@
+import { Dispatch } from 'redux';
 import { userConstants } from '../constants';
 import { User, IAction } from '../models';
-import { UserService } from '../services';
-import { alertActions } from './alert.actions';
-import { Dispatch } from 'redux';
-import { history } from '../services';
-
-// Interfaces for the models
-interface IUserActions
-{
-    register: (user: User) => ((dispatch: Dispatch<any>) => void),
-    login: (user: User, checked: boolean) => ((dispatch: Dispatch<any>) => void),
-    logout: () => IAction
-}
-
-// Export the user actions
-export const userActions: IUserActions =
-{
-    register: register,
-    login: login,
-    logout: logout
-};
+import { UserService, history } from '../services';
+import { successAlert, errorAlert } from './alert.actions';
 
 // Function to create register user
-function register(user: User): (dispatch: Dispatch<any>) => void
+export const register = (user: User): ((dispatch: Dispatch<any>) => void) =>
 {
     return async (dispatch: Dispatch<any>) => 
     {
@@ -44,10 +27,10 @@ function register(user: User): (dispatch: Dispatch<any>) => void
             });
 
             // Dispatch the sucess
-            dispatch(alertActions.success('Registration Success'));
+            dispatch(successAlert('Registration Success'));
 
             // Login after registration
-            dispatch(userActions.login(user, false));
+            dispatch(login(user, false));
         }
         catch(error)
         {
@@ -56,13 +39,13 @@ function register(user: User): (dispatch: Dispatch<any>) => void
                 type: userConstants.REGISTER_ERROR,
                 error: error
             });
-            dispatch(alertActions.error('Registration Failure'));
+            dispatch(errorAlert('Registration Failure'));
         }
     }
 }
 
 // Login function
-function login(user: User, checked: boolean): (dispatch: Dispatch<any>) => void
+export const login = (user: User, checked: boolean): ((dispatch: Dispatch<any>) => void) =>
 {
     return async (dispatch: Dispatch<any>) =>
     {
@@ -81,7 +64,7 @@ function login(user: User, checked: boolean): (dispatch: Dispatch<any>) => void
                 user: user
             });
 
-            dispatch(alertActions.success('Login Success'));
+            dispatch(successAlert('Login Success'));
 
             // Send to the home route
             history.push('/home');            
@@ -93,13 +76,13 @@ function login(user: User, checked: boolean): (dispatch: Dispatch<any>) => void
                 error: error.toString()
             });
 
-            dispatch(alertActions.error('Login Error'));
+            dispatch(errorAlert('Login Error'));
         }
     }
 }
 
 // Logout function
-function logout(): IAction 
+export const logout = (): IAction =>
 {
     // Call a service to remove the user from the store
     UserService.logout();

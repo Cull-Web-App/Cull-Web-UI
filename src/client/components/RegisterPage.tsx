@@ -4,12 +4,9 @@ import { Link } from 'react-router-dom';
 import { connect, DispatchProp } from 'react-redux';
 import { Form, Field, reduxForm, InjectedFormProps } from 'redux-form';
 import { CustomInput } from './CustomInput';
-import { userActions } from '../actions';
+import { register } from '../actions';
 import { User, RegistrationState as RegisterProps } from '../models';
 import { required, validateEmail, validatePassword } from '../services';
-import { AnyPtrRecord } from 'dns';
-
-const spinner: any = require('../assets/loading-spinner.svg');
 
 interface RegisterState
 {
@@ -65,20 +62,19 @@ export class RegisterPage extends React.Component<RegisterProps & DispatchProp<a
         const { user } = this.state;
         const { dispatch } = this.props;
         // Dispatch the registration action
-        dispatch(userActions.register(user));
+        dispatch(register(user));
     }
 
     // React render method
     public render(): React.ReactNode
     {
         const { registering, invalid } = this.props;
-        const { user, submitted } = this.state;
 
         // Create the react node -- this is the page markup -- add validators for fields
         return (
             <div className="page-canvas">
                 <div className="form-wrapper">
-                    <h1 className="white-header"> Sign up for ShareNet </h1>
+                    <h1 className="white-header"> Sign up for Cull </h1>
                     <Form onSubmit={this.handleSubmit}>
                         <div>
                             <Field name="email" label="Email" type="email" validate={[required, validateEmail]} component={CustomInput} onChange={this.handleChange}/>
@@ -87,18 +83,12 @@ export class RegisterPage extends React.Component<RegisterProps & DispatchProp<a
                             <Field name="password" label="Password" type="password" validate={[required, validatePassword]} component={CustomInput} onChange={this.handleChange}/>
                         </div>
                         <div>
-                            <Field name="firstname" label="First name" type="text" validate={[required]} component={CustomInput} onChange={this.handleChange}/>
-                        </div>
-                        <div>
-                            <Field name="lastname" label="Last name" type="text" validate={[required]} component={CustomInput} onChange={this.handleChange}/>
-                        </div>
-                        <div>
                             <button type="submit" disabled={registering || invalid}> Submit </button>
                             <Link to="/home" className="link-style"> Cancel </Link>
                         </div>
                         {
                             registering &&
-                                <img src={spinner} style={{width: "40px", height: "40px"}}/>
+                                <img style={{width: "40px", height: "40px"}}/>
                         }
                     </Form>
                 </div>

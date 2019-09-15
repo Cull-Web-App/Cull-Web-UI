@@ -5,18 +5,15 @@ import { reducer as form } from 'redux-form';
 import thunk from 'redux-thunk';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { App } from './components';
-import { login, registration, devices, connection, order } from './reducers';
+import { login, registration } from './reducers';
 
 import './assets/Utilities.scss';
 
 // Combine the reducers into a top level reducer
 const rootReducer = combineReducers({
-    devices,
     login,
     registration,
-    connection,
-    order,
-    form: form
+    form
 });
 
 // Create the store using the combined reducers

@@ -1,7 +1,4 @@
-import { FormErrors } from "redux-form";
-import { User } from '../models';
-
-export const required = (value: any) => 
+export const required = (value: string): string | undefined => 
 {
     if (value === undefined)
     {
@@ -9,7 +6,7 @@ export const required = (value: any) =>
     }
 }
 
-export const validatePassword = (value: any) =>
+export const validatePassword = (value: string): string | undefined =>
 {
     if (value.length < 10)
     {
@@ -17,7 +14,7 @@ export const validatePassword = (value: any) =>
     }
 }
 
-export const validateEmail = (value: any) =>
+export const validateEmail = (value: string): string | undefined =>
 {
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value))
     {

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { connect, DispatchProp } from 'react-redux';
 import { reduxForm, Field, Form, InjectedFormProps } from 'redux-form';
-import { userActions } from '../actions';
+import { login } from '../actions';
 import { LoginState as LoginProps } from '../models';
 import { CustomInput } from './CustomInput';
 import { required, validateEmail, validatePassword } from '../services';
@@ -10,8 +10,6 @@ import { required, validateEmail, validatePassword } from '../services';
 import '../assets/Register.scss';
 import '../assets/Login.scss';
 import '../assets/Utilities.scss';
-
-const spinner: any = require('../assets/loading-spinner.svg');
 
 interface LoginState
 {
@@ -64,7 +62,7 @@ export class LoginPage extends React.Component<LoginProps & DispatchProp<any> & 
         const { dispatch } = this.props;
         
         // Dispatch the user login -- create user object -- no need for phone or email on login
-        dispatch(userActions.login({
+        dispatch(login({
             email,
             password
         }, checked));
@@ -88,7 +86,7 @@ export class LoginPage extends React.Component<LoginProps & DispatchProp<any> & 
         return (
             <div className="page-canvas">
                 <div className="form-wrapper">
-                    <h1 className="white-header"> Log in to ShareNet </h1>
+                    <h1 className="white-header"> Log in to Cull </h1>
                     <Form onSubmit={this.handleSubmit}>
                         <div>
                             <Field name="email" type="text" label="Email" component={CustomInput} validate={[required, validateEmail]} onChange={this.handleChange}/>
@@ -105,7 +103,7 @@ export class LoginPage extends React.Component<LoginProps & DispatchProp<any> & 
                                 </label>
                                 {
                                     loggingIn &&
-                                        <img src={spinner} style={{width: "40px", height: "40px"}}/>
+                                        <img style={{width: "40px", height: "40px"}}/>
                                 }
                             </div>
                         </div>

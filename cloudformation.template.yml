@@ -16,7 +16,6 @@ Resources:
   CullUiBucket:
     Type: AWS::S3::Bucket
     Properties:
-      DeletionPolicy: Retain
       BucketEncryption:
         ServerSideEncryptionConfiguration: 
           - ServerSideEncryptionByDefault:
@@ -34,9 +33,16 @@ Resources:
             OriginAccessIdentity: !Join [ "", [ "origin-access-identity/cloudfront/", !Ref CloudFrontOriginAccessIdentity ] ]
         Enabled: 'true'
         DefaultRootObject: index.html
-        Aliases:
-          - !Ref DomainName
+        # Aliases:
+        #   - !Ref DomainName
         DefaultCacheBehavior:
+          AllowedMethods:
+            - HEAD
+            - GET
+            - OPTIONS
+          TargetOriginId: cull-ui-bucket
+          ForwardedValues:
+            QueryString: false
           ViewerProtocolPolicy: redirect-to-https
         ViewerCertificate:
           CloudFrontDefaultCertificate: 'true'

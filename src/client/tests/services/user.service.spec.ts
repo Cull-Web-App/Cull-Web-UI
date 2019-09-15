@@ -28,9 +28,7 @@ describe('User service', () =>
 
     const user: User = {
         email: 'test@gmail.com',
-        password: '1234567',
-        firstname: 'chris',
-        lastname: 'h',
+        password: '1234567'
     };
 
     it('should register user', async () =>

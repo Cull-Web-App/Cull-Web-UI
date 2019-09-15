@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as TestUtils from 'react-dom/test-utils';
 import { alertConstants } from '../../constants';
-import { alertActions } from '../../actions';
+import { successAlert, errorAlert, clearAlert } from '../../actions';
 
 describe('Alert actions', () =>
 {
@@ -10,17 +10,17 @@ describe('Alert actions', () =>
     it('should check all alert actions functions', () => 
     {
 
-        expect(alertActions.success('')).toEqual({
+        expect(successAlert('')).toEqual({
             type: alertConstants.SUCCESS,
             message: ''
         });
 
-        expect(alertActions.error('')).toEqual({
+        expect(errorAlert('')).toEqual({
             type: alertConstants.ERROR,
             message: ''
         });
 
-        expect(alertActions.clear('')).toEqual({
+        expect(clearAlert('')).toEqual({
             type: alertConstants.CLEAR,
             message: ''
         });

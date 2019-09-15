@@ -1,6 +1,6 @@
-import { userActions } from '../../actions';
+import { register, login, logout } from '../../actions';
 import { userConstants } from '../../constants';
-import { User, IAction, Device } from '../../models';
+import { User, IAction } from '../../models';
 import { UserService } from '../../services';
 import { Dispatch } from 'redux';
 
@@ -8,9 +8,7 @@ describe('User actions', () =>
 {
     const user: User = {
         email: 'test@gmail.com',
-        password: '1234567',
-        firstname: 'chris',
-        lastname: 'h',
+        password: '1234567'
     };
 
     const mockDispatch: Dispatch<any> = jest.fn();
@@ -18,7 +16,7 @@ describe('User actions', () =>
     it('should register new user', async () =>
     {
         UserService.register = jest.fn((user: User) => Promise.resolve({}));
-        const res: any = await userActions.register(user)(mockDispatch);
+        const res: any = await register(user)(mockDispatch);
 
         expect(UserService.register).toBeCalled();
         expect(mockDispatch).toBeCalledWith(<IAction> {
@@ -30,7 +28,7 @@ describe('User actions', () =>
     it('should error on user registration', async () =>
     {
         UserService.register = jest.fn((user: User) => Promise.reject("ERR"));
-        const res: any = await userActions.register(user)(mockDispatch);
+        const res: any = await register(user)(mockDispatch);
 
         expect(UserService.register).toBeCalled();
         expect(mockDispatch).toBeCalledWith(<IAction> {
@@ -42,7 +40,7 @@ describe('User actions', () =>
     it('should login user', async () =>
     {
         UserService.login = jest.fn((user: User) => Promise.resolve({}));
-        const res: any = await userActions.login(user, false)(mockDispatch);
+        const res: any = await login(user, false)(mockDispatch);
 
         expect(UserService.login).toBeCalled();
         expect(mockDispatch).toBeCalledWith(<IAction> {
@@ -54,7 +52,7 @@ describe('User actions', () =>
     it('should have error logining in user', async () =>
     {
         UserService.login = jest.fn((user: User) => Promise.reject("ERR"));
-        const res: any = await userActions.login(user, false)(mockDispatch);
+        const res: any = await login(user, false)(mockDispatch);
 
         expect(UserService.login).toBeCalled();
         expect(mockDispatch).toBeCalledWith(<IAction> {
@@ -66,7 +64,7 @@ describe('User actions', () =>
     it('should logout user', async () =>
     {
         UserService.logout = jest.fn(async () => new Promise<void>(() => {}));
-        const res: any = await userActions.logout();
+        const res: any = await logout();
 
         expect(UserService.logout).toBeCalled();
         expect(res).toEqual(<IAction> {

@@ -79,11 +79,30 @@ Resources:
       VersioningConfiguration:
         Status: Enabled
 
+  CodeBuildProject:
+    Type: 'AWS::CodeBuild::Project'
+    Properties:
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Artifacts:
+        # The downloaded source code for the build will come from CodePipeline
+        Type: CODEPIPELINE
+      Environment:
+        # Linux container with node installed
+        ComputeType: BUILD_GENERAL1_SMALL
+        Type: LINUX_CONTAINER
+        Image: "aws/codebuild/standard:2.0"
+      # This source record indicates that the code is coming from CodePipeline -- No buildspec specified so buildspec.yml will be used
+      Source:
+        Type: CODEPIPELINE
+
   AppPipeline:
     Type: 'AWS::CodePipeline::Pipeline'
     Properties:
       Name: Cull-Web-UI-Pipeline
       RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Location: !Ref CodePipelineArtifactStoreBucket
+        Type: S3
       Stages:
         - Name: Source
           Actions:
@@ -101,10 +120,9 @@ Resources:
                 Branch: !Ref BranchName
                 OAuthToken: !Ref GitHubOAuthToken
                 PollForSourceChanges: false
-              RunOrder: 1
-        - Name: BuildAndTest
+        - Name: BuildTestDeploy
           Actions:
-            - Name: BuildAndTestAction
+            - Name: BuildTestDeployAction
               InputArtifacts:
                 - Name: SourceOutput
               ActionTypeId:
@@ -115,23 +133,7 @@ Resources:
               OutputArtifacts:
                 - Name: BuildOutput
               Configuration:
-                ApplicationName: !Ref ApplicationName
-                DeploymentGroupName: !Ref BetaFleet
-              RunOrder: 2
-        - Name: Deploy
-          Actions:
-            - Name: DeployAction
-              InputArtifacts:
-                - Name: BuildOutput
-              ActionTypeId:
-                Category: Deploy
-                Owner: AWS
-                Version: 1
-                Provider: CodeDeploy
-              Configuration:
-                ApplicationName: !Ref ApplicationName
-                DeploymentGroupName: !Ref BetaFleet
-              RunOrder: 3
+                ProjectName: !Ref CodeBuildProject
 
   # This webhook allows the github changes to be pushed to CodePipeline rather than polled
   AppPipelineWebhook:
@@ -162,17 +164,9 @@ Resources:
             Action: 'sts:AssumeRole'
       Path: /
       Policies:
-        - PolicyName: AWS-CodePipeline-Service-3
+        - PolicyName: AWS-CodePipeline-Service
           PolicyDocument:
             Statement:
-              - Effect: Allow
-                Action:
-                  - 'codecommit:CancelUploadArchive'
-                  - 'codecommit:GetBranch'
-                  - 'codecommit:GetCommit'
-                  - 'codecommit:GetUploadArchiveStatus'
-                  - 'codecommit:UploadArchive'
-                Resource: '*'
               - Effect: Allow
                 Action:
                   - 'codedeploy:CreateDeployment'
@@ -188,36 +182,53 @@ Resources:
                 Resource: '*'
               - Effect: Allow
                 Action:
-                  - 'devicefarm:ListProjects'
-                  - 'devicefarm:ListDevicePools'
-                  - 'devicefarm:GetRun'
-                  - 'devicefarm:GetUpload'
-                  - 'devicefarm:CreateUpload'
-                  - 'devicefarm:ScheduleRun'
-                Resource: '*'
-              - Effect: Allow
+                  - "s3:GetObject"
+                  - "s3:GetObjectVersion"
+                  - "s3:GetBucketVersioning"
+                  - "s3:PutObject"
+                Resource:
+                  - !GetAtt CodePipelineArtifactStoreBucket.Arn
+                  - !Join ['', [!GetAtt CodePipelineArtifactStoreBucket.Arn, "/*"]]
+  
+  # IAM role that allows CodeBuild to interact with S3, CloudWatch, and CloudFront
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - 
+            Effect: Allow
+            Principal:
+              Service:
+                - "codebuild.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: /service-role/
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement: 
+              - 
+                Effect: Allow
                 Action:
-                  - 'lambda:InvokeFunction'
-                  - 'lambda:ListFunctions'
-                Resource: '*'
-              - Effect: Allow
+                  - "s3:GetObject"
+                  - "s3:GetObjectVersion"
+                  - "s3:GetBucketVersioning"
+                  - "s3:PutObject"
+                Resource: 
+                  - !GetAtt CodePipelineArtifactStoreBucket.Arn
+                  - !Join ['', [!GetAtt CodePipelineArtifactStoreBucket.Arn, "/*"]]
+              -
+                Effect: Allow
                 Action:
-                  - 'iam:PassRole'
-                Resource: '*'
-              - Effect: Allow
-                Action:
-                  - 'elasticbeanstalk:*'
-                  - 'ec2:*'
-                  - 'elasticloadbalancing:*'
-                  - 'autoscaling:*'
-                  - 'cloudwatch:*'
-                  - 's3:*'
-                  - 'sns:*'
-                  - 'cloudformation:*'
-                  - 'rds:*'
-                  - 'sqs:*'
-                  - 'ecs:*'
-                Resource: '*'
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "cloudfront:CreateInvalidation"
+                Resource:
+                  - "*"
 
 # List of parameters referenced in the template
 Parameters:
@@ -249,7 +260,3 @@ Parameters:
     Description: CodeDeploy application name
     Type: String
     Default: Cull-Web-UI
-  BetaFleet:
-    Description: Fleet configured in CodeDeploy
-    Type: String
-    Default: Cull-Web-UI-Fleet

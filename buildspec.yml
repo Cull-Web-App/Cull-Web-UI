@@ -11,13 +11,12 @@ phases:
     commands:
       - npm run build-prod
 
+cache:
+  paths:
+    - 'node_modules/**/*'
+
+# Where the build artifacts are located -- is this necessary for the pipeline?
 artifacts:
-  secondary-artifacts:
-    artifact1:
-      base-directory: $CODEBUILD_SRC_DIR
-      files:
-        - source1_file
-    artifact2:
-      base-directory: $CODEBUILD_SRC_DIR_source2
-      files:
-        - source2_file
+  files:
+    - '**/*'
+  base-directory: dist

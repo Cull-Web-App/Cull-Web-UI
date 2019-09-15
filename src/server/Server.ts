@@ -28,7 +28,7 @@ export default class Server
     public Configure()
     {
         // Add static paths -- needs to be updated for the different frontend methods
-        this.app.use(serve(path.join(__dirname, "../../../../dist")));
+        this.app.use(serve(path.join(__dirname, "../../../dist")));
         this.app.use(bodyParser());
 
         // Add error handling

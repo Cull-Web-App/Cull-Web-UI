@@ -70,6 +70,9 @@ module.exports = {
                 to: "",
                 flatten: true
             }
+        ]),
+        new webpack.EnvironmentPlugin([ // Theres an issue with this overwritting all the env info
+            'NODE_ENV'
         ])
     ],
     devServer: {
@@ -86,19 +89,14 @@ module.exports = {
 };
 
 // Production webpack build
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'PROD') {
     console.log('Production build');
     module.exports.devtool = '#source-map';
     module.exports.plugins = (module.exports.plugins || []).concat([
-        new webpack.DefinePlugin({
-            'process.env': {
-            NODE_ENV: '"PROD"'
-            }
-        }),
         new webpack.optimize.UglifyJsPlugin({
             sourceMap: true,
             compress: {
-            warnings: false
+                warnings: false
             }
         }),
         new webpack.LoaderOptionsPlugin({

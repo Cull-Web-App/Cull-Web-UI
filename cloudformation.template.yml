@@ -6,6 +6,8 @@ Resources:
     Description: "A Cognito user pool for authenticating users"
     Properties:
       UserPoolName: Cull-Users
+      UsernameAttributes:
+        - "email"
       Schema:
         - Name: email
           AttributeDataType: String

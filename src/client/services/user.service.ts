@@ -1,15 +1,14 @@
 import Amplify from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import { User } from '../models';
-
-const { AUTH_API } = require('../config/env.config.json');
+import CONFIG from '../config';
 
 Amplify.configure({
     Auth: {
         mandatorySignIn: true,
-        region: AUTH_API .REGION,
-        userPoolId: AUTH_API.USER_POOL_ID,
-        userPoolWebClientId: AUTH_API.APP_CLIENT_ID
+        region: CONFIG.AUTH_API .REGION,
+        userPoolId: CONFIG.AUTH_API.USER_POOL_ID,
+        userPoolWebClientId: CONFIG.AUTH_API.APP_CLIENT_ID
     }
 });
 

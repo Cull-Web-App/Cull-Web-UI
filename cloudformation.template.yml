@@ -120,9 +120,9 @@ Resources:
                 Branch: !Ref BranchName
                 OAuthToken: !Ref GitHubOAuthToken
                 PollForSourceChanges: false
-        - Name: BuildTestDeploy
+        - Name: BuildAndTest
           Actions:
-            - Name: BuildTestDeployAction
+            - Name: BuildAndTest
               InputArtifacts:
                 - Name: SourceOutput
               ActionTypeId:
@@ -134,6 +134,19 @@ Resources:
                 - Name: BuildOutput
               Configuration:
                 ProjectName: !Ref CodeBuildProject
+        - Name: Deploy
+          Actions:
+            - Name: Deploy
+              InputArtifacts:
+                - Name: BuildOutput
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: 1
+                Provider: S3
+              Configuration:
+                BucketName: !Ref CullUiBucket
+                Extract: true
 
   # This webhook allows the github changes to be pushed to CodePipeline rather than polled
   AppPipelineWebhook:

@@ -1,7 +1,7 @@
 version: 0.2
 
 phases:
-  pre-install:
+  pre_install:
     commands:
       - echo Updating Cloudformation Stack
       - aws cloudformation update-stack --stack-name Cull-UI-Stack --template-body file://./cloudformation.template.yml --capabilities CAPABILITY_IAM
@@ -17,7 +17,7 @@ phases:
     commands:
       - echo Building production application
       - npm run build-prod
-  post-build:
+  post_build:
     commands:
       - echo Build completed
 

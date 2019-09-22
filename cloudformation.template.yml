@@ -195,10 +195,7 @@ Resources:
                 Resource: '*'
               - Effect: Allow
                 Action:
-                  - "s3:GetObject"
-                  - "s3:GetObjectVersion"
-                  - "s3:GetBucketVersioning"
-                  - "s3:PutObject"
+                  - "s3:*"
                 Resource:
                   - !GetAtt CodePipelineArtifactStoreBucket.Arn
                   - !Join ['', [!GetAtt CodePipelineArtifactStoreBucket.Arn, "/*"]]

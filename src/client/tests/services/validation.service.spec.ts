@@ -9,11 +9,11 @@ describe('Validation service', () =>
 
     it('should validate email', () =>
     {
-        expect(validateEmail(undefined)).toEqual("Invalid Email");
+        expect(validateEmail('c.h')).toEqual("Invalid Email");
     });
 
     it('should validate password', () =>
     {
-        expect(validatePassword("")).toEqual("Must be at least 10 characters");
+        expect(validatePassword('pass')).toEqual("Must be at least 10 characters");
     });
 })

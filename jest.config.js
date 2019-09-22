@@ -1,22 +1,33 @@
 module.exports = {
-    "roots": [
-        "<rootDir>/src/client"
+    roots: [
+        '<rootDir>/src/client'
     ],
-    "transform": {
-        "^.+\\.tsx?$": "ts-jest"
+    transform: {
+        '^.+\\.tsx?$': 'ts-jest'
     },
-    "moduleFileExtensions": [
-        "ts",
-        "tsx",
-        "js",
-        "jsx",
-        "json",
-        "node"
+    moduleFileExtensions: [
+        'ts',
+        'tsx',
+        'js',
+        'jsx',
+        'json',
+        'node'
     ],
-    "verbose": true,
-    "coveragePathIgnorePatterns": [
-        "<rootDir>/src/client/index.tsx",
-        "<rootDir>/src/client/components/LoginPage.tsx",
-        "<rootDir>/src/client/components/RegisterPage.tsx"
-    ]
+    moduleNameMapper: {
+        '\\.(css|less|scss)$': '<rootDir>/node_modules/jest-css-modules',
+    },
+    verbose: true,
+    coveragePathIgnorePatterns: [
+        '<rootDir>/src/client/index.tsx',
+        '<rootDir>/src/client/components/LoginPage.tsx',
+        '<rootDir>/src/client/components/RegisterPage.tsx'
+    ],
+    coverageThreshold: {
+        global: {
+            branches: 50,
+            functions: 50,
+            lines: 50,
+            statements: 50
+        }
+    }
 };

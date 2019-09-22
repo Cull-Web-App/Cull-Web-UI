@@ -6,7 +6,7 @@ import CONFIG from '../config';
 Amplify.configure({
     Auth: {
         mandatorySignIn: true,
-        region: CONFIG.AUTH_API .REGION,
+        region: CONFIG.AUTH_API.REGION,
         userPoolId: CONFIG.AUTH_API.USER_POOL_ID,
         userPoolWebClientId: CONFIG.AUTH_API.APP_CLIENT_ID
     }

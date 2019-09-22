@@ -240,6 +240,7 @@ Resources:
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
                   - "cloudfront:CreateInvalidation"
+                  - "cloudformation:*"
                 Resource:
                   - "*"
 

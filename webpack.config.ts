@@ -91,16 +91,6 @@ module.exports = {
 // Production webpack build
 if (process.env.NODE_ENV === 'PROD') {
     console.log('Production build');
-    module.exports.devtool = '#source-map';
-    module.exports.plugins = (module.exports.plugins || []).concat([
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
-            compress: {
-                warnings: false
-            }
-        }),
-        new webpack.LoaderOptionsPlugin({
-            minimize: true
-        })
-    ]);
+    module.exports.devtool = 'source-map';
+    module.exports.mode = 'production';
 }

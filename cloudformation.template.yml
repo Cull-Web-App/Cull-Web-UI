@@ -154,7 +154,7 @@ Resources:
     Properties:
       Authentication: GITHUB_HMAC
       AuthenticationConfiguration:
-        SecretToken: !Ref GitHubOAuthToken
+        SecretToken: !Ref GitHubSecret
       Filters:
         - JsonPath: $.ref
           MatchEquals: 'refs/heads/{Branch}'
@@ -253,22 +253,29 @@ Parameters:
   BranchName:
     Description: Build branch
     Type: String
-    Default: master
+    Default: CH/LoginAndRegister
+
   RepositoryName:
     Description: GitHub repository name
     Type: String
     Default: Cull-Web-UI
+
   GitHubOwner:
     Type: String
-    Default: ChristopherHubbard
+    Default: Cull-Web-App
+
+  # The GitHub Secret and OAuth are SecretsManager secrets that are dynamically retrieved. They aren't in the template for obvious reasons
+  GitHubSecret:
+    Type: String
+    NoEcho: true
+    Default: '{{resolve:secretsmanager:GitHub:SecretString:Secret}}'
   
   # This parameter needs to be passed in everytime the stack is ran -- will not be remembered
   GitHubOAuthToken:
     Type: String
     NoEcho: true
-    MinLength: 40
-    MaxLength: 40
-    AllowedPattern: '[a-z0-9]*'
+    Default: '{{resolve:secretsmanager:GitHub:SecretString:OAuthToken}}'
+
   ApplicationName:
     Description: CodeDeploy application name
     Type: String

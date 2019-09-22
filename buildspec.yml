@@ -11,7 +11,7 @@ phases:
   pre_build:
     commands:
       - echo Updating Cloudformation Stack
-      - aws cloudformation update-stack --stack-name Cull-UI-Stack --template-body file://./cloudformation.template.yml --capabilities CAPABILITY_IAM
+      - aws cloudformation update-stack --stack-name Cull-UI-Stack --template-body file://./cloudformation.template.yml --capabilities CAPABILITY_IAM || echo No stack updates
   build:
     commands:
       - echo Building production application

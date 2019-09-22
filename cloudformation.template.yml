@@ -202,6 +202,8 @@ Resources:
                 Resource:
                   - !GetAtt CodePipelineArtifactStoreBucket.Arn
                   - !Join ['', [!GetAtt CodePipelineArtifactStoreBucket.Arn, "/*"]]
+                  - !GetAtt CullUiBucket.Arn
+                  - !Join ['', [!GetAtt CullUiBucket.Arn, "/*"]]
   
   # IAM role that allows CodeBuild to interact with S3, CloudWatch, and CloudFront
   CodeBuildRole:

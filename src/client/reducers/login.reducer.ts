@@ -3,22 +3,6 @@ import { userConstants } from '../constants';
 import { User, LoginState, IUserAction } from '../models';
 
 // Create the initial state -- async to get the user info
-// let initialState: LoginState = {};
-// const setInitialState = async () =>
-// {
-//     try
-//     {
-//         const user: User | undefined = await Auth.currentAuthenticatedUser();
-//         initialState = user ? { loggedIn: true, user: user } : { loggedIn: false };
-//     }
-//     catch (error)
-//     {
-//         initialState = { loggedIn: false };
-//         console.error(error);
-//     }
-// }
-// setInitialState();
-
 const initialState: LoginState = {
     loggedIn: false
 };

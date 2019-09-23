@@ -1,7 +1,12 @@
 import { userConstants } from '../constants';
 import { RegistrationState, IAction } from '../models';
 
-export const registration = (state: RegistrationState = {}, action: IAction): RegistrationState =>
+const initialRegistrationState: RegistrationState = {
+    registering: false,
+    registered: false
+};
+
+export const registration = (state: RegistrationState = initialRegistrationState, action: IAction): RegistrationState =>
 {
     switch (action.type)
     {
@@ -11,10 +16,12 @@ export const registration = (state: RegistrationState = {}, action: IAction): Re
             };
         case userConstants.REGISTER_SUCCESS:
             return <RegistrationState> {
+                registering: false,
                 registered: true
             };
         case userConstants.REGISTER_ERROR:
             return <RegistrationState> {
+                registering: false,
                 registered: false
             };
         default:

@@ -66,6 +66,8 @@ export const login = (user: User, checked: boolean): ((dispatch: Dispatch<any>) 
 
             dispatch(successAlert('Login Success'));
 
+            dispatch(authenticate());
+
             // Send to the home route
             history.push('/home');            
         }
@@ -77,6 +79,28 @@ export const login = (user: User, checked: boolean): ((dispatch: Dispatch<any>) 
             });
 
             dispatch(errorAlert('Login Error'));
+        }
+    }
+}
+
+export const authenticate = (): ((dispatch: Dispatch<any>) => void) =>
+{
+    return async (dispatch: Dispatch<any>) =>
+    {
+        try
+        {
+            dispatch({
+                type: userConstants.AUTH_SUCCESS,
+                tokens: await UserService.currentTokens()
+            });
+        }
+        catch(error)
+        {
+            dispatch({
+                type: userConstants.AUTH_FAILURE,
+                error: error.toString()
+            });
+            console.error(error);
         }
     }
 }

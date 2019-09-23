@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Component, ReactNode, ChangeEvent, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { connect, DispatchProp } from 'react-redux';
 import { reduxForm, Field, Form, InjectedFormProps } from 'redux-form';
@@ -19,7 +20,7 @@ interface LoginState
     checked: boolean
 }
 
-export class LoginPage extends React.Component<LoginProps & DispatchProp<any> & InjectedFormProps, LoginState>
+export class LoginPage extends Component<LoginProps & DispatchProp<any> & InjectedFormProps, LoginState>
 {
     constructor(props: LoginProps & DispatchProp<any> & InjectedFormProps)
     {
@@ -38,7 +39,7 @@ export class LoginPage extends React.Component<LoginProps & DispatchProp<any> & 
         this.onChecked = this.onChecked.bind(this);
     }
 
-    private handleChange(event: React.ChangeEvent<HTMLInputElement>): void
+    private handleChange(event: ChangeEvent<HTMLInputElement>): void
     {
         const { name, value } = event.target;
 
@@ -49,7 +50,7 @@ export class LoginPage extends React.Component<LoginProps & DispatchProp<any> & 
         }));
     }
 
-    private handleSubmit(event: React.FormEvent<HTMLFormElement>): void
+    private handleSubmit(event: FormEvent<HTMLFormElement>): void
     {
         // Why do we need to prevent the default form submit??
         event.preventDefault();
@@ -64,11 +65,12 @@ export class LoginPage extends React.Component<LoginProps & DispatchProp<any> & 
         // Dispatch the user login -- create user object -- no need for phone or email on login
         dispatch(login({
             email,
+            email_verified: false,
             password
         }, checked));
     }
 
-    private onChecked(event: React.ChangeEvent<HTMLInputElement>): void
+    private onChecked(event: ChangeEvent<HTMLInputElement>): void
     {
         const { checked } = this.state;
 
@@ -78,7 +80,7 @@ export class LoginPage extends React.Component<LoginProps & DispatchProp<any> & 
         }));
     }
 
-    public render(): React.ReactNode
+    public render(): ReactNode
     {
         const { loggingIn, invalid } = this.props;
         const { checked } = this.state;
@@ -117,7 +119,7 @@ export class LoginPage extends React.Component<LoginProps & DispatchProp<any> & 
     }
 }
 
-function mapStateToProps(state: any): LoginProps
+const mapStateToProps = (state: any): LoginProps =>
 {
     const { loggingIn } = state.login;
     return {

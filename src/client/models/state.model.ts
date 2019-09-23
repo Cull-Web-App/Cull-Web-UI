@@ -1,14 +1,21 @@
-import { User } from './user.model';
+import { User, Tokens } from './user.model';
 
 export interface LoginState
 {
-    loggedIn?: boolean,
-    loggingIn?: boolean,
-    user?: User
-};
+    loggedIn?: boolean;
+    loggingIn?: boolean;
+    user?: User;
+}
 
 export interface RegistrationState
 {
-    registering?: boolean,
-    registered?: boolean
-};
+    registering?: boolean;
+    registered?: boolean;
+}
+
+export interface TokenState
+{
+    tokens: Tokens;
+    isAuthenticated: boolean;
+    isLoading: boolean;
+}

@@ -10,7 +10,11 @@ interface IUserConstants
 
     LOGOUT_REQUEST: string,
     LOGOUT_SUCCESS: string,
-    LOGOUT_FAILURE: string
+    LOGOUT_FAILURE: string,
+
+    AUTH_REQUEST: string,
+    AUTH_SUCCESS: string,
+    AUTH_FAILURE: string
 };
 
 export const userConstants: IUserConstants =
@@ -25,5 +29,9 @@ export const userConstants: IUserConstants =
 
     LOGOUT_REQUEST: 'LOGOUT_REQUEST',
     LOGOUT_SUCCESS: 'LOGOUT_SUCCESS',
-    LOGOUT_FAILURE: 'LOGOUT_FAILURE'
+    LOGOUT_FAILURE: 'LOGOUT_FAILURE',
+
+    AUTH_REQUEST: 'AUTH_REQUEST',
+    AUTH_SUCCESS: 'AUTH_SUCCESS',
+    AUTH_FAILURE: 'AUTH_FAILURE'
 };

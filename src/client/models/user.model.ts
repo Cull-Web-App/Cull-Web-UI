@@ -1,5 +1,12 @@
 export interface User
 {
-    email: string,
-    password?: string
-};
+    email: string;
+    email_verified: boolean;
+    password?: string;
+}
+
+export interface Tokens
+{
+    idToken: string;
+    accessToken: string;
+}

@@ -1,5 +1,6 @@
 
 import * as React from 'react';
+import { Component, ReactNode, ChangeEvent, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { connect, DispatchProp } from 'react-redux';
 import { Form, Field, reduxForm, InjectedFormProps } from 'redux-form';
@@ -15,7 +16,7 @@ interface RegisterState
 }
 
 // Register page should have both props and state
-export class RegisterPage extends React.Component<RegisterProps & DispatchProp<any> & InjectedFormProps, RegisterState>
+export class RegisterPage extends Component<RegisterProps & DispatchProp<any> & InjectedFormProps, RegisterState>
 {
     constructor(props: RegisterProps & DispatchProp<any> & InjectedFormProps)
     {
@@ -25,6 +26,7 @@ export class RegisterPage extends React.Component<RegisterProps & DispatchProp<a
         this.state = {
             user: {
                 email: '',
+                email_verified: false,
                 password: ''
             },
             submitted: false
@@ -35,7 +37,7 @@ export class RegisterPage extends React.Component<RegisterProps & DispatchProp<a
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    private handleChange(event: React.ChangeEvent<HTMLInputElement>): void
+    private handleChange(event: ChangeEvent<HTMLInputElement>): void
     {
         // Get the name of the property that changed and the value -- destruct object
         const { name, value } = event.target;
@@ -49,7 +51,7 @@ export class RegisterPage extends React.Component<RegisterProps & DispatchProp<a
         }));
     }
 
-    private handleSubmit(event: React.FormEvent<HTMLFormElement>): void
+    private handleSubmit(event: FormEvent<HTMLFormElement>): void
     {
         // Why do I want to prevent the default action?
         event.preventDefault();
@@ -66,7 +68,7 @@ export class RegisterPage extends React.Component<RegisterProps & DispatchProp<a
     }
 
     // React render method
-    public render(): React.ReactNode
+    public render(): ReactNode
     {
         const { registering, invalid } = this.props;
 
@@ -98,7 +100,7 @@ export class RegisterPage extends React.Component<RegisterProps & DispatchProp<a
 }
 
 // Map from the store to the props
-function mapStateToProps(state: any): RegisterProps
+const mapStateToProps = (state: any): RegisterProps =>
 {
     // Extract the action!
     const { registering } = state.registration;

@@ -1,8 +1,9 @@
 import * as React from 'react';
+import { Component, ReactNode } from 'react';
 
-export default class HomePage extends React.Component<{}, {}>
+export default class HomePage extends Component<{}, {}>
 {
-    public render(): React.ReactNode
+    public render(): ReactNode
     {
         // Render the props on the combobox -- Make sure there is no issue with map on empty array
         return (

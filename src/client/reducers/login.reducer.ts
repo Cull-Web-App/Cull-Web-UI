@@ -1,10 +1,25 @@
+import Auth from '@aws-amplify/auth';
 import { userConstants } from '../constants';
-import { User, LoginState, IAction } from '../models';
+import { User, LoginState, IUserAction } from '../models';
 
-const user: User = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : JSON.parse(sessionStorage.getItem('user') as string);
-const initialState: LoginState = user ? { loggedIn: true, user: user } : { loggedIn: false };
+// Create the initial state -- async to get the user info
+let initialState: LoginState = {};
+const setInitialState = async () =>
+{
+    try
+    {
+        const user: User | undefined = await Auth.currentAuthenticatedUser();
+        initialState = user ? { loggedIn: true, user: user } : { loggedIn: false };
+    }
+    catch (error)
+    {
+        initialState = { loggedIn: false };
+        console.error(error);
+    }
+}
+setInitialState();
 
-export const login = (state: LoginState = initialState, action: IAction): LoginState =>
+export const login = (state: LoginState = initialState, action: IUserAction): LoginState =>
 {
     // Go through possible states for authentication
     switch (action.type)

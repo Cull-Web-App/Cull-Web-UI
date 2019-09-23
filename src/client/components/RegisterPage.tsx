@@ -86,7 +86,7 @@ export class RegisterPage extends Component<RegisterProps & DispatchProp<any> & 
                         </div>
                         <div>
                             <button type="submit" disabled={registering || invalid}> Submit </button>
-                            <Link to="/home" className="link-style"> Cancel </Link>
+                            <Link to="/login" className="link-style"> Cancel </Link>
                         </div>
                         {
                             registering &&

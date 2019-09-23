@@ -1,6 +1,6 @@
 import { login } from '../../reducers';
 import { userConstants } from '../../constants';
-import { User, LoginState, IAction } from '../../models';
+import { User, LoginState, IUserAction } from '../../models';
 
 describe('Login reducer', () =>
 {
@@ -8,15 +8,16 @@ describe('Login reducer', () =>
     {
         const user: User = {
             email: 'test@gmail.com',
+            email_verified: true,
             password: '1234567'
         };
 
-        let state: LoginState = {
+        const state: LoginState = {
             loggedIn: true,
             user: user
         };
 
-        expect(login(state, <IAction> {
+        expect(login(state, <IUserAction> {
             type: userConstants.LOGIN_REQUEST,
             user: user
         })).toEqual(<LoginState> {
@@ -24,7 +25,7 @@ describe('Login reducer', () =>
             user: user
         });
 
-        expect(login(state, <IAction> {
+        expect(login(state, <IUserAction> {
             type: userConstants.LOGIN_SUCCESS,
             user: user
         })).toEqual(<LoginState> {
@@ -32,14 +33,14 @@ describe('Login reducer', () =>
             user: user
         });
 
-        expect(login(state, <IAction> {
+        expect(login(state, <IUserAction> {
             type: userConstants.LOGIN_FAILURE,
         })).toEqual({});
 
-        expect(login(state, <IAction> {
+        expect(login(state, <IUserAction> {
             type: userConstants.LOGOUT_SUCCESS,
         })).toEqual({});
 
-        expect(login(state, <IAction> {})).toEqual(state);
+        expect(login(state, <IUserAction> {})).toEqual(state);
     });
 });

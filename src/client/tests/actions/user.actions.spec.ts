@@ -8,6 +8,7 @@ describe('User actions', () =>
 {
     const user: User = {
         email: 'test@gmail.com',
+        email_verified: false,
         password: '1234567'
     };
 
@@ -39,7 +40,7 @@ describe('User actions', () =>
 
     it('should login user', async () =>
     {
-        UserService.login = jest.fn((user: User) => Promise.resolve({}));
+        UserService.login = jest.fn((user: User) => Promise.resolve(user));
         const res: any = await login(user, false)(mockDispatch);
 
         expect(UserService.login).toBeCalled();

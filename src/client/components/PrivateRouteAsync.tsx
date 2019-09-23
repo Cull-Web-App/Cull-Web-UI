@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { Component, ReactNode } from 'react';
-import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { PrivateRoute } from './PrivateRoute';
 import { authenticate } from '../actions';

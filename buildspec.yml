@@ -1,0 +1,34 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+    commands:
+      - echo Installing dependencies
+      - npm install
+      - echo Dependencies installed successfully
+  pre_build:
+    commands:
+      - echo Updating Cloudformation Stack
+      - aws cloudformation update-stack --stack-name Cull-UI-Stack --template-body file://./cloudformation.template.yml --capabilities CAPABILITY_IAM || echo No stack updates
+  build:
+    commands:
+      - echo Building production application
+      - npm run build-prod
+      - echo Running test cases
+      - npm run test
+      - echo Tests passed coverage
+  post_build:
+    commands:
+      - echo Build completed successfully
+
+cache:
+  paths:
+    - 'node_modules/**/*'
+
+# Where the build artifacts are located -- is this necessary for the pipeline?
+artifacts:
+  files:
+    - '**/*'
+  base-directory: dist

@@ -1,4 +1,5 @@
 import { User, Tokens } from './user.model';
+import { ChartParams } from './chart.model'; 
 
 export interface LoginState
 {
@@ -18,4 +19,11 @@ export interface TokenState
     tokens: Tokens;
     isAuthenticated: boolean;
     isLoading: boolean;
+}
+
+export interface ChartState
+{
+    dataCurrent?: boolean;
+    dataLoading?: boolean;
+    chartParams?: ChartParams; 
 }

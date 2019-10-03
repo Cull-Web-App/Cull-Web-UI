@@ -23,10 +23,12 @@
   "dependencies": {
     "@aws-amplify/auth": "^1.2.20",
     "@aws-amplify/core": "^1.0.25",
+    "@types/node": "^12.7.9",
     "aws-amplify-react": "^2.3.4",
     "axios": "^0.18.1",
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^2.1.0",
+    "d3": "^5.12.0",
     "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-combine-routers": "^4.0.2",
@@ -51,9 +53,11 @@
     "webpack": "^4.29.1"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/d3": "^5.7.2",
     "@types/enzyme": "^3.1.18",
     "@types/enzyme-adapter-react-16": "^1.0.4",
-    "@types/jest": "^24.0.11",
+    "@types/jest": "^24.0.18",
     "@types/koa": "^2.0.48",
     "@types/koa-bodyparser": "^4.2.2",
     "@types/koa-mount": "^3.0.1",
@@ -66,6 +70,7 @@
     "@types/react-router-dom": "^4.3.1",
     "@types/redux-form": "^7.4.16",
     "@types/redux-mock-store": "^1.0.0",
+    "@types/redux-thunk": "^2.1.0",
     "@types/sinon": "^7.0.6",
     "copyfiles": "^2.1.0",
     "enzyme": "^3.8.0",

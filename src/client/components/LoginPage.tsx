@@ -113,6 +113,7 @@ export class LoginPage extends Component<LoginProps & DispatchProp<any> & Inject
                 </div>
                 <div className="registerDiv">
                     <p> No account? <Link to="/register" className="link-style"> Sign up now </Link> </p>
+                    <p><Link to="/chart" className="link-style">Test</Link></p>
                 </div>
             </div>
         );

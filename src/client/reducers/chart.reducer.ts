@@ -12,8 +12,7 @@ export const chart = (state: ChartState = initialState, action: IChartDataAction
     {
         case chartConstants.NEW_DATA_REQUEST:
             return <ChartState> {
-                dataLoading: true,
-                chartParams: action.chartParams
+                dataLoading: true
             };
         case chartConstants.NEW_DATA_SUCCESS:
             return <ChartState> {

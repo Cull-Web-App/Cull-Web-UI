@@ -8,5 +8,5 @@ export interface ChartData{
 export interface ChartParams {
     ticker: string,
     interval?:string,
-    chartData: ChartData[]
+    chartData?: ChartData[]
 }

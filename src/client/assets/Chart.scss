@@ -1,1 +1,12 @@
 @import 'Colors';
+
+
+.page-canvas {
+    width: 80%;
+    height: 80%;
+    background-color: $black-highlight;
+    border: 1px solid rgba(0,0,0,0.1);
+    position: relative;
+    margin: 0 auto;
+    display: block;
+}

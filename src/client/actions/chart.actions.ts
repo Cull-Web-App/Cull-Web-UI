@@ -1,30 +1,34 @@
 import { Dispatch } from 'redux';
 import { chartConstants } from '../constants';
-import { ChartParams, IAction, IChartDataAction } from '../models';
+import { ChartParams, IAction, IChartDataAction, ChartData } from '../models';
 import { ChartService } from '../services';
 import { successAlert, errorAlert } from './alert.actions';
 import { dispatch } from 'd3';
 
-export const getData = (params: ChartParams): any  =>
+export const getData = (params: ChartParams): ((dispatch: Dispatch<any>)  => void) =>
 {
-    return async (dispatch: any) =>
+    return async (dispatch: Dispatch<any>) =>
     {
-        dispatch(<IChartDataAction>{
+        dispatch(<IAction>{
             type: chartConstants.NEW_DATA_REQUEST
         });
 
         try
         {
-            params = await ChartService.getNewData(params);
-            dispatch(<IChartDataAction>{
+            const new_data: ChartData[]  = await ChartService.getNewData(params);
+            params.chartData = new_data;
+            dispatch(<IAction>{
                 type: chartConstants.NEW_DATA_SUCCESS,
                 chartParams: params
             });
+
+            dispatch(successAlert('Got Data Successfully'));
         }
         catch(e)
         {
-            dispatch(<IChartDataAction>{
-                type: chartConstants.NEW_DATA_ERROR
+            dispatch(<IAction>{
+                type: chartConstants.NEW_DATA_ERROR,
+                error: e.toString()
             });
         }
     }

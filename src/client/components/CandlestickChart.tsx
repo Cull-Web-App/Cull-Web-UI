@@ -5,8 +5,12 @@ import { connect, DispatchProp } from 'react-redux';
 import { reduxForm, Field, Form, InjectedFormProps } from 'redux-form';
 import * as d3 from 'd3';
 import { getData } from '../actions';
-import {ChartState as ChartProps} from '../models';
+import {ChartState as ChartProps, ChartData} from '../models';
+import { CustomInput } from './CustomInput';
 import { svg } from 'd3';
+
+import '../assets/Chart.scss';
+import { element } from 'prop-types';
 
 interface ChartState
 {
@@ -21,22 +25,30 @@ interface ChartOptions
     height: number
 }
 
-export class CandlestickChart extends Component<ChartProps & DispatchProp<any> & InjectedFormProps, ChartState>
+export class CandlestickChart extends Component<ChartProps & DispatchProp<any>, ChartState>
 {
-    constructor(props: ChartProps & DispatchProp<any> & InjectedFormProps)
+    constructor(props: ChartProps & DispatchProp<any> )
     {
         super(props);
 
         this.state = {
             ticker: '',
-            interval: '',
+            interval: '1m',
             selected: false
         };
 
-        this.handleSelect = this.handleSelect.bind(this);
+        this.testMethod = this.testMethod.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
-    private handleSelect(event: React.FormEvent<HTMLFormElement>): void
+    private handleChange(event: any) : void
+    {
+        const { name, value } = event.target;
+
+        this.setState({ticker: event.target.value});
+    }
+
+    private testMethod(event: any): void
     {
         this.setState({
             selected: true
@@ -47,43 +59,35 @@ export class CandlestickChart extends Component<ChartProps & DispatchProp<any> &
 
         dispatch(getData({
             ticker,
-            interval,
-            chartData: []
-        }));
-    }
-
-    private handleChange(event: ChangeEvent<HTMLInputElement>): void
-    {
-        const { name, value } = event.currentTarget;
-
-        this.setState(prevState => ({
-            ...prevState,
-            [name]: value
+            interval
         }));
     }
 
     public render(): ReactNode
     {
-        const { dataLoading, chartParams } = this.props;
-        const {ticker, interval } = this.state;
-
-        return(<div></div>);
+        const { dataCurrent, dataLoading, chartParams } = this.props;
+        return(
+            <div className="page-canvas">
+                <label>
+                    Symbol:
+                    <input type="text" name="name" value={this.state.ticker} onChange={this.handleChange} />
+                </label>
+                <button onClick={this.testMethod}>Test</button>
+                
+            </div>);
     }
 }
 
-class ChartVisual extends Component<ChartOptions, {}> {
-    ref!: SVGSVGElement;
-
-    createChart() 
-    {
-        const svg: any = d3.select(this.ref)
-            .append("svg:svg")
-            .attr("class", "chart")
-            .attr("width", this.props.width)
-            .attr("height", this.props.height)
-        const x: any = d3.scaleLinear().domain([])
-
+class ChartVisual extends Component<ChartProps, {}> {
+    
+    constructor(props: ChartProps){
+        super(props)
     }
+
+    formatData(){
+        
+    } 
+    
     render(): ReactNode
     {
         return 
@@ -95,17 +99,16 @@ class ChartVisual extends Component<ChartOptions, {}> {
     }
 }
 
-const mapStatetoProps = (state: any): ChartProps => 
+const mapStateToProps = (state: any): ChartProps => 
 {
-    const { chartParams } = state.chart;
-
+    const { dataCurrent, dataLoading, chartParams } = state.chart;
     return {
+        dataCurrent,
+        dataLoading,
         chartParams
     };
 }
 
-export default connect<ChartProps>
-    (mapStatetoProps)
-    (reduxForm({
-        form: 'candlestickChart'
-    })(CandlestickChart as any));
+// Connect store and set up redux form
+export default connect(mapStateToProps)(CandlestickChart)
+

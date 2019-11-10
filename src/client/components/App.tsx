@@ -17,7 +17,7 @@ export class App extends Component<{}, {}>
         return (
             <div className="page-container">
                 <Router history={history}>
-                    <div>
+                    <div style={{paddingTop: '40px'}}>
                         <div style={{ height: '100%', textAlign: 'center'}}>
                             <Route exact path="/login" component={LoginPage}/>
                             <Route exact path="/register" component={RegisterPage}/>

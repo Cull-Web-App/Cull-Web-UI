@@ -23,7 +23,6 @@ export interface TokenState
 
 export interface ChartState
 {
-    dataCurrent?: boolean;
     dataLoading?: boolean;
-    chartParams?: ChartParams; 
+    chartParams: ChartParams; 
 }

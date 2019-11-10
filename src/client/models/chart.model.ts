@@ -1,12 +1,18 @@
 export interface ChartData{
-    openPrice: string,
-    closePrice: string,
-    date: Date,
-    time?: string
+    open: number,
+    close: number,
+    dateTime: Date,
+    high: number,
+    low: number,
+    volume: number,
+    change: number,
+    changePercent: number
 }
 
 export interface ChartParams {
     ticker: string,
-    interval?:string,
-    chartData?: ChartData[]
+    interval: string,
+    startDate: Date,
+    stopDate: Date,
+    chartData: ChartData[]
 }

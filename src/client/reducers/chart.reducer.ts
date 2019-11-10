@@ -1,9 +1,16 @@
 import { chartConstants } from '../constants';
-import { ChartState, IChartDataAction } from '../models';
+import { ChartState, IChartDataAction, ChartParams } from '../models';
 
 // Create the initial state -- async to get the user info
 const initialState: ChartState = {
-    dataCurrent: false
+    dataLoading: false,
+    chartParams:{
+        ticker:'',
+        startDate: new Date(),
+        stopDate: new Date(),
+        chartData:[],
+        interval:'h'
+    }
 };
 
 export const chart = (state: ChartState = initialState, action: IChartDataAction): ChartState =>
@@ -16,7 +23,6 @@ export const chart = (state: ChartState = initialState, action: IChartDataAction
             };
         case chartConstants.NEW_DATA_SUCCESS:
             return <ChartState> {
-                dataCurrent: true,
                 dataLoading: false,
                 chartParams: action.chartParams
             };

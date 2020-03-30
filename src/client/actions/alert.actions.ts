@@ -1,27 +1,8 @@
-import { alertConstants } from '../constants';
-import { IAction } from '../models';
+import { createActions } from 'redux-actions';
 
 // Define redux action functions
-export const successAlert = (message: string): IAction =>
-{
-    return {
-        type: alertConstants.SUCCESS,
-        message: message
-    };
-}
-
-export const errorAlert = (message: string): IAction =>
-{
-    return {
-        type: alertConstants.ERROR,
-        message: message
-    };
-}
-
-export const clearAlert = (message: string): IAction =>
-{
-    return {
-        type: alertConstants.CLEAR,
-        message: message
-    }
-}
+export const { successAlert, errorAlert, clearAlert } = createActions({
+    SUCCESS_ALERT: (message: string) => message,
+    ERROR_ALERT: (message: string) => message,
+    CLEAR_ALERT: (message: string) => message
+});

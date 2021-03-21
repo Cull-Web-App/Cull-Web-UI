@@ -8,12 +8,16 @@ import { App } from './components';
 import { login, registration, tokens } from './reducers';
 import { register$, login$, logout$, auth$ } from './epics';
 
+// Import the container for inversify -- this will bootstap it's dependencies
+import { container } from './config';
+
 import './assets/Utilities.scss';
 
 const epicMiddleWare = createEpicMiddleware();
 
 // Create the store using the combined reducers
-const store = createStore(combineReducers({
+const store = createStore(
+    combineReducers({
         login,
         registration,
         tokens,
@@ -22,12 +26,14 @@ const store = createStore(combineReducers({
     applyMiddleware(epicMiddleWare)
 );
 
-epicMiddleWare.run(combineEpics(
-    register$,
-    login$,
-    logout$,
-    auth$
-));
+epicMiddleWare.run(
+    combineEpics(
+        register$,
+        login$,
+        logout$,
+        auth$
+    )
+);
 
 // Render the top level app component -- provide the store
 render(

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Component, ReactNode } from 'react';
+import { PureComponent, ReactNode } from 'react';
 
-export default class HomePage extends Component<{}, {}>
+export default class HomePage extends PureComponent<{}, {}>
 {
     public render(): ReactNode
     {

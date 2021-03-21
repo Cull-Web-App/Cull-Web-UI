@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { Component, ReactNode, ChangeEvent, FormEvent } from 'react';
+import { PureComponent, ReactNode, ChangeEvent, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { connect, DispatchProp } from 'react-redux';
 import { Form, Field, reduxForm, InjectedFormProps } from 'redux-form';
@@ -16,7 +16,7 @@ interface RegisterState
 }
 
 // Register page should have both props and state
-export class RegisterPage extends Component<RegisterProps & DispatchProp<any> & InjectedFormProps, RegisterState>
+export class RegisterPage extends PureComponent<RegisterProps & DispatchProp<any> & InjectedFormProps, RegisterState>
 {
     constructor(props: RegisterProps & DispatchProp<any> & InjectedFormProps)
     {
@@ -39,7 +39,6 @@ export class RegisterPage extends Component<RegisterProps & DispatchProp<any> & 
 
     private handleChange(event: ChangeEvent<HTMLInputElement>): void
     {
-        // Get the name of the property that changed and the value -- destruct object
         const { name, value } = event.target;
 
         // Update the state of the user -- only merges so don't have to worry about previous state
@@ -67,7 +66,6 @@ export class RegisterPage extends Component<RegisterProps & DispatchProp<any> & 
         dispatch(register(user));
     }
 
-    // React render method
     public render(): ReactNode
     {
         const { registering, invalid } = this.props;
@@ -89,8 +87,7 @@ export class RegisterPage extends Component<RegisterProps & DispatchProp<any> & 
                             <Link to="/login" className="link-style"> Cancel </Link>
                         </div>
                         {
-                            registering &&
-                                <img style={{width: "40px", height: "40px"}}/>
+                            registering && <img style={{width: "40px", height: "40px"}}/>
                         }
                     </Form>
                 </div>

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Component, ReactNode } from 'react';
+import { PureComponent, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import { PrivateRoute } from './PrivateRoute';
 import { authenticate } from '../actions';
@@ -17,14 +17,14 @@ interface PrivateRouteAsyncReduxProps
 }
 interface PrivateRouteAsyncInputProps
 {
-    component: typeof Component;
+    component: typeof PureComponent;
     path: string;
 }
 
 // Create route that either creates component in render or redirects to the login page
-export class PrivateRouteAsync extends Component<PrivateRouteAsyncProps, {}>
+export class PrivateRouteAsync extends PureComponent<PrivateRouteAsyncProps, {}>
 {
-    constructor(props: PrivateRouteAsyncProps)
+    public constructor(props: PrivateRouteAsyncProps)
     {
         super(props);
     }
@@ -37,12 +37,12 @@ export class PrivateRouteAsync extends Component<PrivateRouteAsyncProps, {}>
 
     public render(): ReactNode
     {
-        const { component: Component, isAuthenticated, isLoading, ...rest } = this.props;
+        const { component, isAuthenticated, isLoading, ...rest } = this.props;
         return (
             <div>
                 {
                     !isLoading ? 
-                        <PrivateRoute {...rest} component={Component} isAuthenticated={isAuthenticated}/>
+                        <PrivateRoute {...rest} component={component} isAuthenticated={isAuthenticated}/>
                         : "Loading"
                 }
             </div>

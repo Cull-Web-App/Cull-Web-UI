@@ -1,7 +1,7 @@
-import Amplify from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
-import { User, Tokens } from '../models';
+import Amplify from '@aws-amplify/core';
 import CONFIG from '../config';
+import { Tokens, User } from '../models';
 
 const authConfigurationOptions = {
     mandatorySignIn: true,

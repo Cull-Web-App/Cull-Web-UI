@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Component, ReactNode, ChangeEvent, FormEvent } from 'react';
+import { PureComponent, ReactNode, ChangeEvent, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { connect, DispatchProp } from 'react-redux';
 import { reduxForm, Field, Form, InjectedFormProps } from 'redux-form';
@@ -20,9 +20,9 @@ interface LoginState
     checked: boolean
 }
 
-export class LoginPage extends Component<LoginProps & DispatchProp<any> & InjectedFormProps, LoginState>
+export class LoginPage extends PureComponent<LoginProps & DispatchProp<any> & InjectedFormProps, LoginState>
 {
-    constructor(props: LoginProps & DispatchProp<any> & InjectedFormProps)
+    public constructor(props: LoginProps & DispatchProp<any> & InjectedFormProps)
     {
         super(props);
 

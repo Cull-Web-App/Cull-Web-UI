@@ -22,7 +22,7 @@ export const tokens = (state: TokenState = initialState, action: ITokenAction): 
             };
         case userConstants.AUTH_FAILURE:
             return {
-                ...initialState,
+                ...state,
                 isLoading: false
             };
         default:

@@ -1,7 +1,8 @@
 import Auth from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
+import { CognitoUserSession } from "amazon-cognito-identity-js";
 import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { IAuthService, IConfigService } from '../interfaces';
 import { Tokens, User } from '../models';
 import { injectable, inject } from 'inversify';
@@ -19,7 +20,7 @@ export class CognitoAuthService implements IAuthService
      * Configure the authentication for cognito
      * @param configOptions Config to apply
      */
-    public configure(authConfigOptions: any): Observable<any>
+    public configure(authConfigOptions: any = {}): Observable<any>
     {
         return this.configService.getAllConfiguration().pipe(
             map(({ envConfig: { AUTH_API } }) => {
@@ -40,37 +41,60 @@ export class CognitoAuthService implements IAuthService
 
     public signUp(user: User): Observable<any>
     {
-        return from(
-            Auth.signUp({
-                username: user.email,
-                password: user.password as string
-            })
+        return this.ensureConfigSet<any>(
+            from(
+                Auth.signUp({
+                    username: user.email,
+                    password: user.password as string
+                })
+            )
         );
     }
 
-    public signIn(email: string, password: string): Observable<{ email: string; email_verified: boolean }>
+    public signIn(email: string, password: string): Observable<Partial<User>>
     {
-        return from(Auth.signIn(email, password)).pipe(
-            map(response => ({
-                email: response.attributes.email,
-                email_verified: response.attributes.email_verified
-            }))
+        return this.ensureConfigSet<Partial<User>>(
+            from(Auth.signIn(email, password)).pipe(
+                map((response: { attributes: Partial<User> }) => ({
+                    email: response.attributes.email,
+                    email_verified: response.attributes.email_verified
+                }))
+            )
         );
     }
 
     public currentTokens(): Observable<Tokens>
     {
-        return from(Auth.currentSession()).pipe(
-            map(sessionTokens => ({
-                idToken: sessionTokens.getIdToken().getJwtToken(),
-                accessToken: sessionTokens.getAccessToken().getJwtToken()
-            }))
+        return this.ensureConfigSet<Tokens>(
+            from(Auth.currentSession()).pipe(
+                map((sessionTokens: CognitoUserSession) => ({
+                    idToken: sessionTokens.getIdToken().getJwtToken(),
+                    accessToken: sessionTokens.getAccessToken().getJwtToken()
+                }))
+            )
         );
     }
 
     public logout(): Observable<any>
     {
-        // Invalidate the Auth token from cognito
-        return from(Auth.signOut());
+        return this.ensureConfigSet<any>(
+            from(Auth.signOut())
+        );
+    }
+
+    private ensureConfigSet<T>(inner$: Observable<T>): Observable<T>
+    {
+        const amplifyConfiguration: any = Amplify.configure();
+
+        if (!amplifyConfiguration)
+        {
+            return this.configure().pipe(
+                switchMap(() => inner$)
+            );
+        }
+        else
+        {
+            return inner$;
+        }
     }
 }

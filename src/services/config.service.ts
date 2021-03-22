@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 
 @injectable()
 export class ConfigService implements IConfigService {
-    private env: string = process.env.NODE_ENV || 'LOCAL'; // This should be the assigned env at runtime -- will this work without dev server??
+    private env: string = process.env.NODE_ENV?.toUpperCase() || 'LOCAL'; // This should be the assigned env at runtime -- will this work without dev server??
     private configuration: Configuration = <Configuration>{};
 
     public constructor(
@@ -19,7 +19,7 @@ export class ConfigService implements IConfigService {
     public getApiConfiguration(): Observable<ApiConfiguration>
     {
         if (!this.configuration.apiConfig) {
-            return this.httpService.sendGet(`${CONFIG[this.env.toUpperCase()].CONFIG_API_URL}/getApiConfigForEnv`).pipe(
+            return this.httpService.sendGet(`${CONFIG[this.env].CONFIG_API_URL}/getApiConfigForEnv`).pipe(
                 map(response => {
                     this.configuration.apiConfig = JSON.parse(response.data as string).config as ApiConfiguration;
                     return this.configuration.apiConfig;
@@ -33,7 +33,7 @@ export class ConfigService implements IConfigService {
     public getEnvConfiguration(): Observable<EnvConfiguration>
     {
         if (!this.configuration.envConfig) {
-            return this.httpService.sendGet(`${CONFIG[this.env.toUpperCase()].CONFIG_API_URL}/getEnvConfigForEnv`).pipe(
+            return this.httpService.sendGet(`${CONFIG[this.env].CONFIG_API_URL}/getEnvConfigForEnv`).pipe(
                 map(response => {
                     this.configuration.envConfig = JSON.parse(response.data as string).config as EnvConfiguration;
                     return this.configuration.envConfig;
@@ -47,7 +47,7 @@ export class ConfigService implements IConfigService {
     {
         if (!this.configuration.apiConfig || !this.configuration.envConfig)
         {
-            return this.httpService.sendGet(`${CONFIG[this.env.toUpperCase()].CONFIG_API_URL}/getAllConfigsForEnv`).pipe(
+            return this.httpService.sendGet(`${CONFIG[this.env].CONFIG_API_URL}/getAllConfigsForEnv`).pipe(
                 map(response => {
                     this.configuration = JSON.parse(JSON.parse(response.data as string).body) as Configuration;
                     return this.configuration;

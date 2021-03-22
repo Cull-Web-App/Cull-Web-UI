@@ -4,11 +4,9 @@ import { Provider } from 'react-redux';
 import { reducer as form } from 'redux-form';
 import { createEpicMiddleware, combineEpics } from 'redux-observable';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
-import { App } from './components';
+import { App, InversifyProvider } from './components';
 import { login, registration, tokens } from './reducers';
 import { register$, login$, logout$, auth$ } from './epics';
-
-// Import the container for inversify -- this will bootstap it's dependencies
 import { container } from './config';
 
 import './assets/Utilities.scss';
@@ -35,10 +33,12 @@ epicMiddleWare.run(
     )
 );
 
-// Render the top level app component -- provide the store
+// Render the top level app component -- provide the store and the inversify DI container
 render(
-    <Provider store={store}>
-        <App/>
-    </Provider>,
+    <InversifyProvider container={container}>
+        <Provider store={store}>
+            <App/>
+        </Provider>
+    </InversifyProvider>,
     document.getElementById('app')
 );

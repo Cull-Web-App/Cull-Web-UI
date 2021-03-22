@@ -1,5 +1,4 @@
-import { userConstants } from '../constants';
-import { TokenState, ITokenAction } from '../models';
+import { TokenState } from '../models';
 
 const initialState: TokenState = {
     tokens: {

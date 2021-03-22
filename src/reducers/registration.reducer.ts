@@ -1,5 +1,4 @@
-import { userConstants } from '../constants';
-import { RegistrationState, IAction } from '../models';
+import { RegistrationState } from '../models';
 
 const initialRegistrationState: RegistrationState = {
     registering: false,

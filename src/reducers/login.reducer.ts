@@ -1,6 +1,4 @@
-import Auth from '@aws-amplify/auth';
-import { userConstants } from '../constants';
-import { User, LoginState, IUserAction } from '../models';
+import { User, LoginState } from '../models';
 
 // Create the initial state -- async to get the user info
 const initialState: LoginState = {

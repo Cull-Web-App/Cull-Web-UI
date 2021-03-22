@@ -1,8 +1,8 @@
-import axios, { AxiosRequestConfig } from "axios";
-import { from, Observable } from "rxjs";
+import axios, { AxiosRequestConfig } from 'axios';
+import { from, Observable } from 'rxjs';
 import { injectable } from 'inversify';
-import { IHTTPService } from "../interfaces";
-import { HTTPMethodTypes, HTTPRequestConfig, HTTPResponse } from "../models";
+import { IHTTPService } from '../interfaces';
+import { HTTPMethodTypes, HTTPRequestConfig, HTTPResponse } from '../models';
 
 /**
  * HTTP Service to act as a RxJS wrapper around a HTTP client, in this case axios

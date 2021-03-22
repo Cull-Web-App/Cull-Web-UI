@@ -50,7 +50,7 @@ export class PrivateRouteAsync extends PureComponent<PrivateRouteAsyncProps, {}>
     }
 }
 
-// Map any dispatch functions to the props of the component -- how to get rid of tthe any?
+// Map any dispatch functions to the props of the component -- how to get rid of the any?
 const mapDispatchToProps = (dispatch: any): PrivateRouteAsyncDispatchProps =>
 {
     return {

@@ -1,4 +1,8 @@
-import { TokenState } from '../models';
+import { Action, handleActions } from 'redux-actions';
+import { authFailure, authRequest, authSuccess } from '../actions';
+import { Tokens, TokenState } from '../models';
+
+type TokenPayload = { tokens: Tokens; };
 
 const initialState: TokenState = {
     tokens: {
@@ -9,22 +13,22 @@ const initialState: TokenState = {
     isLoading: true
 };
 
-export const tokens = (state: TokenState = initialState, action: ITokenAction): TokenState =>
-{
-    switch (action.type)
+export const tokens = handleActions<TokenState, TokenPayload>(
     {
-        case userConstants.AUTH_SUCCESS:
-            return <TokenState> {
-                tokens: action.tokens,
-                isAuthenticated: action.tokens !== undefined,
-                isLoading: false
-            };
-        case userConstants.AUTH_FAILURE:
-            return {
-                ...state,
-                isLoading: false
-            };
-        default:
-            return state;
-    }
-}
+        [authRequest.toString()]: (state: TokenState, { payload: { tokens } }: Action<TokenPayload>) => ({
+            ...state,
+            isLoading: true,
+            isAuthenticated: false
+        }),
+        [authSuccess.toString()]: (state: TokenState, { payload: { tokens } }: Action<TokenPayload>) => ({
+            tokens,
+            isAuthenticated: tokens !== undefined && tokens !== null,
+            isLoading: false
+        }),
+        [authFailure.toString()]: (state: TokenState, { payload: { tokens } }: Action<TokenPayload>) => ({
+            ...state,
+            isLoading: false
+        })
+    },
+    initialState
+);

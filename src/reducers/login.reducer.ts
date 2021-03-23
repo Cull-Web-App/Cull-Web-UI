@@ -1,30 +1,37 @@
+import { loginFailure, loginRequest, loginSuccess, logoutSuccess } from '../actions';
 import { User, LoginState } from '../models';
+import { handleActions } from 'redux-actions';
+import { Action } from 'redux';
 
-// Create the initial state -- async to get the user info
+type UserPayload = { user: User; };
+
+type CombinedPayloadType = string | UserPayload;
+
 const initialState: LoginState = {
-    loggedIn: false
+    loggedIn: false,
+    loggingIn: false,
+    user: null
 };
 
-export const login = (state: LoginState = initialState, action: IUserAction): LoginState =>
-{
-    // Go through possible states for authentication
-    switch (action.type)
+// TODO: fix the anys here
+export const login = handleActions<LoginState, CombinedPayloadType>(
     {
-        case userConstants.LOGIN_REQUEST:
-            return <LoginState> {
-                loggingIn: true,
-                user: action.user
-            };
-        case userConstants.LOGIN_SUCCESS:
-            return <LoginState> {
-                loggedIn: true,
-                user: action.user
-            };
-        case userConstants.LOGIN_FAILURE:
-            return <LoginState> {};
-        case userConstants.LOGOUT_SUCCESS:
-            return <LoginState> {};
-        default:
-            return state;
-    }
-}
+        [loginRequest.toString()]: (state: LoginState, { payload: { user } }: any) => ({
+            loggingIn: true,
+            loggedIn: false,
+            user
+        }),
+        [loginSuccess.toString()]: (state: LoginState, { payload: { user } }: any) => ({
+            loggedIn: true,
+            loggingIn: false,
+            user
+        }),
+        [loginFailure.toString()]: (state: LoginState, action: Action<CombinedPayloadType>) => ({
+            ...initialState
+        }),
+        [logoutSuccess.toString()]: (state: LoginState, action: Action<CombinedPayloadType>) => ({
+            ...initialState
+        })
+    },
+    initialState
+);

@@ -15,7 +15,7 @@ const initialState: TokenState = {
 
 export const tokens = handleActions<TokenState, TokenPayload>(
     {
-        [authRequest.toString()]: (state: TokenState, { payload: { tokens } }: Action<TokenPayload>) => ({
+        [authRequest.toString()]: (state: TokenState, action: Action<TokenPayload>) => ({
             ...state,
             isLoading: true,
             isAuthenticated: false
@@ -25,7 +25,7 @@ export const tokens = handleActions<TokenState, TokenPayload>(
             isAuthenticated: tokens !== undefined && tokens !== null,
             isLoading: false
         }),
-        [authFailure.toString()]: (state: TokenState, { payload: { tokens } }: Action<TokenPayload>) => ({
+        [authFailure.toString()]: (state: TokenState, action: Action<TokenPayload>) => ({
             ...state,
             isLoading: false
         })

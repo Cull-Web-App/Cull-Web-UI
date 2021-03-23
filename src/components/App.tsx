@@ -9,7 +9,7 @@ import { history } from '../services';
 
 import '../assets/App.scss';
 
-export class App extends PureComponent<void, void>
+export class App extends PureComponent<{}, {}>
 {
     // Use this lifecycle method to asynchronously load the app config data
     public componentDidMount(): void {

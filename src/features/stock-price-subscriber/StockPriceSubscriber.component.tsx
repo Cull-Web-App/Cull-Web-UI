@@ -2,6 +2,7 @@ import { Component } from "react";
 import { connect } from "react-redux";
 import { connectionClosed, connectionError, connectionOpened, updatePrice } from "../../state";
 import React from "react";
+import { HubConnectionBuilder } from '@microsoft/signalr';
 
 type StockPriceSubscriberProps = StockPriceSubscriberDispatchProps & Props;
 type Props = {
@@ -22,31 +23,26 @@ export class StockPriceSubscriberComponent extends Component<StockPriceSubscribe
 
     public componentDidMount(): void {
         const { url, connectionOpened, updatePrice, connectionClosed, connectionError } = this.props;
-        const socket = new WebSocket(url);
 
-        socket.addEventListener('open', () => {
+        // Modify the following code to use SignalR instead of WebSocket
+        const connection = new HubConnectionBuilder().withUrl(url, {
+            accessTokenFactory: () => sessionStorage.getItem('accessToken') || ''
+        }).withAutomaticReconnect().build();
+
+        connection.start().then(() => {
+            console.log('Connected!');
             connectionOpened();
+        }).catch(err => {
+            console.log('SignalR connection error: ' + err.toString())
+            connectionError(err);
         });
 
-        socket.addEventListener('message', ({ data }) => {
-            const messageData = JSON.parse(data.toString());
-            if (messageData.type === 'CLIENT_ID') {
-                sessionStorage.setItem('clientId', messageData.clientId);
-            } else if (messageData.type === 'PRICE_UPDATE') {
-                updatePrice({ symbol: messageData.symbol, price: Number(messageData.price) });
-            } else if (messageData.type === 'BULK_PRICE_UPDATE') {
-                for (const [symbol, price] of Object.entries(messageData.prices)) {
-                    updatePrice({ symbol, price: Number(price) });
-                }
-            }
-        });
-
-        socket.addEventListener('close', () => {
+        connection.onclose(() => {
             connectionClosed();
         });
 
-        socket.addEventListener('error', (err) => {
-            connectionError(err);
+        connection.on('ReceiveBar', (messageData) => {
+            updatePrice({ symbol: messageData.symbol, price: Number(messageData.open) });
         });
     }
 

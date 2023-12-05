@@ -2,7 +2,7 @@ import { Component } from "react";
 import { connect } from "react-redux";
 import { connectionClosed, connectionError, connectionOpened, updatePrice } from "../../state";
 import React from "react";
-import { HubConnectionBuilder } from '@microsoft/signalr';
+import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 
 type StockPriceSubscriberProps = StockPriceSubscriberDispatchProps & Props;
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
 };
 
 type StockPriceSubscriberDispatchProps = {
-    connectionOpened: (() => void);
+    connectionOpened: ((connection: HubConnection) => void);
     updatePrice: (({ symbol, price }: { symbol: string, price: number}) => void);
     connectionClosed: (() => void);
     connectionError: ((err: any) => void);
@@ -25,13 +25,13 @@ export class StockPriceSubscriberComponent extends Component<StockPriceSubscribe
         const { url, connectionOpened, updatePrice, connectionClosed, connectionError } = this.props;
 
         // Modify the following code to use SignalR instead of WebSocket
-        const connection = new HubConnectionBuilder().withUrl(url, {
+        const connection: HubConnection = new HubConnectionBuilder().withUrl(url, {
             accessTokenFactory: () => sessionStorage.getItem('accessToken') || ''
         }).withAutomaticReconnect().build();
 
         connection.start().then(() => {
             console.log('Connected!');
-            connectionOpened();
+            connectionOpened(connection);
         }).catch(err => {
             console.log('SignalR connection error: ' + err.toString())
             connectionError(err);

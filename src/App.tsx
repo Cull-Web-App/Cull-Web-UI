@@ -27,7 +27,7 @@ export class App extends PureComponent<AppDispatchProps, {}>
                 <ConnectionAlertComponent></ConnectionAlertComponent>
                 <StockDropdownComponent></StockDropdownComponent>
                 <StockCardListComponent></StockCardListComponent>
-                <StockPriceSubscriberComponent url="ws://localhost:8080/"></StockPriceSubscriberComponent>
+                <StockPriceSubscriberComponent url="https://localhost:7221/bar"></StockPriceSubscriberComponent>
             </div>
         );
     }

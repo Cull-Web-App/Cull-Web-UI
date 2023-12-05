@@ -1,12 +1,15 @@
 import { handleActions } from 'redux-actions';
 import { connectionClosed, connectionError, connectionOpened } from '../actions';
+import { HubConnection } from '@microsoft/signalr';
 
 interface ConnectionState {
+    connection: HubConnection | null;
     opened: boolean;
     error: string | null;
 }
 
 const initialState: ConnectionState = {
+    connection: null,
     opened: false,
     error: null
 };
@@ -14,7 +17,8 @@ const initialState: ConnectionState = {
 // TODO: fix anys
 export const connection = handleActions<ConnectionState, string>(
     {
-        [connectionOpened.toString()]: (state: ConnectionState) => ({
+        [connectionOpened.toString()]: (state: ConnectionState, action: any) => ({
+            connection: action.payload,
             opened: true,
             error: null
         }),

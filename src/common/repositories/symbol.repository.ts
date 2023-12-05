@@ -6,7 +6,7 @@ import { IHttpRepository } from './ihttp.repository';
 
 @injectable()
 export class SymbolRepository implements ISymbolRepository {
-    private readonly url = 'http://localhost:8080/symbols';
+    private readonly url = 'https://localhost:7221/Symbol';
 
     @inject(IDENTIFIERS.IHTTP_REPOSITORY) private readonly httpRepository!: IHttpRepository;
 

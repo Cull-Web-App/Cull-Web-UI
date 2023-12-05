@@ -1,0 +1,17 @@
+.close-button {
+    position: absolute;
+    top: 1px;
+    right: 3px;
+    font-size: 13pt;
+    padding: 2px !important;
+    color: hsl(0, 80%, 50%);
+    cursor: pointer;
+}
+
+.close-button:hover {
+    color: hsl(0, 80%, 60%);
+}
+
+.stock-card {
+    width: 18rem;
+}

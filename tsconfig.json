@@ -1,26 +1,26 @@
 {
-    "compilerOptions": {
-      "target": "es2020",                          /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', or 'ESNEXT'. */
-      "module": "es2020",                     /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
-      "jsx": "react",                     /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
-      "sourceMap": true,                     /* Generates corresponding '.map' file. */
-      "outDir": "./distlib",                        /* Redirect output structure to the directory. */
-      "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
-      "strict": true,                            /* Enable all strict type-checking options. */
-      "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
-      "types": ["node", "jest"],                           /* Type declaration files to be included in compilation. */
-      "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
-      "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
-      "esModuleInterop": true,
-      "moduleResolution": "node"
-    },
-    "include": [
-      "./src/**/*",
-      "./e2e/src/**/*",
-      "./webpack.config.ts"
-    ],
-    "exclude": [
-      "node_modules",
-      "**/*.spec.ts"
-    ]
-  }
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "target": "es2020",
+    "module": "es2020",
+    "jsx": "react",
+    "sourceMap": true,
+    "outDir": "./distlib",
+    "rootDir": "./", 
+    "strict": true,
+    "noImplicitAny": true,
+    "types": ["node", "jest", "reflect-metadata"],
+    "experimentalDecorators": true, 
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
+  },
+  "include": [
+    "./src/**/*",
+    "./e2e/src/**/*"
+, "jest.config.js"  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}

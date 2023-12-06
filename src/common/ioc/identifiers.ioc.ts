@@ -3,5 +3,6 @@ export const IDENTIFIERS = {
     ISYMBOL_REPOSITORY: Symbol.for('ISymbolRepository'),
     IHTTP_REPOSITORY: Symbol.for('IHttpRepository'),
     ISUBSCRIPTION_REPOSITORY: Symbol.for('ISubscriptionRepository'),
-    ISUBSCRIPTION_SERVICE: Symbol.for('ISubscriptionService')
+    ISUBSCRIPTION_SERVICE: Symbol.for('ISubscriptionService'),
+    ISIGNALR_REPOSITORY: Symbol.for('ISignalRRepository')
 };

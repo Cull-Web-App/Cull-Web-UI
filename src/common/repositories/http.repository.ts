@@ -22,4 +22,12 @@ export class HttpRepository implements IHttpRepository {
             } as AxiosRequestConfig) as Promise<HTTPResponse<T>>
         )
     }
+
+    public put<T>(url: string, body: unknown): Observable<HTTPResponse<T>> {
+        return from(
+            axios.post(url, body, {
+                method: 'POST'
+            } as AxiosRequestConfig) as Promise<HTTPResponse<T>>
+        )
+    }
 }

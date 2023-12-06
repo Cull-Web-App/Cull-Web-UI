@@ -6,7 +6,9 @@ import {
     ISymbolRepository,
     SymbolRepository,
     ISubscriptionRepository,
-    SubscriptionRepository
+    SubscriptionRepository,
+    ISignalRRepository,
+    SignalRRepository
 } from '../repositories';
 import {
     SymbolService,
@@ -23,6 +25,7 @@ container.bind<ISymbolRepository>(IDENTIFIERS.ISYMBOL_REPOSITORY).to(SymbolRepos
 container.bind<ISymbolService>(IDENTIFIERS.ISYMBOL_SERVICE).to(SymbolService);
 container.bind<ISubscriptionRepository>(IDENTIFIERS.ISUBSCRIPTION_REPOSITORY).to(SubscriptionRepository);
 container.bind<ISubscriptionService>(IDENTIFIERS.ISUBSCRIPTION_SERVICE).to(SubscriptionService);
+container.bind<ISignalRRepository>(IDENTIFIERS.ISIGNALR_REPOSITORY).to(SignalRRepository);
 
 const { lazyInject } = getDecorators(container, false);
 

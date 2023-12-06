@@ -10,10 +10,12 @@ import {
     receiveBar,
     subscribeBar,
     subscribeBarSuccess,
-    subscribeBarError
+    subscribeBarError,
+    receiveBarSuccess
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
-import { IBarService, container } from '../../common';
+import { Bar, IBar, IBarService, container } from '../../common';
+import { of } from 'rxjs';
 
 export class BarEpic {
     private readonly barService!: IBarService;
@@ -28,7 +30,7 @@ export class BarEpic {
             return this.barService.connect().pipe(
                 map(_ => {
                     this.barService.registerAll(new Map<string, (...args: any[]) => void>([
-                        ['ReceiveBar', (bar) => store.dispatch(receiveBar(bar))]
+                        ['ReceiveBar', (bar: IBar) => store.dispatch(receiveBar({ bar }))]
                     ]));
                     return barConnectSuccess()
                 }),
@@ -65,9 +67,8 @@ export class BarEpic {
 
     public receiveBar$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(receiveBar),
-        switchMap(({ payload: bar }: { payload: any }) => {
-            console.log(bar);
-            return [];
+        switchMap(({ payload: { bar } }: { payload: { bar: any } }) => {
+            return of(receiveBarSuccess({ symbol: bar.symbol, bar: new Bar(bar) }));
         })
     );
 }

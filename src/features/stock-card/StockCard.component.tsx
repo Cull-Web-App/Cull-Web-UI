@@ -6,11 +6,12 @@ import './StockCard.component.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { barDisconnect } from 'state';
+import { IBar } from '../../common';
 
 // Define the Props for this component
 type StockCardProps = StockCardReduxProps & StockCardComponentProps & StockCardDispatchProps;
 interface StockCardReduxProps {
-    priceMap: Map<string, number>;
+    barMap: Map<string, IBar[]>;
 }
 
 interface StockCardDispatchProps {
@@ -29,13 +30,13 @@ const StockCardCloseButton = ({ onClick }: { onClick: MouseEventHandler<HTMLDivE
     );
 }
 
-const StockCardComponent = ({ symbol, priceMap, unsubscribe }: StockCardProps) => {
+const StockCardComponent = ({ symbol, barMap, unsubscribe }: StockCardProps) => {
     return (
         <Card className='stock-card shadow' data-testid="stock-card">
             <StockCardCloseButton onClick={() => unsubscribe(symbol)}></StockCardCloseButton>
             <Card.Body>
                 <Card.Title data-testid="stock-card-title">{symbol}</Card.Title>
-                <PriceComponent priceMap={priceMap} symbol={symbol}></PriceComponent>
+                <PriceComponent barMap={barMap} symbol={symbol}></PriceComponent>
             </Card.Body>
         </Card>
     );
@@ -48,9 +49,9 @@ const mapDispatchToProps = (dispatch: any): StockCardDispatchProps => {
 }
 
 const mapStateToProps = (state: any): StockCardReduxProps => {
-    const { priceMap } = state.bar;
+    const { barMap } = state.bar;
     return {
-        priceMap: new Map(Object.entries(priceMap))
+        barMap: new Map(Object.entries(barMap))
     };
 }
 

@@ -1,2 +1,2 @@
 export * from './symbol.epic';
-export * from './price.epic';
+export * from './bar.epic';

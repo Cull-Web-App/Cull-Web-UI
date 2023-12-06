@@ -1,3 +1,2 @@
 export * from './symbol.action';
-export * from './connection.action';
-export * from './price.action';
+export * from './bar.action';

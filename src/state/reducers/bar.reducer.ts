@@ -1,32 +1,32 @@
 import { handleActions } from 'redux-actions';
-import { subscribeSuccess, unsubscribeSuccess, updatePrice } from '../actions';
+import { receiveBar, subscribeBarSuccess,  } from '../actions';
 
-interface PriceState {
+interface BarState {
     subscribedSymbols: string[];
     priceMap: Record<string, number>;
 }
 
-const initialState: PriceState = {
+const initialState: BarState = {
     subscribedSymbols: [],
     priceMap: {}
 };
 
 // TODO: fix anys
-export const price = handleActions<PriceState, string>(
+export const bar = handleActions<BarState, string>(
     {
-        [subscribeSuccess.toString()]: (state: PriceState, action: any) => {
+        [subscribeBarSuccess.toString()]: (state: BarState, action: any) => {
             return {
                 ...state,
                 subscribedSymbols: [...state.subscribedSymbols, action.payload]
             }
         },
-        [unsubscribeSuccess.toString()]: (state: PriceState, action: any) => {
+        [''.toString()]: (state: BarState, action: any) => {
             return {
                 ...state,
                 subscribedSymbols: state.subscribedSymbols.filter((symbol: string) => symbol !== action.payload)
             };
         },
-        [updatePrice.toString()]: (state: PriceState, action: any) => {
+        [receiveBar.toString()]: (state: BarState, action: any) => {
             return {
                 ...state,
                 priceMap: {

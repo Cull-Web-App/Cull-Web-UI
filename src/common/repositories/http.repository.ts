@@ -30,4 +30,13 @@ export class HttpRepository implements IHttpRepository {
             } as AxiosRequestConfig) as Promise<HTTPResponse<T>>
         )
     }
+
+    public delete<T>(url: string, params?: unknown): Observable<HTTPResponse<T>> {
+        return from(
+            axios.delete(url, {
+                method: 'DELETE',
+                params
+            } as AxiosRequestConfig) as Promise<HTTPResponse<T>>
+        )
+    }
 }

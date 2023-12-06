@@ -2,10 +2,10 @@ import React, { MouseEventHandler } from 'react';
 import Card from 'react-bootstrap/Card';
 import { connect } from 'react-redux';
 import PriceComponent from './Price.component';
-import { unsubscribe } from '../../state';
 import './StockCard.component.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
+import { barDisconnect } from 'state';
 
 // Define the Props for this component
 type StockCardProps = StockCardReduxProps & StockCardComponentProps & StockCardDispatchProps;
@@ -43,12 +43,12 @@ const StockCardComponent = ({ symbol, priceMap, unsubscribe }: StockCardProps) =
 
 const mapDispatchToProps = (dispatch: any): StockCardDispatchProps => {
     return {
-        unsubscribe: (symbol: string) => dispatch(unsubscribe(symbol))
+        unsubscribe: (symbol: string) => dispatch(barDisconnect(symbol))
     };
 }
 
 const mapStateToProps = (state: any): StockCardReduxProps => {
-    const { priceMap } = state.price;
+    const { priceMap } = state.bar;
     return {
         priceMap: new Map(Object.entries(priceMap))
     };

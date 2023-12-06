@@ -17,7 +17,7 @@ const StockCardListComponent = ({ symbols }: StockCardListProps) => {
 }
 
 const mapStateToProps = (state: any): StockCardListReduxProps => {
-    const { subscribedSymbols } = state.price;
+    const { subscribedSymbols } = state.bar;
     return {
         symbols: subscribedSymbols
     };

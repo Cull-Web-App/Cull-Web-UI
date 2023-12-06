@@ -1,7 +1,7 @@
 import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { connect } from 'react-redux';
-import { subscribe } from '../../state';
+import { barConnect } from '../../state';
 
 // Define the Props for this component
 type StockDropdownProps = StockDropdownDispatchProps & StockDropdownReduxProps;
@@ -30,13 +30,13 @@ const StockDropdownComponent = ({ symbols, subscribedSymbols, subscribe }: Stock
 
 const mapDispatchToProps = (dispatch: any): StockDropdownDispatchProps => {
     return {
-        subscribe: (symbol: string) => dispatch(subscribe(symbol)),
+        subscribe: (symbol: string) => dispatch(barConnect(symbol)),
     };
 }
 
 const mapStateToProps = (state: any): StockDropdownReduxProps => {
     const { symbols } = state.symbols;
-    const { subscribedSymbols } = state.price;
+    const { subscribedSymbols } = state.bar;
     return {
         subscribedSymbols: new Set([...subscribedSymbols]),
         symbols

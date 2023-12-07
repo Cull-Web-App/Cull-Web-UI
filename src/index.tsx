@@ -9,7 +9,7 @@ import { createEpicMiddleware, combineEpics } from 'redux-observable';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { InversifyProvider } from './common';
 import { container } from './common/ioc/container.ioc';
-import { bar, initializeSymbols$, symbols, BarEpic } from './state';
+import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic } from './state';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const root = ReactDOM.createRoot(
@@ -29,22 +29,22 @@ const store = configureStore(
     {
         reducer: combineReducers({
             symbols,
-            bar
+            bar,
+            preference
         }),
         middleware: [epicMiddleWare]
     }
 );
 
 // Construct the epics
-const barEpic = new BarEpic();
+const epics: IBaseEpic[] = [
+    new SymbolEpic(),
+    new BarEpic()
+];
 
 epicMiddleWare.run(
     combineEpics(
-        initializeSymbols$,
-        barEpic.connect$,
-        barEpic.disconnect$,
-        barEpic.subscribeBar$,
-        barEpic.receiveBar$
+        ...epics.flatMap(epic => epic.epics)
     )
 );
 root.render(

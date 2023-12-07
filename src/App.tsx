@@ -6,6 +6,7 @@ import StockCardListComponent from "./features/stock-card/StockCardList.componen
 import StockDropdownComponent from "./features/stock-dropdown/StockDropdown.component";
 import StockPriceSubscriberComponent from "./features/stock-price-subscriber/StockPriceSubscriber.component";
 import { initializeSymbols } from "./state";
+import { MenuComponent } from "features/menu/Menu.component";
 
 
 interface AppDispatchProps
@@ -19,14 +20,16 @@ export class App extends PureComponent<AppDispatchProps, {}>
     {
         const { initializeSymbols } = this.props;
         initializeSymbols();
+
+        // Add default dark mode
+        document.body.classList.add('dark-mode');
     }
 
     public render(): ReactNode {
         return (
             <div className="container-md py-3">
+                <MenuComponent></MenuComponent>
                 <ConnectionAlertComponent></ConnectionAlertComponent>
-                <StockDropdownComponent></StockDropdownComponent>
-                <StockCardListComponent></StockCardListComponent>
                 <StockPriceSubscriberComponent></StockPriceSubscriberComponent>
             </div>
         );

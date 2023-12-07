@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 import React from "react";
-import { barConnect, subscribeBar } from "state";
+import { barConnect } from "state";
 
 type StockPriceSubscriberProps = StockPriceSubscriberDispatchProps & Props;
 type Props = {
@@ -9,7 +9,6 @@ type Props = {
 
 type StockPriceSubscriberDispatchProps = {
     barConnect: (() => void);
-    subscribeBar: (({ symbol }: { symbol: string}) => void);
 };
 
 export class StockPriceSubscriberComponent extends Component<StockPriceSubscriberProps> {
@@ -18,13 +17,8 @@ export class StockPriceSubscriberComponent extends Component<StockPriceSubscribe
     }
 
     public componentDidMount(): void {
-        const { barConnect, subscribeBar } = this.props;
+        const { barConnect } = this.props;
         barConnect();
-
-        // wait for a second before subscribing to the bar
-        setTimeout(() => {
-            subscribeBar({ symbol: 'AAPL' });
-        }, 1000);
     }
 
     public render(): JSX.Element {
@@ -36,7 +30,6 @@ const mapDispatchToProps = (dispatch: any): StockPriceSubscriberDispatchProps =>
 {
     return {
         barConnect: () => dispatch(barConnect()),
-        subscribeBar: ({ symbol }: { symbol: string}) => dispatch(subscribeBar({ symbol })),
     };
 }
 

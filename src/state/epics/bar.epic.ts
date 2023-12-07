@@ -16,12 +16,15 @@ import {
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { Bar, IBar, IBarService, container } from '../../common';
 import { of } from 'rxjs';
+import { BaseEpic } from './base.epic';
 
-export class BarEpic {
+export class BarEpic extends BaseEpic {
     private readonly barService!: IBarService;
 
     public constructor() {
+        super();
         this.barService = container.get<IBarService>(IDENTIFIERS.IBAR_SERVICE);
+        this.addEpics([this.connect$, this.disconnect$, this.subscribeBar$, this.receiveBar$]);
     }
 
     public connect$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(

@@ -5,7 +5,7 @@ import PriceComponent from './Price.component';
 import './StockCard.component.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
-import { barDisconnect } from 'state';
+import { barDisconnect, unsubscribeBar } from 'state';
 import { IBar } from '../../common';
 
 // Define the Props for this component
@@ -32,7 +32,7 @@ const StockCardCloseButton = ({ onClick }: { onClick: MouseEventHandler<HTMLDivE
 
 const StockCardComponent = ({ symbol, barMap, unsubscribe }: StockCardProps) => {
     return (
-        <Card className='stock-card shadow' data-testid="stock-card">
+        <Card bg='dark' text='white' className='stock-card shadow' data-testid="stock-card">
             <StockCardCloseButton onClick={() => unsubscribe(symbol)}></StockCardCloseButton>
             <Card.Body>
                 <Card.Title data-testid="stock-card-title">{symbol}</Card.Title>
@@ -44,7 +44,7 @@ const StockCardComponent = ({ symbol, barMap, unsubscribe }: StockCardProps) => 
 
 const mapDispatchToProps = (dispatch: any): StockCardDispatchProps => {
     return {
-        unsubscribe: (symbol: string) => dispatch(barDisconnect(symbol))
+        unsubscribe: (symbol: string) => dispatch(unsubscribeBar({ symbol }))
     };
 }
 

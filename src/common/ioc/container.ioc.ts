@@ -14,7 +14,9 @@ import {
     SymbolService,
     ISymbolService,
     IBarService,
-    BarService
+    BarService,
+    PreferenceService,
+    IPreferenceService
 } from '../services';
 import { IDENTIFIERS } from './identifiers.ioc';
 import getDecorators from 'inversify-inject-decorators';
@@ -26,6 +28,7 @@ container.bind<ISymbolService>(IDENTIFIERS.ISYMBOL_SERVICE).to(SymbolService);
 container.bind<ISignalRRepository>(IDENTIFIERS.ISIGNALR_REPOSITORY).to(SignalRRepository);
 container.bind<IBarRepository>(IDENTIFIERS.IBAR_REPOSITORY).to(BarRepository);
 container.bind<IBarService>(IDENTIFIERS.IBAR_SERVICE).to(BarService);
+container.bind<IPreferenceService>(IDENTIFIERS.IPREFERENCE_SERVICE).to(PreferenceService);
 
 const { lazyInject } = getDecorators(container, false);
 

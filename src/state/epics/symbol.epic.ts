@@ -11,16 +11,18 @@ import { ISymbolService } from '../../common';
 import { BaseEpic } from './base.epic';
 
 export class SymbolEpic extends BaseEpic {
+    private readonly symbolService!: ISymbolService;
+
     public constructor() {
         super();
+        this.symbolService = container.get<ISymbolService>(IDENTIFIERS.ISYMBOL_SERVICE);
         this.addEpics([this.initializeSymbols$]);
     }
 
     public initializeSymbols$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(initializeSymbols),
         switchMap(() => {
-            const symbolService: ISymbolService = container.get<ISymbolService>(IDENTIFIERS.ISYMBOL_SERVICE);
-            return symbolService.findAll().pipe(
+            return this.symbolService.findAll().pipe(
                 map(symbols => initializeSymbolsSuccess({ symbols })),
                 catchError(error => [
                     initializeSymbolsError(error)

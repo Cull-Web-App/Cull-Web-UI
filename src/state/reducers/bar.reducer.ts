@@ -24,7 +24,7 @@ export const bar = handleActions<BarState, string>(
         [unsubscribeBarSuccess.toString()]: (state: BarState, action: any) => {
             return {
                 ...state,
-                subscribedSymbols: state.subscribedSymbols.filter((symbol: string) => symbol !== action.payload)
+                subscribedSymbols: state.subscribedSymbols.filter((symbol: string) => symbol !== action.payload.symbol)
             };
         },
         [receiveBarSuccess.toString()]: (state: BarState, action: any) => {

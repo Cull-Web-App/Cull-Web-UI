@@ -40,7 +40,7 @@ export const MenuComponent = () => {
                         {
                             Array.from(tabMap).map(([key, [title, _]]) => {
                                 return (
-                                    <Nav.Item>
+                                    <Nav.Item key={key}>
                                         <Nav.Link eventKey={key}>{title}</Nav.Link>
                                     </Nav.Item>
                                 );

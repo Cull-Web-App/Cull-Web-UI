@@ -11,7 +11,10 @@ import {
     subscribeBar,
     subscribeBarSuccess,
     subscribeBarError,
-    receiveBarSuccess
+    receiveBarSuccess,
+    unsubscribeBar,
+    unsubscribeBarSuccess,
+    unsubscribeBarError
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { Bar, IBar, IBarService, container } from '../../common';
@@ -24,7 +27,7 @@ export class BarEpic extends BaseEpic {
     public constructor() {
         super();
         this.barService = container.get<IBarService>(IDENTIFIERS.IBAR_SERVICE);
-        this.addEpics([this.connect$, this.disconnect$, this.subscribeBar$, this.receiveBar$]);
+        this.addEpics([this.connect$, this.disconnect$, this.subscribeBar$, this.receiveBar$, this.unsubscribeBar$]);
     }
 
     public connect$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
@@ -63,6 +66,18 @@ export class BarEpic extends BaseEpic {
                 map(_ => subscribeBarSuccess({ symbol })),
                 catchError(error => [
                     subscribeBarError(error)
+                ])
+            );
+        })
+    );
+
+    public unsubscribeBar$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(unsubscribeBar),
+        switchMap(({ payload: { symbol }}: { payload: { symbol: string } }) => {
+            return this.barService.unsubscribe(symbol).pipe(
+                map(_ => unsubscribeBarSuccess({ symbol })),
+                catchError(error => [
+                    unsubscribeBarError(error)
                 ])
             );
         })

@@ -31,6 +31,7 @@ const StockDropdownComponent = ({ symbols, subscribedSymbols, subscribe }: Stock
         const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
         return filteredSymbols.slice(startIndex, endIndex).map((symbol) => (
             <ListGroup.Item
+                variant='dark'
                 key={symbol}
                 action
                 onClick={() => handleItemClick(symbol)}
@@ -62,7 +63,7 @@ const StockDropdownComponent = ({ symbols, subscribedSymbols, subscribe }: Stock
                 Subscribe To Stock Symbol
             </Dropdown.Toggle>
 
-            <Dropdown.Menu>
+            <Dropdown.Menu variant='dark'>
                 <Form.Group controlId="searchForm">
                     <Form.Control
                         type="text"

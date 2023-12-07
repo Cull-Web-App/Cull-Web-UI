@@ -9,7 +9,7 @@ import { createEpicMiddleware, combineEpics } from 'redux-observable';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { InversifyProvider } from './common';
 import { container } from './common/ioc/container.ioc';
-import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic } from './state';
+import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic, PreferenceEpic } from './state';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const root = ReactDOM.createRoot(
@@ -39,7 +39,8 @@ const store = configureStore(
 // Construct the epics
 const epics: IBaseEpic[] = [
     new SymbolEpic(),
-    new BarEpic()
+    new BarEpic(),
+    new PreferenceEpic()
 ];
 
 epicMiddleWare.run(
@@ -47,6 +48,8 @@ epicMiddleWare.run(
         ...epics.flatMap(epic => epic.epics)
     )
 );
+
+// Render the app
 root.render(
     <React.StrictMode>
         <InversifyProvider container={container}>

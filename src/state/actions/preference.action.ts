@@ -6,6 +6,6 @@ export const {
     initializePreferencesError
 } = createActions({
     INITIALIZE_PREFERENCES: undefined,
-    INITILIAZE_PREFERENCES_SUCCESS: (darkMode: boolean) => ({ darkMode }),
-    INITIALIZE_PREFERENCES_ERROR: (error: string) => error,
+    INITIALIZE_PREFERENCES_SUCCESS: ({ darkMode }: { darkMode: boolean }) => ({ darkMode }),
+    INITIALIZE_PREFERENCES_ERROR: (error: string) => error
  });

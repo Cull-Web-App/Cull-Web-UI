@@ -25,4 +25,8 @@ export class BarService implements IBarService {
     public subscribe(symbol: string): Observable<void> {
         return this.barRepository.invoke('Subscribe', symbol);
     }
+
+    public unsubscribe(symbol: string): Observable<void> {
+        return this.barRepository.invoke('Unsubscribe', symbol);
+    }
 }

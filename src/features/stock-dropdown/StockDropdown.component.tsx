@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import ListGroup from 'react-bootstrap/ListGroup';
+import Form from 'react-bootstrap/Form';
 import { connect } from 'react-redux';
-import { subscribe } from '../../state';
+import { subscribeBar } from '../../state';
 
 // Define the Props for this component
 type StockDropdownProps = StockDropdownDispatchProps & StockDropdownReduxProps;
@@ -14,29 +16,85 @@ interface StockDropdownReduxProps {
 }
 
 const StockDropdownComponent = ({ symbols, subscribedSymbols, subscribe }: StockDropdownProps) => {
-    const availableSymbols: string[] = symbols.filter(symbol => !subscribedSymbols.has(symbol));
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
+    const filteredSymbols = symbols.filter(symbol => !subscribedSymbols.has(symbol) && symbol.toLowerCase().includes(searchTerm.toLowerCase()));
+    const itemsPerPage = 20;
+    const totalItems = filteredSymbols.length;
+
+    const handleItemClick = (symbol: string) => {
+        subscribe(symbol);
+    };
+
+    const renderItems = () => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        return filteredSymbols.slice(startIndex, endIndex).map((symbol) => (
+            <ListGroup.Item
+                variant='dark'
+                key={symbol}
+                action
+                onClick={() => handleItemClick(symbol)}
+                data-testid='stock-dropdown-item'
+            >
+                {symbol}
+            </ListGroup.Item>
+        ));
+    };
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    const handlePreviousPage = () => {
+        setCurrentPage(prevPage => Math.max(prevPage - 1, 1));
+    };
+
+    const handleNextPage = () => {
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        setCurrentPage(prevPage => Math.min(prevPage + 1, totalPages));
+    };
+
+    const leftArrow = '\u2190';
+    const rightArrow = '\u2192';
+
     return (
-        <Dropdown>
-            <Dropdown.Toggle data-testid='stock-dropdown-toggle' variant="success" id="subscription-dropdown" disabled={availableSymbols.length === 0}>
+        <Dropdown show={showDropdown} onToggle={show => setShowDropdown(show)}>
+            <Dropdown.Toggle data-testid='stock-dropdown-toggle' variant="success" id="subscription-dropdown" disabled={symbols.length === 0}>
                 Subscribe To Stock Symbol
             </Dropdown.Toggle>
 
-            <Dropdown.Menu>
-                {availableSymbols.map(symbol => <Dropdown.Item data-testid='stock-dropdown-item' key={symbol} onClick={() => subscribe(symbol)}>{symbol}</Dropdown.Item>)}
+            <Dropdown.Menu variant='dark'>
+                <Form.Group controlId="searchForm">
+                    <Form.Control
+                        type="text"
+                        placeholder="Search symbols..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </Form.Group>
+                <ListGroup>
+                    {renderItems()}
+                </ListGroup>
+                {totalItems > itemsPerPage && (
+                    <div>
+                        <button onClick={handlePreviousPage} disabled={currentPage === 1}>{leftArrow}</button>
+                        <button onClick={handleNextPage} disabled={currentPage * itemsPerPage >= totalItems}>{rightArrow}</button>
+                    </div>
+                )}
             </Dropdown.Menu>
         </Dropdown>
     );
-}
+};
 
 const mapDispatchToProps = (dispatch: any): StockDropdownDispatchProps => {
     return {
-        subscribe: (symbol: string) => dispatch(subscribe(symbol)),
+        subscribe: (symbol: string) => dispatch(subscribeBar({ symbol })),
     };
 }
 
 const mapStateToProps = (state: any): StockDropdownReduxProps => {
     const { symbols } = state.symbols;
-    const { subscribedSymbols } = state.price;
+    const { subscribedSymbols } = state.bar;
     return {
         subscribedSymbols: new Set([...subscribedSymbols]),
         symbols

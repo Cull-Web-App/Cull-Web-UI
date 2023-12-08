@@ -22,4 +22,21 @@ export class HttpRepository implements IHttpRepository {
             } as AxiosRequestConfig) as Promise<HTTPResponse<T>>
         )
     }
+
+    public put<T>(url: string, body: unknown): Observable<HTTPResponse<T>> {
+        return from(
+            axios.post(url, body, {
+                method: 'POST'
+            } as AxiosRequestConfig) as Promise<HTTPResponse<T>>
+        )
+    }
+
+    public delete<T>(url: string, params?: unknown): Observable<HTTPResponse<T>> {
+        return from(
+            axios.delete(url, {
+                method: 'DELETE',
+                params
+            } as AxiosRequestConfig) as Promise<HTTPResponse<T>>
+        )
+    }
 }

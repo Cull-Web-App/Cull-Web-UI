@@ -25,7 +25,7 @@ const ConnectionAlertComponent = ({ error }: ConnectionAlertProps) => {
 }
 
 const mapStateToProps = (state: any): ConnectionAlertReduxProps => {
-    const { error: connectionError } = state.connection;
+    const { error: connectionError } = state.bar;
     const { error: symbolError } = state.symbols;
     return {
         error: connectionError || symbolError

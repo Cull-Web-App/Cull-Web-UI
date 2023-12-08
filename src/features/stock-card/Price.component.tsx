@@ -1,9 +1,14 @@
+import { IBar } from "../../common";
 import React from "react";
 
-const PriceComponent = ({ priceMap, symbol }: { priceMap: Map<string, number>, symbol: string }) => {
+const PriceComponent = ({ barMap, symbol }: { barMap: Map<string, IBar[]>, symbol: string }) => {
+    const bars = barMap.get(symbol);
+    if (!bars || bars.length === 0) {
+        return (<div className="price" data-testid="price">$--</div>);
+    }
     return (
         <div className="price" data-testid="price">
-            ${(priceMap.get(symbol) || 0).toFixed(2)}
+            ${bars[bars.length - 1].close.toFixed(2)}
         </div>
     )
 };

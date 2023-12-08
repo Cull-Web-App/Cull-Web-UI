@@ -9,34 +9,47 @@ import { createEpicMiddleware, combineEpics } from 'redux-observable';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { InversifyProvider } from './common';
 import { container } from './common/ioc/container.ioc';
-import { connection, price, initializeSymbols$, symbols, subscribe$, unsubscribe$ } from './state';
+import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic, PreferenceEpic } from './state';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 
-const epicMiddleWare = createEpicMiddleware();
+const epicMiddleWare = createEpicMiddleware({
+    dependencies: {
+        get store() {
+                return store
+        }
+    }
+});
 
 // Create the store using the combined reducers
 const store = configureStore(
     {
         reducer: combineReducers({
             symbols,
-            connection,
-            price
+            bar,
+            preference
         }),
         middleware: [epicMiddleWare]
     }
 );
 
+// Construct the epics
+const epics: IBaseEpic[] = [
+    new SymbolEpic(),
+    new BarEpic(),
+    new PreferenceEpic()
+];
+
 epicMiddleWare.run(
     combineEpics(
-        initializeSymbols$,
-        subscribe$,
-        unsubscribe$
+        ...epics.flatMap(epic => epic.epics)
     )
 );
+
+// Render the app
 root.render(
     <React.StrictMode>
         <InversifyProvider container={container}>

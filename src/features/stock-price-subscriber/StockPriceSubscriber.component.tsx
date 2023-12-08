@@ -1,19 +1,14 @@
 import { Component } from "react";
 import { connect } from "react-redux";
-import { connectionClosed, connectionError, connectionOpened, updatePrice } from "../../state";
 import React from "react";
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { barConnect } from "state";
 
 type StockPriceSubscriberProps = StockPriceSubscriberDispatchProps & Props;
 type Props = {
-    url: string;
 };
 
 type StockPriceSubscriberDispatchProps = {
-    connectionOpened: ((connection: HubConnection) => void);
-    updatePrice: (({ symbol, price }: { symbol: string, price: number}) => void);
-    connectionClosed: (() => void);
-    connectionError: ((err: any) => void);
+    barConnect: (() => void);
 };
 
 export class StockPriceSubscriberComponent extends Component<StockPriceSubscriberProps> {
@@ -22,28 +17,8 @@ export class StockPriceSubscriberComponent extends Component<StockPriceSubscribe
     }
 
     public componentDidMount(): void {
-        const { url, connectionOpened, updatePrice, connectionClosed, connectionError } = this.props;
-
-        // Modify the following code to use SignalR instead of WebSocket
-        const connection: HubConnection = new HubConnectionBuilder().withUrl(url, {
-            accessTokenFactory: () => sessionStorage.getItem('accessToken') || ''
-        }).withAutomaticReconnect().build();
-
-        connection.start().then(() => {
-            console.log('Connected!');
-            connectionOpened(connection);
-        }).catch(err => {
-            console.log('SignalR connection error: ' + err.toString())
-            connectionError(err);
-        });
-
-        connection.onclose(() => {
-            connectionClosed();
-        });
-
-        connection.on('ReceiveBar', (messageData) => {
-            updatePrice({ symbol: messageData.symbol, price: Number(messageData.open) });
-        });
+        const { barConnect } = this.props;
+        barConnect();
     }
 
     public render(): JSX.Element {
@@ -54,10 +29,7 @@ export class StockPriceSubscriberComponent extends Component<StockPriceSubscribe
 const mapDispatchToProps = (dispatch: any): StockPriceSubscriberDispatchProps =>
 {
     return {
-        connectionOpened: () => dispatch(connectionOpened()),
-        updatePrice: ({ symbol, price }: { symbol: string, price: number }) => dispatch(updatePrice({ symbol, price })),
-        connectionClosed: () => dispatch(connectionClosed()),
-        connectionError: (err: any) => dispatch(connectionError(err))
+        barConnect: () => dispatch(barConnect()),
     };
 }
 

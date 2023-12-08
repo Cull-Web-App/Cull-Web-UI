@@ -1,3 +1,3 @@
 export * from './symbol.reducer';
-export * from './connection.reducer';
-export * from './price.reducer';
+export * from './bar.reducer';
+export * from './preference.reducer';

@@ -12,12 +12,12 @@ afterEach(() => {
 });
 
 test('renders the card with the appropriate symbol', () => {
-    const priceMap = new Map<string, number>();
+    const barMap = new Map<string, number>();
     const symbol = 'AAPL';
-    priceMap.set(symbol, 100);
+    barMap.set(symbol, 100);
     const store = mockStore({
         price: {
-            priceMap: priceMap
+            barMap: barMap
         }
     });
     render(
@@ -32,12 +32,12 @@ test('renders the card with the appropriate symbol', () => {
 });
 
 test('renders the card with a price component', () => {
-    const priceMap = new Map<string, number>();
+    const barMap = new Map<string, number>();
     const symbol = 'AAPL';
-    priceMap.set(symbol, 100);
+    barMap.set(symbol, 100);
     const store = mockStore({
         price: {
-            priceMap: priceMap
+            barMap: barMap
         }
     });
     render(

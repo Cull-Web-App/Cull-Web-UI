@@ -2,26 +2,27 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import PriceComponent from './Price.component';
+import { IBar } from '../../common';
 
 test('renders the price if it exists in the map', () => {
     const symbol = 'AAPL';
-    const priceMap = new Map<string, number>();
-    priceMap.set(symbol, 100);
-    priceMap.set('GOOG', 200);
+    const barMap = new Map<string, IBar[]>();
+    barMap.set(symbol, [{ close: 100 } as IBar]);
+    barMap.set('GOOG', [{ close: 200 } as IBar]);
     render(
-        <PriceComponent priceMap={priceMap} symbol={symbol}></PriceComponent>
+        <PriceComponent barMap={barMap} symbol={symbol}></PriceComponent>
     )
 
     const price = screen.queryByText('$100.00');
     expect(price).toBeInTheDocument();
 });
 
-test('renders $0.00 if the price does not exist in the map', () => {
+test('renders $-- if the price does not exist in the map', () => {
     const symbol = 'AAPL';
-    const priceMap = new Map<string, number>();
-    priceMap.set('GOOG', 200);
+    const barMap = new Map<string, IBar[]>();
+    barMap.set('GOOG', [{ close: 200 } as IBar]);
     render(
-        <PriceComponent priceMap={priceMap} symbol={symbol}></PriceComponent>
+        <PriceComponent barMap={barMap} symbol={symbol}></PriceComponent>
     )
     const price = screen.queryByText('$0.00');
     expect(price).toBeInTheDocument();

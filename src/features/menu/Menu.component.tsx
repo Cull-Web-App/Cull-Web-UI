@@ -60,3 +60,5 @@ export const MenuComponent = () => {
         </div>
     );
 }
+
+export default MenuComponent;

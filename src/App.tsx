@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import ConnectionAlertComponent from "./features/connection-alert/ConnectionAlert.component";
 import StockPriceSubscriberComponent from "./features/stock-price-subscriber/StockPriceSubscriber.component";
 import { initializeSymbols, initializePreferences } from "./state";
-import { MenuComponent } from "features/menu/Menu.component";
+import MenuComponent from "features/menu/Menu.component";
 
 type AppProps = AppReduxProps & AppDispatchProps;
 interface AppDispatchProps

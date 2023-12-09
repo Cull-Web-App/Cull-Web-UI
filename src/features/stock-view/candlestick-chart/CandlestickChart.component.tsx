@@ -158,7 +158,7 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
                         strokeDasharray="5"
                     />
                     { showToolTip && (
-                        <foreignObject x={cursorX + 10} y={cursorY - 40} width="100" height="40">
+                        <foreignObject x={cursorX + 10} y={cursorY - 40} width="100" height="100">
                             <CandlestickTooltipComponent bar={tooltipBar as IBar} variant={variant}></CandlestickTooltipComponent>
                         </foreignObject>
                     )}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
-import HomeComponent from 'features/home/Home.component';
+import OverviewComponent from 'features/overview/Overview.component';
 import StockViewComponent from 'features/stock-view/StockView.component';
 import NewsComponent from 'features/news/News.component';
 import TradingStrategiesComponent from 'features/trading-strategies/TradingStrategies.component';
@@ -16,7 +16,7 @@ import UserDropdownComponent from './UserDropdown.component';
 export const MenuComponent = () => {
     const [key, setKey] = useState('home');
     const tabMap = new Map<string, [string, JSX.Element]>([
-        ['home', ['Home', <HomeComponent></HomeComponent>]],
+        ['overview', ['Overview', <OverviewComponent></OverviewComponent>]],
         ['stock', ['Stock', <StockViewComponent></StockViewComponent>]],
         ['news', ['News', <NewsComponent></NewsComponent>]],
         ['strategies', ['Trading Strategies', <TradingStrategiesComponent></TradingStrategiesComponent>]],

@@ -1,0 +1,4 @@
+.content-container {
+    overflow-x: scroll;
+    width: 10px;
+}

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import * as d3 from 'd3';
 import CandlestickComponent from './Candlestick.component';
 import CandlestickTooltipComponent from './CandlestickTooltip.component';
+import './CandlestickChart.component.css';
 
 import { IBar } from '../../../common';
 import { findManyBar } from '../../../state';
@@ -23,6 +24,7 @@ interface CandlestickChartComponentProps {
 const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChartProps) => {
     const margin = { top: 40, right: 40, bottom: 40, left: 40 };
     const width = 1600 - margin.left - margin.right;
+    const windowWidth = 600;
     const height = 300 - margin.top - margin.bottom;
 
     const [minTime, setMinTime] = React.useState<Date | null>(null);
@@ -54,8 +56,8 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
         applyVariant();
     }, [variant, minTime, maxTime, minY, maxY]);
 
-    const handleMouseMove = (event: React.MouseEvent<SVGElement, MouseEvent>) => {
-        const svgRect = (d3.select('#candlestick-chart').node() as SVGElement).getBoundingClientRect();
+    const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        const svgRect = (d3.select('#content-container').node() as SVGElement).getBoundingClientRect();
         const mouseX = event.clientX - svgRect.left;
         const mouseY = event.clientY - svgRect.top;
 
@@ -85,86 +87,104 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
 
     const drawAxes = () => {
         const svg = d3.select('#candlestick-chart');
+        const contentContainer = d3.select('#content-container');
 
         const xScale = d3.scaleTime().domain([minTime, maxTime] as Date[]).range([0, width]);
         const yScale = d3.scaleLinear().domain([minY, maxY] as number[]).range([height, 0]);
 
         const xAxis = d3.axisBottom(xScale).ticks(d3.timeMinute.every(30));
-        const yAxis = d3.axisLeft(yScale);
+        const yAxis = d3.axisRight(yScale);
 
-        if (!svg.select('.x-axis').empty()) {
-            svg.select<SVGGElement>('.x-axis').remove();
+        if (!contentContainer.select('.x-axis').empty()) {
+            contentContainer.select<SVGGElement>('.x-axis').remove();
         }
-        svg.append<SVGGElement>('g')
+        contentContainer.append<SVGGElement>('g')
             .attr('class', 'x-axis')
-            .attr('transform', `translate(${margin.left},${height + margin.top})`)
+            .attr('transform', `translate(${0},${height + margin.top})`)
             .call(xAxis);
 
-        if (!svg.select('.y-axis').empty()) {
-            svg.select<SVGGElement>('.y-axis').remove();
+        const yAxisGroup = svg.select<SVGGElement>('.y-axis');
+        if (!yAxisGroup.empty()) {
+            yAxisGroup.remove();
         }
         svg.append<SVGGElement>('g')
             .attr('class', 'y-axis')
-            .attr('transform', `translate(${margin.left},${margin.top})`)
-            .call(yAxis);
+            .attr('transform', `translate(${windowWidth},${margin.top})`) // Move to the right side
+            .call(yAxis)
+            .selectAll('.tick line')
+            .attr('x2', -windowWidth) // Draw lines to the left (negative x-value) to span the chart area
+            .attr('stroke', 'lightgrey')
+            .attr('stroke-dasharray', '.3');
     };
 
     const applyVariant = () => {
         const svg = d3.select('#candlestick-chart');
-        // Apply styles for dark mode using CSS variables
-        svg.style('--background-color', 'var(--background-color)');
-        svg.selectAll('.x-axis text').style('fill', 'var(--text-color)');
-        svg.selectAll('.y-axis text').style('fill', 'var(--text-color)');
-        svg.selectAll('.x-axis path').style('stroke', 'var(--text-color)');
-        svg.selectAll('.y-axis path').style('stroke', 'var(--text-color)');
+        const contentContainer = d3.select('#content-container');
+        [svg, contentContainer].forEach((selection) => {
+            // Apply styles for dark mode using CSS variables
+            selection.style('--background-color', 'var(--background-color)');
+            selection.selectAll('.x-axis text').style('fill', 'var(--text-color)');
+            selection.selectAll('.y-axis text').style('fill', 'var(--text-color)');
+            selection.selectAll('.x-axis path').style('stroke', 'var(--text-color)');
+            selection.selectAll('.y-axis path').style('stroke', 'var(--text-color)');
+        });
     };
 
     return (
-        <svg
-            id="candlestick-chart"
-            width={width + margin.left + margin.right}
-            height={height + margin.top + margin.bottom}
+        <div
+            style={{ width: windowWidth }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
         >
-            <g className='x-axis'></g>
-            <g className='y-axis'></g>
-            <g transform={`translate(${margin.left},${margin.top})`}>
-                {minTime && maxTime && minY !== null && maxY !== null && bars.map((bar: IBar) => (
-                    <CandlestickComponent key={`${bar.symbol}-${bar.timeUtc}`} bar={bar} x={d3.scaleTime().domain([minTime, maxTime]).range([0, width])(new Date(bar.timeUtc))} y={d3.scaleLinear().domain([minY, maxY]).range([height, 0])(Math.max(bar.open, bar.close))}/>
-                ))}
-            </g>
-            {cursorX !== null && cursorX >= margin.left && cursorY !== null && cursorY <= height + margin.top && minTime && maxTime && minY !== null && maxY !== null && (
-                <g>
-                    {/* Vertical line */}
-                    <line
-                        x1={cursorX}
-                        y1={0}
-                        x2={cursorX}
-                        y2={height + margin.top}
-                        stroke="black"
-                        strokeWidth="1"
-                        strokeDasharray="5"
-                    />
+            <svg
+                id="candlestick-chart"
+                style={{ width: '100%', height: height + margin.top + margin.bottom, position: 'absolute', pointerEvents: 'none', zIndex: 1 }}
+            >
+                <g className='y-axis'></g>
+            </svg>
+            <div style={{ overflowX: 'scroll', WebkitOverflowScrolling: 'touch', direction: 'rtl' }}>
+                <svg id="content-container" width={width} height={height + margin.bottom + margin.top} display="block">
+                    <g className='x-axis'></g>
+                    <g transform={`translate(${margin.left},${margin.top})`}>
+                        {minTime && maxTime && minY !== null && maxY !== null && bars.map((bar: IBar) => (
+                            <CandlestickComponent key={`${bar.symbol}-${bar.timeUtc}`} bar={bar} x={d3.scaleTime().domain([minTime, maxTime]).range([0, width])(new Date(bar.timeUtc))} y={d3.scaleLinear().domain([minY, maxY]).range([height, 0])(Math.max(bar.open, bar.close))}/>
+                        ))}
+                    </g>
+                    {cursorX !== null && cursorX >= margin.left && cursorY !== null && cursorY <= height + margin.top && minTime && maxTime && minY !== null && maxY !== null && (
+                        <g>
+                            {/* Vertical line */}
+                            <line
+                                x1={cursorX}
+                                y1={0 - margin.top}
+                                x2={cursorX}
+                                y2={height + margin.top}
+                                stroke={variant === 'dark' ? '#FFA500' : 'black'}
+                                strokeWidth="1"
+                                strokeDasharray="5"
+                                z={100}
+                            />
 
-                    {/* Horizontal line */}
-                    <line
-                        x1={margin.left}
-                        y1={cursorY}
-                        x2={width + margin.left}
-                        y2={cursorY}
-                        stroke="black"
-                        strokeWidth="1"
-                        strokeDasharray="5"
-                    />
-                    { showToolTip && (
-                        <foreignObject x={cursorX + 10} y={cursorY - 40} width="100" height="100">
-                            <CandlestickTooltipComponent bar={tooltipBar as IBar} variant={variant}></CandlestickTooltipComponent>
-                        </foreignObject>
+                            {/* Horizontal line */}
+                            <line
+                                x1={margin.left}
+                                y1={cursorY}
+                                x2={windowWidth + margin.left}
+                                y2={cursorY}
+                                stroke={variant === 'dark' ? '#FFA500' : 'black'}
+                                strokeWidth="1"
+                                strokeDasharray="5"
+                                z={100}
+                            />
+                            { showToolTip && (
+                                <foreignObject x={cursorX + 10} y={cursorY - 40} width="100" height="100">
+                                    <CandlestickTooltipComponent bar={tooltipBar as IBar} variant={variant}></CandlestickTooltipComponent>
+                                </foreignObject>
+                            )}
+                        </g>
                     )}
-                </g>
-            )}
-        </svg>
+                </svg>
+            </div>
+        </div>
     );
 };
 

@@ -5,6 +5,7 @@ import './CandlestickTooltip.component.css';
 export const CandlestickTooltipComponent = ({ bar, variant }: { bar: IBar, variant: string }) => {
     return (
         <div className={`${variant}-candlestick-tooltip`}>
+            <div>Time: {new Date(bar.timeUtc).toLocaleTimeString()}</div>
             <div>Open: {bar.open}</div>
             <div>Close: {bar.close}</div>
             <div>High: {bar.high}</div>

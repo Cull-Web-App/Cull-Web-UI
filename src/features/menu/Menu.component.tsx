@@ -14,7 +14,7 @@ import AboutComponent from 'features/about/About.component';
 import UserDropdownComponent from './UserDropdown.component';
 
 export const MenuComponent = () => {
-    const [key, setKey] = useState('home');
+    const [key, setKey] = useState('overview');
     const tabMap = new Map<string, [string, JSX.Element]>([
         ['overview', ['Overview', <OverviewComponent></OverviewComponent>]],
         ['stock', ['Stock', <StockViewComponent></StockViewComponent>]],

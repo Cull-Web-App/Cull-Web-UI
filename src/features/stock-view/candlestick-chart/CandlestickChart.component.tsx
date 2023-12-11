@@ -67,6 +67,7 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
             const contentContainerRect = (d3.select('#content-container').node() as SVGElement).getBoundingClientRect();
             const chartLinesRect = (d3.select('#chart-lines').node() as SVGElement).getBoundingClientRect();
             const xScale = getXScale();
+
             const nearestMinute = d3.timeMinute.round(xScale.invert(event.clientX - chartLinesRect.left));
             const trueMousePositionX = d3.timeMinute.round(xScale.invert(event.clientX - contentContainerRect.left));
             const mouseX = xScale(nearestMinute);
@@ -151,7 +152,7 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
             </svg>
             <div id="chart-view-box" className="chart-view-box">
                 <svg id="chart-lines" className="chart-lines" width={width} height={height + margin.bottom + margin.top}>
-                {cursorX !== null && cursorX >= margin.left && cursorY !== null && cursorY <= height + margin.top && minTime && maxTime && minY !== null && maxY !== null && (
+                {cursorX !== null && cursorX >= (windowWidth - margin.left - margin.right) && cursorY !== null && cursorY <= height + margin.top && minTime && maxTime && minY !== null && maxY !== null && (
                         <g>
                             <line
                                 x1={cursorX}

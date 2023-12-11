@@ -40,10 +40,10 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
 
     useEffect(() => {
         if (bars.length > 0) {
-            const allTimes = bars.map(bar => new Date(bar.timeUtc));
+            const allTimes = bars.map(bar => bar.timeUtc);
             // Set the mins and maxs rounded to the nearest 30 minutes
             const from = d3.min(allTimes) as Date;
-            from.setMinutes(Math.ceil(from.getMinutes() / 30) * 30);
+            from.setMinutes(Math.floor(from.getMinutes() / 30) * 30);
             const to = d3.max(allTimes) as Date;
             to.setMinutes(Math.ceil(to.getMinutes() / 30) * 30);
             setMinTime(from);
@@ -76,7 +76,7 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
             setCursorX(mouseX);
             setCursorY(mouseY);
     
-            const nearestBar = bars.find(bar => new Date(bar.timeUtc).getTime() === trueMousePositionX.getTime());
+            const nearestBar = bars.find(bar => bar.timeUtc.getTime() === trueMousePositionX.getTime());
     
             if (nearestBar) {
                 setShowToolTip(true);
@@ -130,7 +130,7 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
     };
 
     const getXScale = () => {
-        return d3.scaleTime().domain([minTime, maxTime] as Date[]).range([0, width - margin.left - margin.right]);
+        return d3.scaleTime().domain([minTime, maxTime] as Date[]).range([0, width]);
     }
 
     const getYScale = () => {
@@ -183,7 +183,7 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
                                     fontWeight="bold"
                                 >
                                     {/* Display x-axis value */}
-                                    {d3.timeFormat('%H:%M')(new Date(cursorBar.timeUtc))}
+                                    {d3.timeFormat('%H:%M')(cursorBar.timeUtc)}
                                 </text>
                             </g>
                             )}
@@ -192,14 +192,14 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
                             <line
                                 x1={width - windowWidth}
                                 y1={cursorY}
-                                x2={width + margin.left}
+                                x2={width}
                                 y2={cursorY}
                                 stroke={variant === 'dark' ? '#FFA500' : 'black'}
                                 strokeWidth="1"
                             />
                             { /* Box showing y-axis value */ }
                             <rect
-                                x={width + margin.right - 15}
+                                x={width - 20}
                                 y={cursorY - 10}
                                 z={999}
                                 width={35}
@@ -234,9 +234,9 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
                     <g className='x-axis'></g>
 
                     {/* Draw the bars */}
-                    <g transform={`translate(${margin.left},${margin.top})`}>
+                    <g transform={`translate(${0},${margin.top})`}>
                         {minTime && maxTime && minY !== null && maxY !== null && bars.map((bar: IBar) => (
-                            <CandlestickComponent key={`${bar.symbol}-${bar.timeUtc}`} bar={bar} x={getXScale()(new Date(bar.timeUtc))} y={getYScale()(Math.max(bar.open, bar.close))}/>
+                            <CandlestickComponent key={`${bar.symbol}-${bar.timeUtc.toISOString()}`} bar={bar} x={getXScale()(bar.timeUtc)} y={getYScale()(Math.max(bar.open, bar.close))}/>
                         ))}
                     </g>
                 </svg>

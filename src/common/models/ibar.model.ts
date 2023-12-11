@@ -5,8 +5,7 @@ export interface IBar {
     low: number;
     open: number;
     symbol: string;
-    timeUtc: string;
-    timestampUtc: string;
+    timeUtc: Date;
     tradeCount: number;
     volume: number;
     vwap: number;

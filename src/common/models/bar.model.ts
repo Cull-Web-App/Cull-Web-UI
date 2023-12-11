@@ -1,12 +1,13 @@
-export class Bar {
+import { IBar } from "./ibar.model";
+
+export class Bar implements IBar {
     public channel: string;
     public close: number;
     public high: number;
     public low: number;
     public open: number;
     public symbol: string;
-    public timeUtc: string;
-    public timestampUtc: string;
+    public timeUtc: Date;
     public tradeCount: number;
     public volume: number;
     public vwap: number;
@@ -19,8 +20,7 @@ export class Bar {
         this.low = bar.low as number;
         this.open = bar.open as number;
         this.symbol = bar.symbol as string;
-        this.timeUtc = bar.timeUtc as string;
-        this.timestampUtc = bar.timestampUtc as string;
+        this.timeUtc = new Date(bar.timeUtc as string);
         this.tradeCount = bar.tradeCount as number;
         this.volume = bar.volume as number;
         this.vwap = bar.vwap as number;

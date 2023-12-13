@@ -1,11 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 import { connect } from 'react-redux';
-import * as d3 from 'd3';
+import { 
+    select as d3Select,
+    scaleTime as d3ScaleTime,
+    scaleLinear as d3ScaleLinear,
+    axisBottom as d3AxisBottom,
+    axisRight as d3AxisRight,
+    zoom as d3Zoom,
+    min as d3Min,
+    max as d3Max,
+    timeMinute as d3TimeMinute,
+    timeFormat as d3TimeFormat,
+} from 'd3';
 import CandlestickComponent from './Candlestick.component';
+import CursorComponent from './Cursor.component';
 import CandlestickTooltipComponent from './CandlestickTooltip.component';
 import './CandlestickChart.component.css';
 
-import { IBar } from '../../../common';
+import { IBar, IScaledBar } from '../../../common';
 import { findManyBar } from '../../../state';
 
 type CandlestickChartProps = CandlestickChartDispatchProps & CandlestickChartComponentProps & CandlestickChartReduxProps;
@@ -19,69 +31,99 @@ interface CandlestickChartReduxProps {
 interface CandlestickChartComponentProps {
     bars: IBar[];
     variant: string;
+    maxHeight: number;
+    maxWidth: number;
+    margin: { top: number, right: number, bottom: number, left: number };
 }
 
-const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChartProps) => {
-    const margin = { top: 40, right: 40, bottom: 40, left: 40 };
-    const totalWidth = 1600;
-    const width = totalWidth - margin.left - margin.right;
-    const windowWidth = totalWidth / 2;
-    const height = 300 - margin.top - margin.bottom;
+const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, margin, findMany }: CandlestickChartProps) => {
+    const xTicksMinutes = 30;
 
-    const [minTime, setMinTime] = React.useState<Date | null>(null);
-    const [maxTime, setMaxTime] = React.useState<Date | null>(null);
-    const [minY, setMinY] = React.useState<number | null>(null);
-    const [maxY, setMaxY] = React.useState<number | null>(null);
+    const containerRef = React.useRef<SVGSVGElement>(null);
+    const xAxisRef = React.useRef<SVGGElement>(null);
+    const yAxisRef = React.useRef<SVGGElement>(null);
+    const [scaledBars, setScaledBars] = React.useState<IScaledBar[]>([]);
     const [cursorX, setCursorX] = React.useState<number | null>(null);
     const [cursorY, setCursorY] = React.useState<number | null>(null);
+    const [cursorYScaled, setCursorYScaled] = React.useState<number | null>(null); // The y-axis value at the cursor's x-axis position
     const [cursorBar, setCursorBar] = React.useState<IBar | null>(null); // The bar at the cursor's x-axis position
     const [showToolTip, setShowToolTip] = React.useState<boolean>(false);
     const [tooltipBar, setTooltipBar] = React.useState<IBar | null>(null); // The bar that the cursor is hovering over
+    const [defaultScales, setDefaultScales] = React.useState<{ xScale: d3.ScaleTime<number, number> | null, yScale: d3.ScaleLinear<number, number> | null}>({ xScale: null, yScale: null });
+    const [rescaledScales, setRescaledScales] = React.useState<{ xScale: d3.ScaleTime<number, number> | null, yScale: d3.ScaleLinear<number, number> | null}>({ xScale: null, yScale: null });
+    const [axis, setAxis] = React.useState<{ xAxis: d3.Axis<Date | d3.NumberValue> | null, yAxis: d3.Axis<d3.NumberValue> | null}>({ xAxis: null, yAxis: null });
 
     useEffect(() => {
         if (bars.length > 0) {
+            // Set the mins and maxs rounded to the nearest tick minutes
             const allTimes = bars.map(bar => bar.timeUtc);
-            // Set the mins and maxs rounded to the nearest 30 minutes
-            const from = d3.min(allTimes) as Date;
-            from.setMinutes(Math.floor(from.getMinutes() / 30) * 30);
-            const to = d3.max(allTimes) as Date;
-            to.setMinutes(Math.ceil(to.getMinutes() / 30) * 30);
-            setMinTime(from);
-            setMaxTime(to);
+            const from = d3Min(allTimes) as Date;
+            from.setMinutes(Math.floor(from.getMinutes() / xTicksMinutes) * xTicksMinutes);
+            const to = d3Max(allTimes) as Date;
+            to.setMinutes(Math.ceil(to.getMinutes() / xTicksMinutes) * xTicksMinutes);
 
-            const minLow = d3.min(bars.map(bar => bar.low)) as number;
-            const maxHigh = d3.max(bars.map(bar => bar.high)) as number;
-            setMinY(minLow - (maxHigh - minLow) * 0.1);
-            setMaxY(maxHigh + (maxHigh - minLow) * 0.1);
+            const minLow = d3Min(bars.map(bar => bar.low)) as number;
+            const maxHigh = d3Max(bars.map(bar => bar.high)) as number;
+
+            // Scale the bars
+            const xScale = d3ScaleTime().domain([from, to] as Date[]).range([margin.left, maxWidth - margin.right]);
+            const yScale = d3ScaleLinear().domain([minLow - (maxHigh - minLow) * 0.1, maxHigh + (maxHigh - minLow) * 0.1] as number[]).range([maxHeight - margin.top, margin.bottom]);
+            const scaledBars: IScaledBar[] = bars.map(bar => ({
+                ...bar,
+                scaledOpen: yScale(bar.open),
+                scaledClose: yScale(bar.close),
+                scaledHigh: yScale(bar.high),
+                scaledLow: yScale(bar.low),
+                scaledTimeUtc: xScale(bar.timeUtc),
+                scaledVolume: yScale(bar.volume),
+                scaledVwap: yScale(bar.vwap),
+                x: xScale(bar.timeUtc),
+                y: yScale(Math.max(bar.open, bar.close))
+            }));
+            setScaledBars(scaledBars);
+
+            // Create the axis
+            const xAxis: d3.Axis<Date | d3.NumberValue> = d3AxisBottom(xScale).ticks(d3TimeMinute.every(xTicksMinutes));
+            const yAxis: d3.Axis<d3.NumberValue> = d3AxisRight(yScale);
+            d3Select(xAxisRef.current!).call(xAxis);
+            d3Select(yAxisRef.current!)
+                .call(yAxis)
+                .selectAll('.tick line')
+                .attr('x2', -maxWidth) // Draw lines to the left (negative x-value) to span the chart area
+                .attr('stroke', 'lightgrey')
+                .attr('stroke-dasharray', '.3');;
+            setDefaultScales({ xScale, yScale });
+            setRescaledScales({ xScale, yScale });
+            setAxis({ xAxis, yAxis });
         }
-    }, [bars]);
+    }, [bars, xTicksMinutes]);
 
     useEffect(() => {
-        if (minTime && maxTime && minY !== null && maxY !== null) {
-            drawAxes();
+        if (!!defaultScales.xScale && !!defaultScales.yScale && !!axis.xAxis && !!axis.yAxis) {
+            applyZoom();
         }
-    }, [minTime, maxTime, minY, maxY]);
+    }, [defaultScales]);
 
-    const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (bars.length > 0 && minTime && maxTime && minY !== null && maxY !== null) {
-            const contentContainerRect = (d3.select('#content-container').node() as SVGElement).getBoundingClientRect();
-            const chartLinesRect = (d3.select('#chart-lines').node() as SVGElement).getBoundingClientRect();
-            const xScale = getXScale();
+    const handleMouseMove = (event: React.MouseEvent<SVGElement, MouseEvent>) => {
+        const { xScale, yScale } = rescaledScales;
+        if (bars.length > 0 && xScale && yScale) {
+            const contentContainerRect = d3Select(containerRef.current!).node()!.getBoundingClientRect();
 
-            const nearestMinute = d3.timeMinute.round(xScale.invert(event.clientX - chartLinesRect.left));
-            const trueMousePositionX = d3.timeMinute.round(xScale.invert(event.clientX - contentContainerRect.left));
+            const nearestMinute = d3TimeMinute.round(xScale.invert(event.clientX - contentContainerRect.left));
             const mouseX = xScale(nearestMinute);
             const mouseY = event.clientY - contentContainerRect.top;
+            const mouseYScaled = yScale.invert(event.clientY - contentContainerRect.top);
     
             setCursorX(mouseX);
             setCursorY(mouseY);
+            setCursorYScaled(mouseYScaled);
     
-            const nearestBar = bars.find(bar => bar.timeUtc.getTime() === trueMousePositionX.getTime());
+            const nearestBar = bars.find(bar => bar.timeUtc.getTime() === nearestMinute.getTime());
     
             if (nearestBar) {
                 setShowToolTip(true);
-                setTooltipBar(nearestBar);
-                setCursorBar(nearestBar);
+                setTooltipBar(scaleBar(nearestBar, xScale, yScale));
+                setCursorBar(scaleBar(nearestBar, xScale, yScale));
             } else {
                 setShowToolTip(false);
                 setTooltipBar(null);
@@ -96,152 +138,65 @@ const CandlestickChartComponent = ({ bars, variant, findMany }: CandlestickChart
         setShowToolTip(false);
         setTooltipBar(null);
     };
+    
+    const applyZoom = () => {
+        const zoomHandler = d3Zoom<SVGSVGElement, unknown>()
+            .scaleExtent([.5, 10]) // Restrict the zoom levels
+            .translateExtent([[0, 0], [maxWidth, maxHeight]]) // Restrict the panning
+            .on('zoom', zoomed);
 
-    const drawAxes = () => {
-        const svg = d3.select('#y-axis-container');
-        const contentContainer = d3.select('#content-container');
-
-        const xScale = getXScale();
-        const yScale = getYScale();
-
-        const xAxis = d3.axisBottom(xScale).ticks(d3.timeMinute.every(30));
-        const yAxis = d3.axisRight(yScale);
-
-        if (!contentContainer.select('.x-axis').empty()) {
-            contentContainer.select<SVGGElement>('.x-axis').remove();
-        }
-        contentContainer.append<SVGGElement>('g')
-            .attr('class', 'x-axis')
-            .attr('transform', `translate(${margin.right - margin.left},${height + margin.top})`)
-            .call(xAxis);
-
-        const yAxisGroup = svg.select<SVGGElement>('.y-axis');
-        if (!yAxisGroup.empty()) {
-            yAxisGroup.remove();
-        }
-        svg.append<SVGGElement>('g')
-            .attr('class', 'y-axis')
-            .attr('transform', `translate(${windowWidth},${margin.top})`) // Move to the right side
-            .call(yAxis)
-            .selectAll('.tick line')
-            .attr('x2', -windowWidth) // Draw lines to the left (negative x-value) to span the chart area
-            .attr('stroke', 'lightgrey')
-            .attr('stroke-dasharray', '.3');
+        d3Select(containerRef.current!).call(zoomHandler);
     };
 
-    const getXScale = () => {
-        return d3.scaleTime().domain([minTime, maxTime] as Date[]).range([0, width]);
+    const zoomed = (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
+        const { transform } = event;
+        const { xScale, yScale } = defaultScales;
+        const newXScale = transform.rescaleX(xScale!);
+        const scaledBars: IScaledBar[] = getScaledBars(newXScale, yScale!);
+        setScaledBars(scaledBars);
+        setRescaledScales({ xScale: newXScale, yScale });
+        d3Select(xAxisRef.current!).call(axis.xAxis!.scale(newXScale));
+    };
+
+    const getScaledBars = (xScale: d3.ScaleTime<number, number>, yScale: d3.ScaleLinear<number, number>) => {
+        return bars.map(bar => scaleBar(bar, xScale, yScale));
     }
 
-    const getYScale = () => {
-        return d3.scaleLinear().domain([minY, maxY] as number[]).range([height, 0]);
-    }
+    const scaleBar = (bar: IBar, xScale: d3.ScaleTime<number, number>, yScale: d3.ScaleLinear<number, number>) => {
+        return {
+            ...bar,
+            scaledOpen: yScale(bar.open),
+            scaledClose: yScale(bar.close),
+            scaledHigh: yScale(bar.high),
+            scaledLow: yScale(bar.low),
+            scaledTimeUtc: xScale(bar.timeUtc),
+            scaledVolume: yScale(bar.volume),
+            scaledVwap: yScale(bar.vwap),
+            x: xScale(bar.timeUtc),
+            y: yScale(Math.max(bar.open, bar.close))
+        };
+    };
 
     return (
-        <div
-            style={{ width: windowWidth }}
+        <svg
+            id="chart-container"
+            width={maxWidth + margin.left + margin.right}
+            height={maxHeight + margin.top + margin.bottom}
+            ref={containerRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
         >
-            <svg
-                id="y-axis-container"
-                style={{ width: '100%', height: height + margin.top + margin.bottom, position: 'absolute', pointerEvents: 'none' }}
-            >
-                {/* Draw the y-axis */}
-                <g className='y-axis'></g>
-            </svg>
-            <div id="chart-view-box" className="chart-view-box">
-                <svg id="chart-lines" className="chart-lines" width={width} height={height + margin.bottom + margin.top}>
-                {cursorX !== null && cursorX >= (windowWidth - margin.left - margin.right) && cursorY !== null && cursorY <= height + margin.top && minTime && maxTime && minY !== null && maxY !== null && (
-                        <g>
-                            <line
-                                x1={cursorX}
-                                y1={0 - margin.top}
-                                x2={cursorX}
-                                y2={height + margin.top}
-                                stroke={variant === 'dark' ? '#FFA500' : 'black'}
-                                strokeWidth="1"
-                            />
-                            { /* Box showing x-axis value */ }
-                            {cursorBar !== null && (
-                            <g>
-                                <rect
-                                    x={cursorX - 15}
-                                    y={height + margin.top + 5}
-                                    width={30}
-                                    height={15}
-                                    fill={variant === 'dark' ? '#FFA500' : 'white'}
-                                    stroke="black"
-                                />
-                                <text
-                                    x={cursorX}
-                                    y={height + margin.top + 13}
-                                    textAnchor="middle"
-                                    dominantBaseline="middle"
-                                    fill="black"
-                                    fontSize="10px"
-                                    fontWeight="bold"
-                                >
-                                    {/* Display x-axis value */}
-                                    {d3.timeFormat('%H:%M')(cursorBar.timeUtc)}
-                                </text>
-                            </g>
-                            )}
-
-                            {/* Horizontal line */}
-                            <line
-                                x1={width - windowWidth}
-                                y1={cursorY}
-                                x2={width}
-                                y2={cursorY}
-                                stroke={variant === 'dark' ? '#FFA500' : 'black'}
-                                strokeWidth="1"
-                            />
-                            { /* Box showing y-axis value */ }
-                            <rect
-                                x={width - 20}
-                                y={cursorY - 10}
-                                z={999}
-                                width={35}
-                                height={20}
-                                fill={variant === 'dark' ? '#FFA500' : 'white'}
-                                stroke="black"
-                            />
-                            <text
-                                x={width + margin.right - 2.5}
-                                y={cursorY + 1}
-                                textAnchor="middle"
-                                dominantBaseline="middle"
-                                fill="black"
-                                fontSize="10px"
-                                fontWeight="bold"
-                            >
-                                {/* Display y-axis value */}
-                                {(getYScale().invert(cursorY))}
-                            </text>
-
-                            {/* Tooltip */}
-                            { showToolTip && (
-                                <foreignObject x={cursorX + 10} y={cursorY - 40} width="150" height="200">
-                                    <CandlestickTooltipComponent bar={tooltipBar as IBar} variant={variant}></CandlestickTooltipComponent>
-                                </foreignObject>
-                            )}
-                        </g>
-                    )}
-                </svg>
-                <svg id="content-container" className="content-container" width={width} height={height + margin.bottom + margin.top}>
-                    {/* Draw the x-axis */}
-                    <g className='x-axis'></g>
-
-                    {/* Draw the bars */}
-                    <g transform={`translate(${0},${margin.top})`}>
-                        {minTime && maxTime && minY !== null && maxY !== null && bars.map((bar: IBar) => (
-                            <CandlestickComponent key={`${bar.symbol}-${bar.timeUtc.toISOString()}`} bar={bar} x={getXScale()(bar.timeUtc)} y={getYScale()(Math.max(bar.open, bar.close))}/>
-                        ))}
-                    </g>
-                </svg>
-            </div>
-        </div>
+            <g id="bars-container">
+                {
+                    scaledBars.map((scaledBar) => (<CandlestickComponent key={`${scaledBar.symbol}-${scaledBar.timeUtc.toISOString()}`} scaledBar={scaledBar} width={10}/>))
+                }
+            </g>
+            <g>
+                <g id="x-axis-container" className="x-axis" ref={xAxisRef} transform={`translate(${margin.right - margin.left},${maxHeight})`}></g>
+                <g id="y-axis-container" className="y-axis" ref={yAxisRef} transform={`translate(${maxWidth - margin.right},${margin.top})`}></g>
+            </g>
+            <CursorComponent cursorX={cursorX} cursorY={cursorY} cursorYScaled={cursorYScaled} maxWidth={maxWidth} maxHeight={maxHeight} variant={variant} margin={margin} cursorBar={cursorBar}></CursorComponent>
+        </svg>
     );
 };
 
@@ -259,4 +214,4 @@ const mapDispatchToProps = (dispatch: any): CandlestickChartDispatchProps => {
 export default connect<CandlestickChartReduxProps, CandlestickChartDispatchProps>(
     mapStateToProps,
     mapDispatchToProps
-)(CandlestickChartComponent);
+)(memo(CandlestickChartComponent));

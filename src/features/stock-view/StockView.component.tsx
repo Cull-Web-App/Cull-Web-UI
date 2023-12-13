@@ -21,7 +21,7 @@ export const StockViewComponent = ({ barMap, findMany }: StockViewProps) => {
         <div>
             <h1>Stock View</h1>
             <button onClick={() => findMany({ symbol: "AAPL", from, to })}>Find Many</button>
-            <CandleStickChartComponent bars={barMap.get("AAPL") ?? []} variant='dark'></CandleStickChartComponent>
+            <CandleStickChartComponent bars={barMap.get("AAPL") ?? []} variant='dark' maxWidth={800} maxHeight={400} margin={{ top: 40, right: 40, bottom: 40, left: 40 }}></CandleStickChartComponent>
         </div>
     );
 }

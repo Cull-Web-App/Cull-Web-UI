@@ -1,22 +1,23 @@
 import React from 'react';
-import { IBar } from '../../../common';
+import { IScaledBar } from '../../../common';
 
-const CandlestickComponent = ({ bar, x, y }: { bar: IBar, x: number, y: number }) => {
-    const candleHeight = Math.abs(bar.open - bar.close) * 50;
-    const candleWidth = 10;
+const CandlestickComponent = ({ scaledBar, width }: { scaledBar: IScaledBar, width: number }) => {
+    const candleHeight = Math.abs(scaledBar.scaledOpen - scaledBar.scaledClose);
+    const x = scaledBar.x;
 
     // Calculate the y position of the candlestick's top based on the open and close values
-    const candleY = bar.open > bar.close ? y - candleHeight : y;
+    const candleY = scaledBar.scaledOpen > scaledBar.scaledClose ? scaledBar.scaledOpen - candleHeight : scaledBar.scaledClose - candleHeight;
 
-    // Calculate the line's starting y position based on high and max of open/close
-    const lineY = y - (bar.high - Math.max(bar.open, bar.close)) * 50;
+    // Calculate the line y1 and y2 based on the high and low values
+    const lineY1 = scaledBar.scaledHigh;
+    const lineY2 = scaledBar.scaledLow;
 
-    const fill = bar.open > bar.close ? 'red' : 'green';
+    const fill = scaledBar.scaledOpen > scaledBar.scaledClose ? 'red' : 'green';
 
     return (
         <g>
-            <rect x={x - candleWidth / 2} y={candleY} width={candleWidth} height={candleHeight} fill={fill} />
-            <line x1={x} y1={lineY} x2={x} y2={lineY + (bar.high - bar.low) * 50} stroke={fill} strokeWidth="1" />
+            <rect x={x - width / 2} y={candleY} width={width} height={candleHeight} fill={fill} />
+            <line x1={x} y1={lineY1} x2={x} y2={lineY2} stroke={fill} strokeWidth="1" />
         </g>
     );
 };

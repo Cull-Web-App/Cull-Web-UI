@@ -24,10 +24,12 @@
     -webkit-overflow-scrolling: touch;
     /* invalid property value error ? */
     direction: rtl;
+    z-index: 999;
 }
 
 .chart-lines {
     position: absolute;
+    z-index: 1;
 }
 
 /* Webkit-based browsers (Chrome, Safari) */

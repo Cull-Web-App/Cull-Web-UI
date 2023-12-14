@@ -32,10 +32,12 @@ interface CandlestickChartComponentProps {
     variant: string;
     maxHeight: number;
     maxWidth: number;
-    margin: { top: number, right: number, bottom: number, left: number };
 }
 
-const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, margin, findMany }: CandlestickChartProps) => {
+const PADDING_X = 40;
+const PADDING_Y = 14;
+
+const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, findMany }: CandlestickChartProps) => {
     const xTicksMinutes = 30;
 
     const containerRef = useRef<SVGSVGElement>(null);
@@ -68,13 +70,13 @@ const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, margin,
             const maxHigh = d3Max(bars.map(bar => bar.high)) as number;
 
             // Scale the bars
-            const xScale = d3ScaleTime().domain([from, to] as Date[]).range([margin.left, maxWidth - margin.right]);
-            const yScale = d3ScaleLinear().domain([minLow - (maxHigh - minLow) * 0.1, maxHigh + (maxHigh - minLow) * 0.1] as number[]).range([maxHeight - margin.top, margin.bottom]);
+            const xScale = d3ScaleTime().domain([from, to] as Date[]).range([PADDING_X / 4, maxWidth - PADDING_X / 4]);
+            const yScale = d3ScaleLinear().domain([minLow - (maxHigh - minLow) * 0.1, maxHigh + (maxHigh - minLow) * 0.1] as number[]).range([maxHeight + PADDING_Y, -PADDING_Y]);
             const scaledBars: IScaledBar[] = getScaledBars(xScale, yScale);
             setScaledBars(scaledBars);
 
             // Create the axis
-            const xAxis: d3.Axis<Date | d3.NumberValue> = d3AxisBottom(xScale).ticks(d3TimeMinute.every(xTicksMinutes));
+            const xAxis: d3.Axis<Date | d3.NumberValue> = d3AxisBottom(xScale);
             const yAxis: d3.Axis<d3.NumberValue> = d3AxisRight(yScale);
             d3Select(xAxisRef.current!).call(xAxis);
             d3Select(yAxisRef.current!)
@@ -163,26 +165,28 @@ const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, margin,
     }
 
     return (
-        <svg
-            id="chart-container"
-            className="chart-container"
-            width={maxWidth + margin.left + margin.right}
-            height={maxHeight + margin.top + margin.bottom}
-            ref={containerRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-        >
-            <g id="bars-container">
-                {
-                    scaledBars.map((scaledBar) => (<CandlestickComponent key={`${scaledBar.symbol}-${scaledBar.timeUtc.toISOString()}`} scaledBar={scaledBar} width={10}/>))
-                }
-            </g>
-            <g>
-                <g id="x-axis-container" className="x-axis" ref={xAxisRef} transform={`translate(${margin.right - margin.left},${maxHeight})`}></g>
-                <g id="y-axis-container" className="y-axis" ref={yAxisRef} transform={`translate(${maxWidth - margin.right},${margin.top})`}></g>
-            </g>
-            <CursorComponent cursorX={cursorX} cursorY={cursorY} cursorYScaled={cursorYScaled} maxWidth={maxWidth} maxHeight={maxHeight} variant={variant} margin={margin} cursorBar={cursorBar}></CursorComponent>
-        </svg>
+        <div style={{ overflowX: 'scroll', overflowY: 'hidden', width: maxWidth + PADDING_X, height: maxHeight + PADDING_Y }}>
+            <svg
+                id="chart-container"
+                className="chart-container"
+                width={maxWidth + PADDING_X}
+                height={maxHeight + PADDING_Y}
+                ref={containerRef}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+            >
+                <g id="bars-container">
+                    {
+                        scaledBars.map((scaledBar) => (<CandlestickComponent key={`${scaledBar.symbol}-${scaledBar.timeUtc.toISOString()}`} scaledBar={scaledBar} width={10}/>))
+                    }
+                </g>
+                <g>
+                    <g id="x-axis-container" className="x-axis" ref={xAxisRef} transform={`translate(${0},${maxHeight - PADDING_Y})`}></g>
+                    <g id="y-axis-container" className="y-axis" ref={yAxisRef} transform={`translate(${maxWidth - PADDING_X},${0})`}></g>
+                </g>
+                <CursorComponent cursorX={cursorX} cursorY={cursorY} cursorYScaled={cursorYScaled} maxWidth={maxWidth} maxHeight={maxHeight} variant={variant} cursorBar={cursorBar} padding={{ x: PADDING_X, y: PADDING_Y }}></CursorComponent>
+            </svg>
+        </div>
     );
 };
 

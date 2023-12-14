@@ -1,5 +1,6 @@
 import React from "react";
 import { timeFormat as d3TimeFormat } from "d3";
+import { IBar } from "common";
 
 type CursorComponentProps = {
     cursorX: number | null,
@@ -8,11 +9,11 @@ type CursorComponentProps = {
     maxWidth: number,
     maxHeight: number,
     variant: string,
-    margin: { top: number, right: number, bottom: number, left: number },
-    cursorBar: any
+    cursorBar: IBar | null,
+    padding: { x: number, y: number }
 };
 
-export const CursorComponent = ({ cursorX, cursorY, cursorYScaled, maxWidth, maxHeight, variant, margin, cursorBar }: CursorComponentProps) => {
+export const CursorComponent = ({ cursorX, cursorY, cursorYScaled, maxWidth, maxHeight, variant, cursorBar, padding }: CursorComponentProps) => {
     return (
         <g>
             {cursorX !== null && cursorY !== null && (
@@ -20,9 +21,9 @@ export const CursorComponent = ({ cursorX, cursorY, cursorYScaled, maxWidth, max
                     {/* Vertical line */}
                     <line
                         x1={cursorX}
-                        y1={margin.top}
+                        y1={0}
                         x2={cursorX}
-                        y2={maxHeight}
+                        y2={maxHeight - padding.y}
                         stroke={variant === 'dark' ? '#FFA500' : 'black'}
                     />
 
@@ -30,7 +31,7 @@ export const CursorComponent = ({ cursorX, cursorY, cursorYScaled, maxWidth, max
                     <line
                         x1={0}
                         y1={cursorY}
-                        x2={maxWidth - margin.right}
+                        x2={maxWidth - padding.x}
                         y2={cursorY}
                         stroke={variant === 'dark' ? '#FFA500' : 'black'}
                     />
@@ -43,7 +44,7 @@ export const CursorComponent = ({ cursorX, cursorY, cursorYScaled, maxWidth, max
                     {/* X axis rectangle */}
                     <rect
                         x={cursorX - 15} // Adjust as needed
-                        y={maxHeight} // Adjust as needed
+                        y={maxHeight - padding.y} // Adjust as needed
                         width={30} // Adjust as needed
                         height={15} // Adjust as needed
                         fill={variant === 'dark' ? '#FFA500' : 'white'}
@@ -51,7 +52,7 @@ export const CursorComponent = ({ cursorX, cursorY, cursorYScaled, maxWidth, max
                     />
                     <text
                         x={cursorX}
-                        y={maxHeight + 7.5}
+                        y={maxHeight + 7.5 - padding.y}
                         textAnchor="middle"
                         dominantBaseline="middle"
                         fill="black"
@@ -64,7 +65,7 @@ export const CursorComponent = ({ cursorX, cursorY, cursorYScaled, maxWidth, max
 
                     {/* Y axis rectangle */}
                     <rect
-                        x={maxWidth - margin.right} // Adjust as needed
+                        x={maxWidth - padding.x} // Adjust as needed
                         y={cursorY - 7.5} // Adjust as needed
                         width={40} // Adjust as needed
                         height={15} // Adjust as needed
@@ -72,7 +73,7 @@ export const CursorComponent = ({ cursorX, cursorY, cursorYScaled, maxWidth, max
                         stroke='black'
                     />
                     <text
-                        x={maxWidth - margin.right / 2}
+                        x={maxWidth + (padding.x / 2) - padding.x}
                         y={cursorY}
                         textAnchor="middle"
                         dominantBaseline="middle"

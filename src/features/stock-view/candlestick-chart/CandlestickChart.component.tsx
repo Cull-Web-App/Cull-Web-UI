@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { 
     select as d3Select,
@@ -10,14 +10,13 @@ import {
     min as d3Min,
     max as d3Max,
     timeMinute as d3TimeMinute,
-    timeFormat as d3TimeFormat,
 } from 'd3';
 import CandlestickComponent from './Candlestick.component';
 import CursorComponent from './Cursor.component';
 import CandlestickTooltipComponent from './CandlestickTooltip.component';
 import './CandlestickChart.component.css';
 
-import { IBar, IScaledBar } from '../../../common';
+import { IBar, IScaledBar, ScaledBar } from '../../../common';
 import { findManyBar } from '../../../state';
 
 type CandlestickChartProps = CandlestickChartDispatchProps & CandlestickChartComponentProps & CandlestickChartReduxProps;
@@ -39,20 +38,23 @@ interface CandlestickChartComponentProps {
 const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, margin, findMany }: CandlestickChartProps) => {
     const xTicksMinutes = 30;
 
-    const containerRef = React.useRef<SVGSVGElement>(null);
-    const xAxisRef = React.useRef<SVGGElement>(null);
-    const yAxisRef = React.useRef<SVGGElement>(null);
-    const [scaledBars, setScaledBars] = React.useState<IScaledBar[]>([]);
-    const [cursorX, setCursorX] = React.useState<number | null>(null);
-    const [cursorY, setCursorY] = React.useState<number | null>(null);
-    const [cursorYScaled, setCursorYScaled] = React.useState<number | null>(null); // The y-axis value at the cursor's x-axis position
-    const [cursorBar, setCursorBar] = React.useState<IBar | null>(null); // The bar at the cursor's x-axis position
-    const [showToolTip, setShowToolTip] = React.useState<boolean>(false);
-    const [tooltipBar, setTooltipBar] = React.useState<IBar | null>(null); // The bar that the cursor is hovering over
-    const [defaultScales, setDefaultScales] = React.useState<{ xScale: d3.ScaleTime<number, number> | null, yScale: d3.ScaleLinear<number, number> | null}>({ xScale: null, yScale: null });
-    const [rescaledScales, setRescaledScales] = React.useState<{ xScale: d3.ScaleTime<number, number> | null, yScale: d3.ScaleLinear<number, number> | null}>({ xScale: null, yScale: null });
-    const [axis, setAxis] = React.useState<{ xAxis: d3.Axis<Date | d3.NumberValue> | null, yAxis: d3.Axis<d3.NumberValue> | null}>({ xAxis: null, yAxis: null });
+    const containerRef = useRef<SVGSVGElement>(null);
+    const xAxisRef = useRef<SVGGElement>(null);
+    const yAxisRef = useRef<SVGGElement>(null);
+    const [scaledBars, setScaledBars] = useState<IScaledBar[]>([]);
+    const [cursorX, setCursorX] = useState<number | null>(null);
+    const [cursorY, setCursorY] = useState<number | null>(null);
+    const [cursorYScaled, setCursorYScaled] = useState<number | null>(null);
+    const [cursorEvent, setCursorEvent] = useState<React.MouseEvent<SVGElement, MouseEvent> | null>(null);
+    const [cursorBar, setCursorBar] = useState<IBar | null>(null);
+    const [showToolTip, setShowToolTip] = useState<boolean>(false);
+    const [tooltipBar, setTooltipBar] = useState<IBar | null>(null); // The bar that the cursor is hovering over
+    const [defaultScales, setDefaultScales] = useState<{ xScale: d3.ScaleTime<number, number> | null, yScale: d3.ScaleLinear<number, number> | null}>({ xScale: null, yScale: null });
+    const [rescaledScales, setRescaledScales] = useState<{ xScale: d3.ScaleTime<number, number> | null, yScale: d3.ScaleLinear<number, number> | null}>({ xScale: null, yScale: null });
+    const [axis, setAxis] = useState<{ xAxis: d3.Axis<Date | d3.NumberValue> | null, yAxis: d3.Axis<d3.NumberValue> | null}>({ xAxis: null, yAxis: null });
 
+    // Set the default scales and axis on data load -- this will need to be updated to accomodate for new data loading
+    // affecting the scales, axis, and zoom
     useEffect(() => {
         if (bars.length > 0) {
             // Set the mins and maxs rounded to the nearest tick minutes
@@ -68,18 +70,7 @@ const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, margin,
             // Scale the bars
             const xScale = d3ScaleTime().domain([from, to] as Date[]).range([margin.left, maxWidth - margin.right]);
             const yScale = d3ScaleLinear().domain([minLow - (maxHigh - minLow) * 0.1, maxHigh + (maxHigh - minLow) * 0.1] as number[]).range([maxHeight - margin.top, margin.bottom]);
-            const scaledBars: IScaledBar[] = bars.map(bar => ({
-                ...bar,
-                scaledOpen: yScale(bar.open),
-                scaledClose: yScale(bar.close),
-                scaledHigh: yScale(bar.high),
-                scaledLow: yScale(bar.low),
-                scaledTimeUtc: xScale(bar.timeUtc),
-                scaledVolume: yScale(bar.volume),
-                scaledVwap: yScale(bar.vwap),
-                x: xScale(bar.timeUtc),
-                y: yScale(Math.max(bar.open, bar.close))
-            }));
+            const scaledBars: IScaledBar[] = getScaledBars(xScale, yScale);
             setScaledBars(scaledBars);
 
             // Create the axis
@@ -91,18 +82,26 @@ const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, margin,
                 .selectAll('.tick line')
                 .attr('x2', -maxWidth) // Draw lines to the left (negative x-value) to span the chart area
                 .attr('stroke', 'lightgrey')
-                .attr('stroke-dasharray', '.3');;
+                .attr('stroke-dasharray', '.3');
             setDefaultScales({ xScale, yScale });
             setRescaledScales({ xScale, yScale });
             setAxis({ xAxis, yAxis });
         }
     }, [bars, xTicksMinutes]);
 
+    // Apply the zoom handler when the default scales are set
     useEffect(() => {
         if (!!defaultScales.xScale && !!defaultScales.yScale && !!axis.xAxis && !!axis.yAxis) {
             applyZoom();
         }
     }, [defaultScales]);
+
+    // Handle resetting the cursor event data when the scales are changed (e.g. zoomed)
+    useEffect(() => {
+        if (!!rescaledScales.xScale && !!rescaledScales.yScale && !!axis.xAxis && !!axis.yAxis && cursorEvent) {
+            handleMouseMove(cursorEvent);
+        }
+    }, [rescaledScales]);
 
     const handleMouseMove = (event: React.MouseEvent<SVGElement, MouseEvent>) => {
         const { xScale, yScale } = rescaledScales;
@@ -114,6 +113,7 @@ const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, margin,
             const mouseY = event.clientY - contentContainerRect.top;
             const mouseYScaled = yScale.invert(event.clientY - contentContainerRect.top);
     
+            setCursorEvent(event);
             setCursorX(mouseX);
             setCursorY(mouseY);
             setCursorYScaled(mouseYScaled);
@@ -122,8 +122,8 @@ const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, margin,
     
             if (nearestBar) {
                 setShowToolTip(true);
-                setTooltipBar(scaleBar(nearestBar, xScale, yScale));
-                setCursorBar(scaleBar(nearestBar, xScale, yScale));
+                setTooltipBar(new ScaledBar({ ...nearestBar } as Record<string, string | number | Date>, xScale, yScale));
+                setCursorBar(new ScaledBar({ ...nearestBar } as Record<string, string | number | Date>, xScale, yScale));
             } else {
                 setShowToolTip(false);
                 setTooltipBar(null);
@@ -159,27 +159,13 @@ const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, margin,
     };
 
     const getScaledBars = (xScale: d3.ScaleTime<number, number>, yScale: d3.ScaleLinear<number, number>) => {
-        return bars.map(bar => scaleBar(bar, xScale, yScale));
+        return bars.map(bar => new ScaledBar({ ...bar } as Record<string, string | number | Date>, xScale, yScale));
     }
-
-    const scaleBar = (bar: IBar, xScale: d3.ScaleTime<number, number>, yScale: d3.ScaleLinear<number, number>) => {
-        return {
-            ...bar,
-            scaledOpen: yScale(bar.open),
-            scaledClose: yScale(bar.close),
-            scaledHigh: yScale(bar.high),
-            scaledLow: yScale(bar.low),
-            scaledTimeUtc: xScale(bar.timeUtc),
-            scaledVolume: yScale(bar.volume),
-            scaledVwap: yScale(bar.vwap),
-            x: xScale(bar.timeUtc),
-            y: yScale(Math.max(bar.open, bar.close))
-        };
-    };
 
     return (
         <svg
             id="chart-container"
+            className="chart-container"
             width={maxWidth + margin.left + margin.right}
             height={maxHeight + margin.top + margin.bottom}
             ref={containerRef}

@@ -39,8 +39,7 @@ export const CursorComponent = ({ cursorX, cursorY, cursorYScaled, maxWidth, max
 
                     { /* Tooltip */ }
                     {cursorBar && (
-                        <CandlestickTooltipComponent bar={cursorBar} cursorX={cursorX} cursorY={cursorY} variant={variant} padding={padding}>
-                        </CandlestickTooltipComponent>
+                        <CandlestickTooltipComponent bar={cursorBar} cursorX={cursorX} cursorY={cursorY} variant={variant} padding={padding}></CandlestickTooltipComponent>
                     )}
                 </>
             )}

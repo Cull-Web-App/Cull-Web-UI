@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 import { IDENTIFIERS } from "../ioc/identifiers.ioc";
 import { IBarRepository } from "../repositories";
 import { IBarService } from "./ibar.service";
+import { IBar, IBarFindManyParams } from "../models";
 
 @injectable()
 export class BarService implements IBarService {
@@ -28,5 +29,15 @@ export class BarService implements IBarService {
 
     public unsubscribe(symbol: string): Observable<void> {
         return this.barRepository.invoke('Unsubscribe', symbol);
+    }
+
+    public findMany(symbol: string, from: Date, to: Date): Observable<IBar[]> {
+        const params: IBarFindManyParams = {
+            symbol: symbol,
+            from: from,
+            to: to,
+            interval: 1 // move this to enum
+        };
+        return this.barRepository.findMany(params);
     }
 }

@@ -1,3 +1,4 @@
+import { IBar, IBarFindManyParams } from "../models";
 import { Observable } from "rxjs";
 
 export interface IBarRepository {
@@ -5,4 +6,5 @@ export interface IBarRepository {
     disconnect(): Observable<void>;
     registerAll(registrationMap: Map<string, (...args: any[]) => void>): void;
     invoke<T>(event: string, ...args: any[]): Observable<T>;
+    findMany(params: IBarFindManyParams): Observable<IBar[]>;
 }

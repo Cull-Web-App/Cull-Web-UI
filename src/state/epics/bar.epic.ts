@@ -14,7 +14,10 @@ import {
     receiveBarSuccess,
     unsubscribeBar,
     unsubscribeBarSuccess,
-    unsubscribeBarError
+    unsubscribeBarError,
+    findManyBar,
+    findManyBarSuccess,
+    findManyBarError
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { Bar, IBar, IBarService, container } from '../../common';
@@ -27,7 +30,7 @@ export class BarEpic extends BaseEpic {
     public constructor() {
         super();
         this.barService = container.get<IBarService>(IDENTIFIERS.IBAR_SERVICE);
-        this.addEpics([this.connect$, this.disconnect$, this.subscribeBar$, this.receiveBar$, this.unsubscribeBar$]);
+        this.addEpics([this.connect$, this.disconnect$, this.subscribeBar$, this.receiveBar$, this.unsubscribeBar$, this.findMany$]);
     }
 
     public connect$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
@@ -87,6 +90,18 @@ export class BarEpic extends BaseEpic {
         ofType(receiveBar),
         switchMap(({ payload: { bar } }: { payload: { bar: any } }) => {
             return of(receiveBarSuccess({ symbol: bar.symbol, bar: new Bar(bar) }));
+        })
+    );
+
+    public findMany$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(findManyBar),
+        switchMap(({ payload: { symbol, from, to } }: { payload: { symbol: string, from: Date, to: Date } }) => {
+            return this.barService.findMany(symbol, from, to).pipe(
+                map(bars => findManyBarSuccess({ symbol: symbol, bars })),
+                catchError(error => [
+                    findManyBarError(error)
+                ])
+            );
         })
     );
 }

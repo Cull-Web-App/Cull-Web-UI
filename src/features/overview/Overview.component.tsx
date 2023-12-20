@@ -2,7 +2,7 @@ import React from "react";
 import StockCardListComponent from "features/stock-card/StockCardList.component";
 import StockDropdownComponent from "features/stock-dropdown/StockDropdown.component";
 
-export const HomeComponent = () => {
+export const OverviewComponent = () => {
     return (
         <div>
             <StockDropdownComponent></StockDropdownComponent>
@@ -11,4 +11,4 @@ export const HomeComponent = () => {
     );
 }
 
-export default HomeComponent;
+export default OverviewComponent;

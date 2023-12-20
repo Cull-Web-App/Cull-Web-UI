@@ -34,7 +34,7 @@ interface CandlestickChartComponentProps {
     maxWidth: number;
 }
 
-const PADDING_X = 40;
+const PADDING_X = 20;
 const PADDING_Y = 14;
 
 const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, findMany }: CandlestickChartProps) => {
@@ -165,28 +165,26 @@ const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, findMan
     }
 
     return (
-        <div style={{ overflowX: 'scroll', overflowY: 'hidden', width: maxWidth + PADDING_X, height: maxHeight + PADDING_Y }}>
-            <svg
-                id="chart-container"
-                className="chart-container"
-                width={maxWidth + PADDING_X}
-                height={maxHeight + PADDING_Y}
-                ref={containerRef}
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-            >
-                <g id="bars-container">
-                    {
-                        scaledBars.map((scaledBar) => (<CandlestickComponent key={`${scaledBar.symbol}-${scaledBar.timeUtc.toISOString()}`} scaledBar={scaledBar} width={10}/>))
-                    }
-                </g>
-                <g>
-                    <g id="x-axis-container" className="x-axis" ref={xAxisRef} transform={`translate(${0},${maxHeight - PADDING_Y})`}></g>
-                    <g id="y-axis-container" className="y-axis" ref={yAxisRef} transform={`translate(${maxWidth - PADDING_X},${0})`}></g>
-                </g>
-                <CursorComponent cursorX={cursorX} cursorY={cursorY} cursorYScaled={cursorYScaled} maxWidth={maxWidth} maxHeight={maxHeight} variant={variant} cursorBar={cursorBar} padding={{ x: PADDING_X, y: PADDING_Y }}></CursorComponent>
-            </svg>
-        </div>
+        <svg
+            id="chart-container"
+            className="chart-container"
+            width={maxWidth + PADDING_X}
+            height={maxHeight + PADDING_Y}
+            ref={containerRef}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+        >
+            <g id="bars-container">
+                {
+                    scaledBars.map((scaledBar) => (<CandlestickComponent key={`${scaledBar.symbol}-${scaledBar.timeUtc.toISOString()}`} scaledBar={scaledBar} width={10}/>))
+                }
+            </g>
+            <g>
+                <g id="x-axis-container" className="x-axis" ref={xAxisRef} transform={`translate(${0},${maxHeight - PADDING_Y})`}></g>
+                <g id="y-axis-container" className="y-axis" ref={yAxisRef} transform={`translate(${maxWidth - PADDING_X},${0})`}></g>
+            </g>
+            <CursorComponent cursorX={cursorX} cursorY={cursorY} cursorYScaled={cursorYScaled} maxWidth={maxWidth} maxHeight={maxHeight} variant={variant} cursorBar={cursorBar} padding={{ x: PADDING_X, y: PADDING_Y }}></CursorComponent>
+        </svg>
     );
 };
 

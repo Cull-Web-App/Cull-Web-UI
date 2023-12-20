@@ -2,7 +2,15 @@ import React from 'react';
 import { IBar } from '../../../common';
 import './CandlestickTooltip.component.css';
 
-export const CandlestickTooltipComponent = ({ bar, variant }: { bar: IBar, variant: string }) => {
+type CandlestickTooltipComponentProps = {
+    bar: IBar,
+    cursorX: number | null,
+    cursorY: number | null,
+    variant: string,
+    padding: { x: number, y: number }
+};
+
+export const CandlestickTooltipComponent = ({ bar, cursorX, cursorY, variant, padding }: CandlestickTooltipComponentProps) => {
     return (
         <div className={`${variant}-candlestick-tooltip`}>
             <div>Time: {bar.timeUtc.toLocaleTimeString()}</div>

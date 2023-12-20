@@ -1,6 +1,7 @@
 import React from "react";
 import { timeFormat as d3TimeFormat } from "d3";
 import { IBar } from "common";
+import CandlestickTooltipComponent from "./CandlestickTooltip.component";
 
 type CursorComponentProps = {
     cursorX: number | null,
@@ -35,6 +36,12 @@ export const CursorComponent = ({ cursorX, cursorY, cursorYScaled, maxWidth, max
                         y2={cursorY}
                         stroke={variant === 'dark' ? '#FFA500' : 'black'}
                     />
+
+                    { /* Tooltip */ }
+                    {cursorBar && (
+                        <CandlestickTooltipComponent bar={cursorBar} cursorX={cursorX} cursorY={cursorY} variant={variant} padding={padding}>
+                        </CandlestickTooltipComponent>
+                    )}
                 </>
             )}
 
@@ -69,20 +76,20 @@ export const CursorComponent = ({ cursorX, cursorY, cursorYScaled, maxWidth, max
                         y={cursorY - 7.5} // Adjust as needed
                         width={40} // Adjust as needed
                         height={15} // Adjust as needed
-                        fill={variant === 'dark' ? '#FFA500' : 'white'}
+                        fill={variant === 'dark' ? 'green' : 'white'}
                         stroke='black'
                     />
                     <text
-                        x={maxWidth + (padding.x / 2) - padding.x}
+                        x={maxWidth - padding.x + 20}
                         y={cursorY}
                         textAnchor="middle"
                         dominantBaseline="middle"
-                        fill="black"
+                        fill="white"
                         fontSize="10px"
                         fontWeight="bold"
                     >
                         {/* Display y-axis value */}
-                        {cursorYScaled.toFixed(2)}
+                        @{cursorYScaled.toFixed(2)}
                     </text>
                 </>
             )}

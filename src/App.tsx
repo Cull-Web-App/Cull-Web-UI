@@ -1,19 +1,26 @@
 import React from "react";
 import { PureComponent, ReactNode } from "react";
 import { connect } from "react-redux";
-import ConnectionAlertComponent from "./features/connection-alert/ConnectionAlert.component";
-import StockPriceSubscriberComponent from "./features/stock-price-subscriber/StockPriceSubscriber.component";
 import { initializeSymbols, initializePreferences } from "./state";
 import MenuComponent from "features/menu/Menu.component";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import RightPanelComponent from "features/right-panel/RightPanel.component";
+import ContentComponent from "features/app-content/Content.component";
+import OverviewComponent from "features/overview/Overview.component";
+import StockViewComponent from "features/stock-view/StockView.component";
+import NewsComponent from "features/news/News.component";
+import TradingStrategiesComponent from "features/trading-strategies/TradingStrategies.component";
+import ContactComponent from "features/contact/Contact.component";
+import AboutComponent from "features/about/About.component";
+import TestingStrategiesComponent from "features/testing-strategies/TestingStrategies.component";
+import AccountPerformanceComponent from "features/account-performance/AccountPerformance.component";
+import MetricsComponent from "features/metrics/Metrics.component";
 
 type AppProps = AppReduxProps & AppDispatchProps;
 interface AppDispatchProps
 {
-    initializeSymbols: (() => void);
     initializePreferences: (() => void);
 }
 
@@ -26,8 +33,7 @@ export class App extends PureComponent<AppProps, {}>
 {
     public componentDidMount(): void
     {
-        const { initializeSymbols, initializePreferences } = this.props;
-        initializeSymbols();
+        const { initializePreferences } = this.props;
         initializePreferences();
     }
 
@@ -46,11 +52,23 @@ export class App extends PureComponent<AppProps, {}>
 
     public render(): ReactNode
     {
+        const tabMap = new Map<string, [string, JSX.Element]>([
+            ['overview', ['Overview', <OverviewComponent></OverviewComponent>]],
+            ['stock', ['Stock', <StockViewComponent></StockViewComponent>]],
+            ['news', ['News', <NewsComponent></NewsComponent>]],
+            ['strategies', ['Trading Strategies', <TradingStrategiesComponent></TradingStrategiesComponent>]],
+            ['testing', ['Testing Strategies', <TestingStrategiesComponent></TestingStrategiesComponent>]],
+            ['performance', ['Account Performance', <AccountPerformanceComponent></AccountPerformanceComponent>]],
+            ['dashboard', ['Metrics', <MetricsComponent></MetricsComponent>]],
+            ['contact', ['Contact', <ContactComponent></ContactComponent>]],
+            ['about', ['About', <AboutComponent></AboutComponent>]]
+        ]);
         return (
             <Container fluid className="p-0">
                 <Row>
+                    <MenuComponent tabMap={tabMap}></MenuComponent>
                     <Col xs={9}>
-                        <MenuComponent></MenuComponent>
+                        <ContentComponent tabMap={tabMap}></ContentComponent>
                     </Col>
                     <Col xs={3}>
                         <RightPanelComponent></RightPanelComponent>
@@ -64,7 +82,6 @@ export class App extends PureComponent<AppProps, {}>
 const mapDispatchToProps = (dispatch: any): AppDispatchProps =>
 {
     return {
-        initializeSymbols: () => dispatch(initializeSymbols()),
         initializePreferences: () => dispatch(initializePreferences())
     };
 }

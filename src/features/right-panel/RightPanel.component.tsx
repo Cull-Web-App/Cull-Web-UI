@@ -1,11 +1,14 @@
-import SearchBarComponent from 'features/menu/SearchBar.component';
+import SearchBarComponent from './SearchBar.component';
 import StockCardComponent from 'features/stock-card/StockCard.component';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card } from 'react-bootstrap';
 import { connect } from 'react-redux';
+import { initializeWatch } from 'state';
+import EditWatchListButtonComponent from './EditWatchListButton.component';
 
 type RightPanelProps = RightPanelDispatchProps & RightPanelComponentProps & RightPanelReduxProps;
 interface RightPanelDispatchProps {
+    findAll: (() => void);
 }
 
 interface RightPanelReduxProps {
@@ -15,11 +18,20 @@ interface RightPanelReduxProps {
 interface RightPanelComponentProps {
 }
 
-export const RightPanelComponent = ({ watchList }: RightPanelProps) => {
+export const RightPanelComponent = ({ watchList, findAll }: RightPanelProps) => {
+    useEffect(() => {
+        findAll();
+    }, []);
+
+    const handleSearch = ({ searchTerm }: { searchTerm: string }) => {
+        console.log(searchTerm);
+    };
+
     return (
         <div className='right-panel-content'>
             <div className='d-flex justify-content-end mb-3'>
-                <SearchBarComponent></SearchBarComponent>
+                <EditWatchListButtonComponent></EditWatchListButtonComponent>
+                <SearchBarComponent onSearch={handleSearch} onSearchTermChange={() => {}}></SearchBarComponent>
             </div>
             <Card>
                 <Card.Header>
@@ -43,6 +55,7 @@ const mapStateToProps = (state: any): RightPanelReduxProps => {
 
 const mapDispatchToProps = (dispatch: any): RightPanelDispatchProps => {
     return {
+        findAll: () => dispatch(initializeWatch()),
     };
 }
 

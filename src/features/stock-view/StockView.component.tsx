@@ -3,7 +3,7 @@ import { findManyBar } from '../../state';
 import { connect } from 'react-redux';
 import { IBar } from '../../common';
 import CandleStickChartComponent from './candlestick-chart/CandlestickChart.component';
-import SearchBarComponent from 'features/menu/SearchBar.component';
+import SearchBarComponent from 'features/right-panel/SearchBar.component';
 
 type StockViewProps = StockViewDispatchProps & StockViewReduxProps;
 interface StockViewDispatchProps {

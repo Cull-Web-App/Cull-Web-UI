@@ -6,3 +6,5 @@ export * from './ipreference.model';
 export * from './ibar-find-many-params.model';
 export * from './iscaled-bar.model';
 export * from './scaled-bar.model';
+export * from './asset.model';
+export * from './iasset.model';

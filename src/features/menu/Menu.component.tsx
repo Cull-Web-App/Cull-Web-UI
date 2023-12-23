@@ -1,33 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-
-import OverviewComponent from 'features/overview/Overview.component';
-import StockViewComponent from 'features/stock-view/StockView.component';
-import NewsComponent from 'features/news/News.component';
-import TradingStrategiesComponent from 'features/trading-strategies/TradingStrategies.component';
-import TestingStrategiesComponent from 'features/testing-strategies/TestingStrategies.component';
-import AccountPerformanceComponent from 'features/account-performance/AccountPerformance.component';
-import MetricsComponent from 'features/metrics/Metrics.component';
-import ContactComponent from 'features/contact/Contact.component';
-import AboutComponent from 'features/about/About.component';
 import UserDropdownComponent from './UserDropdown.component';
-import { Route, Routes, Navigate } from 'react-router-dom';
-import SearchBarComponent from './SearchBar.component';
 
-export const MenuComponent = () => {
+type MenuProps = MenuComponentProps;
+interface MenuComponentProps {
+    tabMap: Map<string, [string, JSX.Element]>;
+}
+
+export const MenuComponent = ({ tabMap }: MenuProps) => {
     const [key, setKey] = useState('overview');
-    const tabMap = new Map<string, [string, JSX.Element]>([
-        ['overview', ['Overview', <OverviewComponent></OverviewComponent>]],
-        ['stock', ['Stock', <StockViewComponent></StockViewComponent>]],
-        ['news', ['News', <NewsComponent></NewsComponent>]],
-        ['strategies', ['Trading Strategies', <TradingStrategiesComponent></TradingStrategiesComponent>]],
-        ['testing', ['Testing Strategies', <TestingStrategiesComponent></TestingStrategiesComponent>]],
-        ['performance', ['Account Performance', <AccountPerformanceComponent></AccountPerformanceComponent>]],
-        ['dashboard', ['Metrics', <MetricsComponent></MetricsComponent>]],
-        ['contact', ['Contact', <ContactComponent></ContactComponent>]],
-        ['about', ['About', <AboutComponent></AboutComponent>]]
-    ]);
 
     useEffect(() => {
         const path = window.location.pathname;
@@ -62,14 +44,6 @@ export const MenuComponent = () => {
                     <UserDropdownComponent></UserDropdownComponent>
                 </Nav>
             </Navbar>
-            <div className="content">
-                <Routes>
-                    <Route path='/' element={<Navigate to='/overview'></Navigate>}/>
-                    {
-                        Array.from(tabMap).map(([key, [_, element]]) => <Route key={key} path={`/${key}`} element={element}/> )
-                    }
-                </Routes>
-            </div>
         </div>
     );
 }

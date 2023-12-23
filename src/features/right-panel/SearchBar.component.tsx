@@ -5,10 +5,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import './SearchBar.component.css';
 
-export const SearchBarComponent = () => {
+type SearchBarProps = SearchBarComponentProps;
+interface SearchBarComponentProps {
+    expandEnabled?: boolean;
+    onSearchTermChange: (({ searchTerm }: { searchTerm: string }) => void);
+    onSearch: (({ searchTerm }: { searchTerm: string }) => void);
+}
+
+export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange }: SearchBarProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isExpanded, setIsExpanded] = useState(false);
-    const navigate = useNavigate();
 
     const handleSearch = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -16,7 +22,7 @@ export const SearchBarComponent = () => {
             return;
         }
 
-        navigate(`/stock/${searchTerm}`);
+        onSearch({ searchTerm });
         setSearchTerm('');
         setIsExpanded(false);
     };
@@ -30,7 +36,7 @@ export const SearchBarComponent = () => {
             return;
         }
 
-        if (e.key === 'Escape') {
+        if (e.key === 'Escape' && !expandEnabled) {
             setIsExpanded(false);
             setSearchTerm('');
         } else if (e.key === 'Enter') {
@@ -38,21 +44,34 @@ export const SearchBarComponent = () => {
         }
     };
 
+    const handleBlur = () => {
+        if (!expandEnabled) {
+            setIsExpanded(false);
+            setSearchTerm('');
+        }
+    };
+
+    const handleSearchTermChange = (e: { target: { value: string; }; }) => {
+        const upperSearchTerm = e.target.value.toUpperCase();
+        setSearchTerm(upperSearchTerm);
+        onSearchTermChange({ searchTerm: upperSearchTerm });
+    };
+
     return (
         <Form.Group controlId="searchForm" className='d-flex align-items-center' onSubmit={handleSearch}>
-            <div className={`search-icon ${isExpanded ? 'expanded': ''}`} onClick={handleExpand}>
+            <div className={`search-icon ${(isExpanded || expandEnabled) ? 'expanded': ''}`} onClick={handleExpand}>
                 <FontAwesomeIcon icon={faSearch}></FontAwesomeIcon>
             </div>
-            {isExpanded && (
+            {(isExpanded || expandEnabled) && (
                 <Form.Control
                     type="text"
                     placeholder="Search"
                     className="search-box ml-2"
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={handleSearchTermChange}
                     onKeyDown={handleKeyDown}
+                    onBlur={handleBlur}
                     autoFocus
-                    
                 />
             )}
         </Form.Group>

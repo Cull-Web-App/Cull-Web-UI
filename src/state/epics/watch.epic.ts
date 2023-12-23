@@ -28,7 +28,7 @@ export class WatchEpic extends BaseEpic {
         ofType(initializeWatch),
         switchMap(() => {
             return this.watchService.findAll().pipe(
-                map(assets => initializeWatchSuccess({ payload: { assets } })),
+                map(assets => initializeWatchSuccess({ assets })),
                 catchError(error => [
                     initializeWatchError(error)
                 ])

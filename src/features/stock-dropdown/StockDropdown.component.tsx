@@ -4,6 +4,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 import { connect } from 'react-redux';
 import { subscribeBar } from '../../state';
+import { IAsset } from '../../common';
 
 // Define the Props for this component
 type StockDropdownProps = StockDropdownDispatchProps & StockDropdownReduxProps;
@@ -97,7 +98,7 @@ const mapStateToProps = (state: any): StockDropdownReduxProps => {
     const { subscribedSymbols } = state.bar;
     return {
         subscribedSymbols: new Set([...subscribedSymbols]),
-        symbols
+        symbols: symbols.map((asset: IAsset) => asset.symbol)
     };
 }
 

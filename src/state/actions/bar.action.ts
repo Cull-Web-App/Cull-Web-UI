@@ -26,7 +26,7 @@ export const {
     BAR_DISCONNECT: undefined,
     BAR_DISCONNECT_SUCCESS: undefined,
     BAR_DISCONNECT_ERROR: (error: string) => error,
-    RECEIVE_BAR: ({ bar }: { bar: IBar }) => ( {bar }),
+    RECEIVE_BAR: ({ bar }: { bar: IBar }) => ({ bar }),
     RECEIVE_BAR_SUCCESS: ({ symbol, bar }: { symbol: string, bar: IBar }) => ({ symbol, bar }),
     SUBSCRIBE_BAR: ({ symbol }: { symbol: string }) => ({ symbol }),
     SUBSCRIBE_BAR_SUCCESS: ({ symbol }) => ({ symbol }),

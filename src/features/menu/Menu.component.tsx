@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
@@ -12,6 +12,8 @@ import MetricsComponent from 'features/metrics/Metrics.component';
 import ContactComponent from 'features/contact/Contact.component';
 import AboutComponent from 'features/about/About.component';
 import UserDropdownComponent from './UserDropdown.component';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import SearchBarComponent from './SearchBar.component';
 
 export const MenuComponent = () => {
     const [key, setKey] = useState('overview');
@@ -27,6 +29,14 @@ export const MenuComponent = () => {
         ['about', ['About', <AboutComponent></AboutComponent>]]
     ]);
 
+    useEffect(() => {
+        const path = window.location.pathname;
+        const key = path.substring(1);
+        if (tabMap.has(key)) {
+            setKey(key);
+        }
+    }, []);
+
     return (
         <div>
             <Navbar bg="dark" variant='dark' expand="lg">
@@ -41,7 +51,7 @@ export const MenuComponent = () => {
                             Array.from(tabMap).map(([key, [title, _]]) => {
                                 return (
                                     <Nav.Item key={key}>
-                                        <Nav.Link eventKey={key}>{title}</Nav.Link>
+                                        <Nav.Link href={`/${key}`} eventKey={key}>{title}</Nav.Link>
                                     </Nav.Item>
                                 );
                             })
@@ -53,9 +63,12 @@ export const MenuComponent = () => {
                 </Nav>
             </Navbar>
             <div className="content">
-                {
-                    tabMap.get(key)?.[1]
-                }
+                <Routes>
+                    <Route path='/' element={<Navigate to='/overview'></Navigate>}/>
+                    {
+                        Array.from(tabMap).map(([key, [_, element]]) => <Route key={key} path={`/${key}`} element={element}/> )
+                    }
+                </Routes>
             </div>
         </div>
     );

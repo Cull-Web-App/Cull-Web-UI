@@ -8,7 +8,9 @@ import {
     ISignalRRepository,
     SignalRRepository,
     IBarRepository,
-    BarRepository
+    BarRepository,
+    IWatchRepository,
+    WatchRepository
 } from '../repositories';
 import {
     SymbolService,
@@ -16,7 +18,9 @@ import {
     IBarService,
     BarService,
     PreferenceService,
-    IPreferenceService
+    IPreferenceService,
+    WatchService,
+    IWatchService
 } from '../services';
 import { IDENTIFIERS } from './identifiers.ioc';
 import getDecorators from 'inversify-inject-decorators';
@@ -29,6 +33,8 @@ container.bind<ISignalRRepository>(IDENTIFIERS.ISIGNALR_REPOSITORY).to(SignalRRe
 container.bind<IBarRepository>(IDENTIFIERS.IBAR_REPOSITORY).to(BarRepository);
 container.bind<IBarService>(IDENTIFIERS.IBAR_SERVICE).to(BarService);
 container.bind<IPreferenceService>(IDENTIFIERS.IPREFERENCE_SERVICE).to(PreferenceService);
+container.bind<IWatchRepository>(IDENTIFIERS.IWATCH_REPOSITORY).to(WatchRepository);
+container.bind<IWatchService>(IDENTIFIERS.IWATCH_SERVICE).to(WatchService);
 
 const { lazyInject } = getDecorators(container, false);
 

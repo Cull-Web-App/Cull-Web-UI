@@ -6,3 +6,5 @@ export * from './signalr.repository';
 export * from './isignalr.repository';
 export * from './bar.repository';
 export * from './ibar.repository';
+export * from './iwatch.repository';
+export * from './watch.repository';

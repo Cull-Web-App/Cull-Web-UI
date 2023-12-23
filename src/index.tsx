@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -9,7 +10,7 @@ import { createEpicMiddleware, combineEpics } from 'redux-observable';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { InversifyProvider } from './common';
 import { container } from './common/ioc/container.ioc';
-import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic, PreferenceEpic } from './state';
+import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic, PreferenceEpic, WatchEpic, watch } from './state';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const root = ReactDOM.createRoot(
@@ -30,7 +31,8 @@ const store = configureStore(
         reducer: combineReducers({
             symbols,
             bar,
-            preference
+            preference,
+            watch
         }),
         middleware: [epicMiddleWare]
     }
@@ -40,7 +42,8 @@ const store = configureStore(
 const epics: IBaseEpic[] = [
     new SymbolEpic(),
     new BarEpic(),
-    new PreferenceEpic()
+    new PreferenceEpic(),
+    new WatchEpic()
 ];
 
 epicMiddleWare.run(
@@ -54,7 +57,9 @@ root.render(
     <React.StrictMode>
         <InversifyProvider container={container}>
             <Provider store={store}>
-                <App />
+                <Router>
+                    <App />
+                </Router>
             </Provider>
         </InversifyProvider>
     </React.StrictMode>

@@ -3,6 +3,7 @@ import { findManyBar } from '../../state';
 import { connect } from 'react-redux';
 import { IBar } from '../../common';
 import CandleStickChartComponent from './candlestick-chart/CandlestickChart.component';
+import SearchBarComponent from 'features/menu/SearchBar.component';
 
 type StockViewProps = StockViewDispatchProps & StockViewReduxProps;
 interface StockViewDispatchProps {
@@ -20,9 +21,12 @@ export const StockViewComponent = ({ barMap, findMany }: StockViewProps) => {
     return (
         <div>
             <h1>Stock View</h1>
-            <button onClick={() => findMany({ symbol: "AAPL", from, to })}>Find Many</button>
-            <CandleStickChartComponent bars={barMap.get("AAPL") ?? []} variant='dark' maxWidth={800} maxHeight={400} ></CandleStickChartComponent>
         </div>
+        // <div>
+        //     <h1>Stock View</h1>
+        //     <button onClick={() => findMany({ symbol: "AAPL", from, to })}>Find Many</button>
+        //     <CandleStickChartComponent bars={barMap.get("AAPL") ?? []} variant='dark' maxWidth={800} maxHeight={400} ></CandleStickChartComponent>
+        // </div>
     );
 }
 

@@ -5,6 +5,10 @@ import ConnectionAlertComponent from "./features/connection-alert/ConnectionAler
 import StockPriceSubscriberComponent from "./features/stock-price-subscriber/StockPriceSubscriber.component";
 import { initializeSymbols, initializePreferences } from "./state";
 import MenuComponent from "features/menu/Menu.component";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import RightPanelComponent from "features/right-panel/RightPanel.component";
 
 type AppProps = AppReduxProps & AppDispatchProps;
 interface AppDispatchProps
@@ -43,11 +47,16 @@ export class App extends PureComponent<AppProps, {}>
     public render(): ReactNode
     {
         return (
-            <div className="container-md py-3">
-                <MenuComponent></MenuComponent>
-                <ConnectionAlertComponent></ConnectionAlertComponent>
-                <StockPriceSubscriberComponent></StockPriceSubscriberComponent>
-            </div>
+            <Container fluid className="p-0">
+                <Row>
+                    <Col xs={9}>
+                        <MenuComponent></MenuComponent>
+                    </Col>
+                    <Col xs={3}>
+                        <RightPanelComponent></RightPanelComponent>
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 }

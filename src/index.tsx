@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
-import AppComponent from './App.component';
+import AuthenticatedAppComponent from './AuthenticatedApp.component';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { createEpicMiddleware, combineEpics } from 'redux-observable';
@@ -12,6 +12,7 @@ import { InversifyProvider } from './common';
 import { container } from './common/ioc/container.ioc';
 import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic, PreferenceEpic, WatchEpic, watch } from './state';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -54,13 +55,15 @@ epicMiddleWare.run(
 
 // Render the app
 root.render(
-    <InversifyProvider container={container}>
-        <Provider store={store}>
-            <Router>
-                <AppComponent />
-            </Router>
-        </Provider>
-    </InversifyProvider>
+    <React.StrictMode>
+        <InversifyProvider container={container}>
+            <Provider store={store}>
+                <Router>
+                    <AuthenticatedAppComponent />
+                </Router>
+            </Provider>
+        </InversifyProvider>
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

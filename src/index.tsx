@@ -10,7 +10,7 @@ import { createEpicMiddleware, combineEpics } from 'redux-observable';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { InversifyProvider } from './common';
 import { container } from './common/ioc/container.ioc';
-import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic, PreferenceEpic, WatchEpic, watch } from './state';
+import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic, PreferenceEpic, WatchEpic, watch, UserEpic, user } from './state';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
@@ -33,7 +33,8 @@ const store = configureStore(
             symbols,
             bar,
             preference,
-            watch
+            watch,
+            user
         }),
         middleware: [epicMiddleWare]
     }
@@ -44,7 +45,8 @@ const epics: IBaseEpic[] = [
     new SymbolEpic(),
     new BarEpic(),
     new PreferenceEpic(),
-    new WatchEpic()
+    new WatchEpic(),
+    new UserEpic()
 ];
 
 epicMiddleWare.run(

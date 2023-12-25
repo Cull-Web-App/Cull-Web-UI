@@ -18,7 +18,11 @@ export const RequestAuthenticationInterceptorComponent = ({ children }: RequestA
         }
 
         const response = await instance.acquireTokenSilent({
-            scopes: ["api://70be7cd0-14ac-49ce-a268-6239913d2ba5/User.Read"],
+            scopes: [
+                "User.Read",
+                "User.ReadBasic.All",
+                "api://70be7cd0-14ac-49ce-a268-6239913d2ba5/User.Read"
+            ],
             account,
         });
 

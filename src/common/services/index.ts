@@ -6,3 +6,5 @@ export * from './preference.service';
 export * from './ipreference.service';
 export * from './iwatch.service';
 export * from './watch.service';
+export * from './user-avatar.service';
+export * from './iuser-avatar.service';

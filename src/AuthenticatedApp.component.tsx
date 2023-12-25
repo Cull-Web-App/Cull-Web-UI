@@ -19,7 +19,9 @@ export const AuthenticatedAppComponent = () => {
             <MsalAuthenticationTemplate
                 interactionType={InteractionType.Redirect}
                 authenticationRequest={{
-                    scopes: ["api://70be7cd0-14ac-49ce-a268-6239913d2ba5/User.Read"]
+                    scopes: [
+                        "api://70be7cd0-14ac-49ce-a268-6239913d2ba5/User.Read"
+                    ]
                 }}
                 >
                 <AppComponent/>

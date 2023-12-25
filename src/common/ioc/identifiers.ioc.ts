@@ -8,4 +8,6 @@ export const IDENTIFIERS = {
     IPREFERENCE_SERVICE: Symbol.for('IPreferenceService'),
     IWATCH_SERVICE: Symbol.for('IWatchService'),
     IWATCH_REPOSITORY: Symbol.for('IWatchRepository'),
+    IUSERAVATAR_REPOSITORY: Symbol.for('IUserAvatarRepository'),
+    IUSERAVATAR_SERVICE: Symbol.for('IUserAvatarService')
 };

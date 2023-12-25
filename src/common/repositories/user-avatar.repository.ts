@@ -3,7 +3,6 @@ import { injectable, inject } from 'inversify';
 import { Observable, map } from 'rxjs';
 import { IDENTIFIERS } from '../ioc/identifiers.ioc';
 import { IHttpRepository } from './ihttp.repository';
-import { Asset, IAsset } from '../models';
 
 @injectable()
 export class UserAvatarRepository implements IUserAvatarRepository {

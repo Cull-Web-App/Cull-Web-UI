@@ -1,6 +1,7 @@
 import { useAccount, useMsal } from "@azure/msal-react";
 import axios from "axios";
 import React from "react";
+import { scopeMap } from "../../common";
 
 type RequestAuthenticationInterceptorProps = RequestAuthenticationInterceptorComponentProps;
 interface RequestAuthenticationInterceptorComponentProps {
@@ -17,12 +18,18 @@ export const RequestAuthenticationInterceptorComponent = ({ children }: RequestA
             throw Error('No active account! Verify a user has been signed in.');
         }
 
+        if (!config.url) {
+            throw Error('No url configured for the request!');
+        }
+
+        const baseUrl = new URL(config.url).origin;
+        const scopes = scopeMap.get(baseUrl);
+        if (!scopes) {
+            throw Error('No scopes configured for the request!');
+        }
+
         const response = await instance.acquireTokenSilent({
-            scopes: [
-                "User.Read",
-                "User.ReadBasic.All",
-                "api://70be7cd0-14ac-49ce-a268-6239913d2ba5/User.Read"
-            ],
+            scopes,
             account,
         });
 

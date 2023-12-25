@@ -6,6 +6,7 @@ import { injectable } from 'inversify';
 
 @injectable()
 export class HttpRepository implements IHttpRepository {
+
     public get<T>(url: string, params?: unknown): Observable<HTTPResponse<T>> {
         return from(
             axios.get(url, {

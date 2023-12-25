@@ -7,11 +7,13 @@ import {
     findManyAssetsWithQuery,
     findManyAssetsWithQuerySuccess,
     findManyAssetsWithQueryError,
+    clearSearchSuccess,
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { container } from '../../common/ioc/container.ioc';
 import { ISymbolService } from '../../common';
 import { BaseEpic } from './base.epic';
+import { clearSearch } from 'state';
 
 export class SymbolEpic extends BaseEpic {
     private readonly symbolService!: ISymbolService;
@@ -19,7 +21,7 @@ export class SymbolEpic extends BaseEpic {
     public constructor() {
         super();
         this.symbolService = container.get<ISymbolService>(IDENTIFIERS.ISYMBOL_SERVICE);
-        this.addEpics([this.initializeSymbols$, this.findManyWithFilter$]);
+        this.addEpics([this.initializeSymbols$, this.findManyWithFilter$, this.clearSearch$]);
     }
 
     public initializeSymbols$: Epic<any> = (actions$, state$) => actions$.pipe(
@@ -44,5 +46,10 @@ export class SymbolEpic extends BaseEpic {
                 ])
             );
         })
+    );
+
+    public clearSearch$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(clearSearch),
+        map(() => clearSearchSuccess())
     );
 }

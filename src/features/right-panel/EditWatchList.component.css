@@ -1,0 +1,16 @@
+.edit-modal {
+    max-height: 80vh; /* Adjust this value as needed */
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.edit-modal-rows {
+    overflow-y: auto;
+    height: calc(100vh - 56px); /* Adjust this value as needed */
+}

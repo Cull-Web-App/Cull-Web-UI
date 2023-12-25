@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import SearchBarComponent from './SearchBar.component';
 import { connect } from 'react-redux';
-import { createOneWatch, deleteOneWatch, findManyAssetsWithQuery } from 'state';
+import { clearSearch, createOneWatch, deleteOneWatch, findManyAssetsWithQuery } from 'state';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { IAsset } from '../../common';
+import './EditWatchList.component.css';
 
 type EditWatchListProps = EditWatchListDispatchProps & EditWatchListComponentProps & EditWatchListReduxProps;
 interface EditWatchListDispatchProps {
     findManyWithFilter: (({ filter }: { filter: string }) => void);
     createOne: (({ symbol }: { symbol: string }) => void);
+    clearSearch: (() => void);
     deleteOne: (({ symbol }: { symbol: string }) => void);
 }
 interface EditWatchListReduxProps {
@@ -20,7 +22,7 @@ interface EditWatchListComponentProps {
     onClose: (() => void);
 }
 
-export const EditWatchListComponent = ({ createOne, deleteOne, findManyWithFilter, watchList, searchResults, onClose }: EditWatchListProps) => {
+export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, findManyWithFilter, watchList, searchResults, onClose }: EditWatchListProps) => {
     const [rows, setRows] = useState<IAsset[]>([]);
     const [isAddMode, setIsAddMode] = useState(false);
 
@@ -43,12 +45,19 @@ export const EditWatchListComponent = ({ createOne, deleteOne, findManyWithFilte
     };
 
     const handleSearchTermChanged = ({ searchTerm }: { searchTerm: string }) => {
-        findManyWithFilter({ filter: searchTerm });
+        if (searchTerm === '') {
+            clearSearch();
+            return;
+        } else {
+            findManyWithFilter({ filter: searchTerm });
+        }
     };
 
     return (
         <div className='edit-modal'>
-            <SearchBarComponent expandEnabled={true} onSearchTermChange={handleSearchTermChanged} onSearch={() => {}} />
+            <div className='edit-modal-header'>
+                <SearchBarComponent expandEnabled={true} onSearchTermChange={handleSearchTermChanged} onSearch={() => {}} />
+            </div>
             <div className='edit-modal-rows'>
                 {rows.map((item) => (
                     <div key={item.symbol}>
@@ -81,6 +90,7 @@ const mapStateToProps = (state: any): EditWatchListReduxProps => {
 const mapDispatchToProps = (dispatch: any): EditWatchListDispatchProps => {
     return {
         createOne: ({ symbol }: { symbol: string }) => dispatch(createOneWatch({ symbol })),
+        clearSearch: () => dispatch(clearSearch()),
         deleteOne: ({ symbol }: { symbol: string }) => dispatch(deleteOneWatch({ symbol })),
         findManyWithFilter: ({ filter }: { filter: string }) => dispatch(findManyAssetsWithQuery({ query: filter }))
     };

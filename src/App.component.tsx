@@ -1,11 +1,12 @@
-import React from "react";
-import { PureComponent, ReactNode } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { initializeSymbols, initializePreferences } from "./state";
+import { initializePreferences } from "./state";
 import MenuComponent from "features/menu/Menu.component";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { Configuration, PublicClientApplication } from "@azure/msal-browser";
+import { MsalProvider } from "@azure/msal-react";
 import RightPanelComponent from "features/right-panel/RightPanel.component";
 import ContentComponent from "features/app-content/Content.component";
 import OverviewComponent from "features/overview/Overview.component";
@@ -17,6 +18,8 @@ import AboutComponent from "features/about/About.component";
 import TestingStrategiesComponent from "features/testing-strategies/TestingStrategies.component";
 import AccountPerformanceComponent from "features/account-performance/AccountPerformance.component";
 import MetricsComponent from "features/metrics/Metrics.component";
+import AuthenticationContainerComponent from "features/authentication/AuthenticationContainer.component";
+import RequestAuthenticationInterceptorComponent from "features/authentication/RequestAuthenticationInterceptor.component";
 
 type AppProps = AppReduxProps & AppDispatchProps;
 interface AppDispatchProps
@@ -29,29 +32,21 @@ interface AppReduxProps
     darkMode: boolean;
 }
 
-export class App extends PureComponent<AppProps, {}>
-{
-    public componentDidMount(): void
-    {
-        const { initializePreferences } = this.props;
+const config: Configuration = {
+    auth: {
+        clientId: "96a42910-ace2-4e54-bcd5-b34e0275cab0",
+        authority: "https://login.microsoftonline.com/09c105c2-92b3-4242-aa95-062b36c2534c",
+        redirectUri: "http://localhost:3000"
+    }
+};
+
+const msalInstance = new PublicClientApplication(config);
+
+export const AppComponent = ({ darkMode, initializePreferences }: AppProps) => {
+    const [tabMap, setTabMap] = useState<Map<string, [string, JSX.Element]>>(new Map<string, [string, JSX.Element]>());
+
+    useEffect(() => {
         initializePreferences();
-    }
-
-    public componentDidUpdate(): void
-    {
-        const { darkMode } = this.props;
-        if (darkMode)
-        {
-            document.body.classList.add("dark-mode");
-        }
-        else
-        {
-            document.body.classList.remove("dark-mode");
-        }
-    }
-
-    public render(): ReactNode
-    {
         const tabMap = new Map<string, [string, JSX.Element]>([
             ['overview', ['Overview', <OverviewComponent></OverviewComponent>]],
             ['stock', ['Stock', <StockViewComponent></StockViewComponent>]],
@@ -63,20 +58,36 @@ export class App extends PureComponent<AppProps, {}>
             ['contact', ['Contact', <ContactComponent></ContactComponent>]],
             ['about', ['About', <AboutComponent></AboutComponent>]]
         ]);
-        return (
-            <Container fluid className="p-0">
-                <Row>
-                    <MenuComponent tabMap={tabMap}></MenuComponent>
-                    <Col xs={9}>
-                        <ContentComponent tabMap={tabMap}></ContentComponent>
-                    </Col>
-                    <Col xs={3}>
-                        <RightPanelComponent></RightPanelComponent>
-                    </Col>
-                </Row>
-            </Container>
-        );
-    }
+        setTabMap(tabMap);
+    }, []);
+
+    useEffect(() => {
+        if (darkMode) {
+            document.body.classList.add("dark-mode");
+        } else {
+            document.body.classList.remove("dark-mode");
+        }
+    }, [darkMode]);
+
+    return (
+        <MsalProvider instance={msalInstance!}>
+            <AuthenticationContainerComponent>
+                <RequestAuthenticationInterceptorComponent>
+                    <Container fluid className="p-0">
+                        <Row>
+                            <MenuComponent tabMap={tabMap}></MenuComponent>
+                            <Col xs={9}>
+                                <ContentComponent tabMap={tabMap}></ContentComponent>
+                            </Col>
+                            <Col xs={3}>
+                                <RightPanelComponent></RightPanelComponent>
+                            </Col>
+                        </Row>
+                    </Container>
+                </RequestAuthenticationInterceptorComponent>
+            </AuthenticationContainerComponent>
+        </MsalProvider>
+    );
 }
 
 const mapDispatchToProps = (dispatch: any): AppDispatchProps =>
@@ -96,4 +107,4 @@ const mapStateToProps = (state: any): AppReduxProps => {
 export default connect<AppReduxProps, AppDispatchProps>(
     mapStateToProps,
     mapDispatchToProps
-)(App);
+)(AppComponent);

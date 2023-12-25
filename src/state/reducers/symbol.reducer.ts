@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { initializeSymbolsSuccess, initializeSymbolsError, findManyAssetsWithQuerySuccess, findManyAssetsWithQueryError } from '../actions';
+import { initializeSymbolsSuccess, initializeSymbolsError, findManyAssetsWithQuerySuccess, findManyAssetsWithQueryError, clearSearchSuccess, clearSearchError } from '../actions';
 import { IAsset } from '../../common';
 
 interface SymbolState {
@@ -42,6 +42,15 @@ export const symbols = handleActions<SymbolState, string>(
             };
         },
         [findManyAssetsWithQueryError.toString()]: (state: SymbolState, action: any) => ({
+            ...state,
+            latestQueryResult: [],
+            error: action.payload
+        }),
+        [clearSearchSuccess.toString()]: (state: SymbolState) => ({
+            ...state,
+            latestQueryResult: []
+        }),
+        [clearSearchError.toString()]: (state: SymbolState, action: any) => ({
             ...state,
             latestQueryResult: [],
             error: action.payload

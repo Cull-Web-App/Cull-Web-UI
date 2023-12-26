@@ -31,7 +31,7 @@ export const RequestAuthenticationInterceptorComponent = ({ children }: RequestA
         const response = await instance.acquireTokenSilent({
             scopes,
             account,
-        });
+        }).catch(e => console.error(e)) as any;
 
         const bearer = `Bearer ${response.accessToken}`;
         config.headers.Authorization = bearer;

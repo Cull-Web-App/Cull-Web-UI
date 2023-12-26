@@ -28,6 +28,8 @@ import {
 } from '../services';
 import { IDENTIFIERS } from './identifiers.ioc';
 import getDecorators from 'inversify-inject-decorators';
+import { msalConfig } from '../config';
+import { IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
 
 const container: Container = new Container();
 container.bind<IHttpRepository>(IDENTIFIERS.IHTTP_REPOSITORY).to(HttpRepository);
@@ -41,6 +43,7 @@ container.bind<IWatchRepository>(IDENTIFIERS.IWATCH_REPOSITORY).to(WatchReposito
 container.bind<IWatchService>(IDENTIFIERS.IWATCH_SERVICE).to(WatchService);
 container.bind<IUserAvatarRepository>(IDENTIFIERS.IUSERAVATAR_REPOSITORY).to(UserAvatarRepository);
 container.bind<IUserAvatarService>(IDENTIFIERS.IUSERAVATAR_SERVICE).to(UserAvatarService);
+container.bind<IPublicClientApplication>(IDENTIFIERS.IMSAL_INSTANCE).toConstantValue(new PublicClientApplication(msalConfig));
 
 const { lazyInject } = getDecorators(container, false);
 

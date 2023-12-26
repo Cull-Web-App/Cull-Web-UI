@@ -17,6 +17,7 @@ import TestingStrategiesComponent from "features/testing-strategies/TestingStrat
 import AccountPerformanceComponent from "features/account-performance/AccountPerformance.component";
 import MetricsComponent from "features/metrics/Metrics.component";
 import RequestAuthenticationInterceptorComponent from "features/authentication/RequestAuthenticationInterceptor.component";
+import { AuthenticatedTemplate } from "@azure/msal-react";
 
 type AppProps = AppReduxProps & AppDispatchProps;
 interface AppDispatchProps
@@ -57,19 +58,21 @@ export const AppComponent = ({ darkMode, initializePreferences }: AppProps) => {
     }, [darkMode]);
 
     return (
-        <RequestAuthenticationInterceptorComponent>
-            <Container fluid className="p-0">
-                <Row>
-                    <MenuComponent tabMap={tabMap}></MenuComponent>
-                    <Col xs={9}>
-                        <ContentComponent tabMap={tabMap}></ContentComponent>
-                    </Col>
-                    <Col xs={3}>
-                        <RightPanelComponent></RightPanelComponent>
-                    </Col>
-                </Row>
-            </Container>
-        </RequestAuthenticationInterceptorComponent>
+        <AuthenticatedTemplate>
+            <RequestAuthenticationInterceptorComponent>
+                <Container fluid className="p-0">
+                    <Row>
+                        <MenuComponent tabMap={tabMap}></MenuComponent>
+                        <Col xs={9}>
+                            <ContentComponent tabMap={tabMap}></ContentComponent>
+                        </Col>
+                        <Col xs={3}>
+                            <RightPanelComponent></RightPanelComponent>
+                        </Col>
+                    </Row>
+                </Container>
+            </RequestAuthenticationInterceptorComponent>
+        </AuthenticatedTemplate>
     );
 }
 

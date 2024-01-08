@@ -8,7 +8,11 @@ import {
     ISignalRRepository,
     SignalRRepository,
     IBarRepository,
-    BarRepository
+    BarRepository,
+    IWatchRepository,
+    WatchRepository,
+    UserAvatarRepository,
+    IUserAvatarRepository
 } from '../repositories';
 import {
     SymbolService,
@@ -16,10 +20,16 @@ import {
     IBarService,
     BarService,
     PreferenceService,
-    IPreferenceService
+    IPreferenceService,
+    WatchService,
+    IWatchService,
+    IUserAvatarService,
+    UserAvatarService
 } from '../services';
 import { IDENTIFIERS } from './identifiers.ioc';
 import getDecorators from 'inversify-inject-decorators';
+import { msalConfig } from '../config';
+import { IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
 
 const container: Container = new Container();
 container.bind<IHttpRepository>(IDENTIFIERS.IHTTP_REPOSITORY).to(HttpRepository);
@@ -29,6 +39,11 @@ container.bind<ISignalRRepository>(IDENTIFIERS.ISIGNALR_REPOSITORY).to(SignalRRe
 container.bind<IBarRepository>(IDENTIFIERS.IBAR_REPOSITORY).to(BarRepository);
 container.bind<IBarService>(IDENTIFIERS.IBAR_SERVICE).to(BarService);
 container.bind<IPreferenceService>(IDENTIFIERS.IPREFERENCE_SERVICE).to(PreferenceService);
+container.bind<IWatchRepository>(IDENTIFIERS.IWATCH_REPOSITORY).to(WatchRepository);
+container.bind<IWatchService>(IDENTIFIERS.IWATCH_SERVICE).to(WatchService);
+container.bind<IUserAvatarRepository>(IDENTIFIERS.IUSERAVATAR_REPOSITORY).to(UserAvatarRepository);
+container.bind<IUserAvatarService>(IDENTIFIERS.IUSERAVATAR_SERVICE).to(UserAvatarService);
+container.bind<IPublicClientApplication>(IDENTIFIERS.IMSAL_INSTANCE).toConstantValue(new PublicClientApplication(msalConfig));
 
 const { lazyInject } = getDecorators(container, false);
 

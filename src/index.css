@@ -5,6 +5,7 @@
     --text-color: #333;
     --background-color: #fff;
     --bs-body-bg: #fff;
+    --bs-body-color: #333;
     --scroll-bar-background-color: #fff;
 }
 
@@ -14,6 +15,7 @@
     --text-color: #a0a0a0;
     --background-color: #222;
     --bs-body-bg: #222;
+    --bs-body-color: #fff;
     --scroll-bar-background-color: #333;
 }
 

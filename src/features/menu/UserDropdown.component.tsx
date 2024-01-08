@@ -1,8 +1,34 @@
-import React from 'react';
+import { useMsal } from '@azure/msal-react';
+import React, { useEffect } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Image from 'react-bootstrap/Image';
+import { connect } from 'react-redux';
+import { initializeUserAvatar } from 'state';
 
-export const UserDropdownComponent = () => {
+type UserDropdownProps = UserDropdownReduxProps & UserDropdownDispatchProps & UserDropdownComponentProps;
+interface UserDropdownReduxProps {
+    avatar: Blob;
+}
+
+interface UserDropdownDispatchProps {
+    initializeUserAvatar: () => void;
+}
+
+interface UserDropdownComponentProps {
+}
+
+
+export const UserDropdownComponent = ({ initializeUserAvatar, avatar }: UserDropdownProps) => {
+    const { instance } = useMsal();
+
+    useEffect(() => {
+        initializeUserAvatar();
+    }, []);
+
+    const handleLogout = () => {
+        instance.logoutRedirect();
+    };
+
     return (
         <Dropdown>
             <Dropdown.Toggle
@@ -10,20 +36,39 @@ export const UserDropdownComponent = () => {
                 id="dropdown-custom-components"
                 className="p-0 caret"
             >
-                <Image
-                    src="user-avatar.jpg"
-                    roundedCircle
-                    style={{ cursor: 'pointer', width: '30px', height: '30px' }}
-                />
+                {avatar && (
+                    <Image
+                        src={URL.createObjectURL(avatar)}
+                        roundedCircle
+                        style={{ cursor: 'pointer', width: '30px', height: '30px' }}
+                    />
+                )}
             </Dropdown.Toggle>
-            <Dropdown.Menu variant='dark'>
+            <Dropdown.Menu variant='dark' align='end'>
                 <Dropdown.Item>Preferences</Dropdown.Item>
                 <Dropdown.Item>Settings</Dropdown.Item>
                 <Dropdown.Divider />
-                <Dropdown.Item>Logout</Dropdown.Item>
+                <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
     );
 }
 
-export default UserDropdownComponent;
+const mapDispatchToProps = (dispatch: any): UserDropdownDispatchProps =>
+{
+    return {
+        initializeUserAvatar: () => dispatch(initializeUserAvatar())
+    };
+}
+
+const mapStateToProps = (state: any): UserDropdownReduxProps => {
+    const { avatar } = state.user;
+    return {
+        avatar
+    };
+}
+
+export default connect<UserDropdownReduxProps, UserDropdownDispatchProps>(
+    mapStateToProps,
+    mapDispatchToProps
+)(UserDropdownComponent);

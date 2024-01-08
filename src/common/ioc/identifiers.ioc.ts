@@ -5,5 +5,10 @@ export const IDENTIFIERS = {
     ISIGNALR_REPOSITORY: Symbol.for('ISignalRRepository'),
     IBAR_REPOSITORY: Symbol.for('IBarRepository'),
     IBAR_SERVICE: Symbol.for('IBarService'),
-    IPREFERENCE_SERVICE: Symbol.for('IPreferenceService')
+    IPREFERENCE_SERVICE: Symbol.for('IPreferenceService'),
+    IWATCH_SERVICE: Symbol.for('IWatchService'),
+    IWATCH_REPOSITORY: Symbol.for('IWatchRepository'),
+    IUSERAVATAR_REPOSITORY: Symbol.for('IUserAvatarRepository'),
+    IUSERAVATAR_SERVICE: Symbol.for('IUserAvatarService'),
+    IMSAL_INSTANCE: Symbol.for('IMsalInstance'),
 };

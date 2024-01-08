@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { IAsset } from '../models';
 export interface ISymbolRepository {
-    findAll(): Observable<string[]>;
+    findMany(query: string): Observable<IAsset[]>;
 }

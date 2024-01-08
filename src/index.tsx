@@ -1,16 +1,18 @@
 import 'reflect-metadata';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
-import App from './App';
+import AuthenticatedAppComponent from './AuthenticatedApp.component';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { createEpicMiddleware, combineEpics } from 'redux-observable';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { InversifyProvider } from './common';
 import { container } from './common/ioc/container.ioc';
-import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic, PreferenceEpic } from './state';
+import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic, PreferenceEpic, WatchEpic, watch, UserEpic, user } from './state';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -30,7 +32,9 @@ const store = configureStore(
         reducer: combineReducers({
             symbols,
             bar,
-            preference
+            preference,
+            watch,
+            user
         }),
         middleware: [epicMiddleWare]
     }
@@ -40,7 +44,9 @@ const store = configureStore(
 const epics: IBaseEpic[] = [
     new SymbolEpic(),
     new BarEpic(),
-    new PreferenceEpic()
+    new PreferenceEpic(),
+    new WatchEpic(),
+    new UserEpic()
 ];
 
 epicMiddleWare.run(
@@ -54,7 +60,9 @@ root.render(
     <React.StrictMode>
         <InversifyProvider container={container}>
             <Provider store={store}>
-                <App />
+                <Router>
+                    <AuthenticatedAppComponent />
+                </Router>
             </Provider>
         </InversifyProvider>
     </React.StrictMode>

@@ -8,3 +8,5 @@ export * from './iscaled-bar.model';
 export * from './scaled-bar.model';
 export * from './asset.model';
 export * from './iasset.model';
+export * from './iwatch.model';
+export * from './watch.model';

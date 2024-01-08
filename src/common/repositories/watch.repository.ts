@@ -16,15 +16,15 @@ export class WatchRepository implements IWatchRepository {
         );
     }
 
-    public createOne(symbol: string): Observable<string> {
+    public createOne(symbol: string): Observable<void> {
         return this.httpRepository.post<string>(this.url, { symbol }).pipe(
-            map(d => d.data as string)
+            map(d => undefined)
         );
     }
 
-    public deleteOne(symbol: string): Observable<string> {
+    public deleteOne(symbol: string): Observable<void> {
         return this.httpRepository.delete<string>(this.url, { symbol }).pipe(
-            map(d => d.data as string)
+            map(d => undefined)
         );
     }
 }

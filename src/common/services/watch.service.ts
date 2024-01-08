@@ -13,11 +13,11 @@ export class WatchService implements IWatchService {
         return this.watchRepository.findAll();
     }
 
-    public createOne(symbol: string): Observable<string> {
+    public createOne(symbol: string): Observable<void> {
         return this.watchRepository.createOne(symbol);
     }
 
-    public deleteOne(symbol: string): Observable<string> {
+    public deleteOne(symbol: string): Observable<void> {
         return this.watchRepository.deleteOne(symbol);
     }
 }

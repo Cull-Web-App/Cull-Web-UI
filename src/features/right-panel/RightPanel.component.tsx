@@ -49,7 +49,7 @@ export const RightPanelComponent = ({ watchList, findAll }: RightPanelProps) => 
 
 const mapStateToProps = (state: any): RightPanelReduxProps => {
     return {
-        watchList: state.watch.assets
+        watchList: state.watch.watches
     };
 }
 

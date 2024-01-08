@@ -88,8 +88,8 @@ export class BarEpic extends BaseEpic {
 
     public receiveBar$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(receiveBar),
-        switchMap(({ payload: { bar } }: { payload: { bar: any } }) => {
-            return of(receiveBarSuccess({ symbol: bar.symbol, bar: new Bar(bar) }));
+        switchMap(({ payload: { bar } }: { payload: { bar: IBar } }) => {
+            return of(receiveBarSuccess({ symbol: bar.symbol, bar }));
         })
     );
 

@@ -38,9 +38,9 @@ export class WatchEpic extends BaseEpic {
 
     public createOne$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(createOneWatch),
-        switchMap(({ payload: { asset } }: { payload: { asset: string } }) => {
-            return this.watchService.createOne(asset).pipe(
-                map(_ => createOneWatchSuccess({ watch: new Watch({ symbol: asset, createdAt: new Date() }) })),
+        switchMap(({ payload: { symbol } }: { payload: { symbol: string } }) => {
+            return this.watchService.createOne(symbol).pipe(
+                map(_ => createOneWatchSuccess({ watch: new Watch({ symbol: symbol, createdAt: new Date() }) })),
                 catchError(error => [
                     createOneWatchError(error)
                 ])
@@ -50,9 +50,9 @@ export class WatchEpic extends BaseEpic {
 
     public deleteOne$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(deleteOneWatch),
-        switchMap(({ payload: { asset } }: { payload: { asset: string } }) => {
-            return this.watchService.deleteOne(asset).pipe(
-                map(_ => deleteOneWatchSuccess({ asset })),
+        switchMap(({ payload: { symbol } }: { payload: { symbol: string } }) => {
+            return this.watchService.deleteOne(symbol).pipe(
+                map(_ => deleteOneWatchSuccess({ symbol })),
                 catchError(error => [
                     deleteOneWatchError(error)
                 ])

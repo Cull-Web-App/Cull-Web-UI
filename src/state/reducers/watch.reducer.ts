@@ -31,8 +31,8 @@ export const watch = handleActions<WatchState, string>(
             watches: state.watches,
             error: action.payload
         }),
-        [deleteOneWatchSuccess.toString()]: (state: WatchState, { payload: { asset } }: any) => ({
-            watches: state.watches.filter(a => a !== asset),
+        [deleteOneWatchSuccess.toString()]: (state: WatchState, { payload: { symbol } }: any) => ({
+            watches: state.watches.filter(a => a.symbol !== symbol),
             error: null
         }),
         [deleteOneWatchError.toString()]: (state: WatchState, action: any) => ({

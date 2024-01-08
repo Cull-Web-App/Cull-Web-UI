@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { clearSearch, createOneWatch, deleteOneWatch, findManyAssetsWithQuery } from 'state';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
-import { IAsset } from '../../common';
+import { IAsset, IWatch } from '../../common';
 import './EditWatchList.component.css';
 
 type EditWatchListProps = EditWatchListDispatchProps & EditWatchListComponentProps & EditWatchListReduxProps;
@@ -15,7 +15,7 @@ interface EditWatchListDispatchProps {
     deleteOne: (({ symbol }: { symbol: string }) => void);
 }
 interface EditWatchListReduxProps {
-    watchList: string[];
+    watchList: IWatch[];
     searchResults: IAsset[];
 }
 interface EditWatchListComponentProps {
@@ -28,7 +28,7 @@ export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, find
 
     useEffect(() => {
         if (searchResults.length === 0) {
-            setRows(watchList.map((symbol) => ({ symbol } as IAsset)));
+            setRows(watchList.map((watch) => ({ symbol: watch.symbol } as IAsset)));
             setIsAddMode(false);
         } else {
             setRows(searchResults);
@@ -82,7 +82,7 @@ export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, find
 
 const mapStateToProps = (state: any): EditWatchListReduxProps => {
     return {
-        watchList: state.watch.assets,
+        watchList: state.watch.watches,
         searchResults: state.symbols.latestQueryResult
     };
 }

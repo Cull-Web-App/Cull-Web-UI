@@ -15,10 +15,10 @@ export const {
     INITIALIZE_WATCH: undefined,
     INITIALIZE_WATCH_SUCCESS: ({ watches }: { watches: IWatch[] }) => ({ watches }),
     INITIALIZE_WATCH_ERROR: (error: string) => ({ error }),
-    CREATE_ONE_WATCH: ({ asset }: { asset: string }) => ({ asset }),
+    CREATE_ONE_WATCH: ({ symbol }: { symbol: string }) => ({ symbol }),
     CREATE_ONE_WATCH_SUCCESS: ({ watch }: { watch: IWatch }) => ({ watch }),
     CREATE_ONE_WATCH_ERROR: (error: string) => ({ error }),
-    DELETE_ONE_WATCH: ({ asset }: { asset: string }) => ({ asset }),
-    DELETE_ONE_WATCH_SUCCESS: ({ asset }: { asset: string }) => ({ asset }),
+    DELETE_ONE_WATCH: ({ symbol }: { symbol: string }) => ({ symbol }),
+    DELETE_ONE_WATCH_SUCCESS: ({ symbol }: { symbol: string }) => ({ symbol }),
     DELETE_ONE_WATCH_ERROR: (error: string) => ({ error })
 });

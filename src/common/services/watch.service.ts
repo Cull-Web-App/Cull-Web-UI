@@ -3,6 +3,7 @@ import { injectable, inject } from 'inversify';
 import { IDENTIFIERS } from '../ioc/identifiers.ioc';
 import { IWatchRepository } from '../repositories';
 import { IWatchService } from './iwatch.service';
+import { IWatch, Watch } from '../models';
 
 @injectable()
 export class WatchService implements IWatchService {
@@ -13,11 +14,16 @@ export class WatchService implements IWatchService {
         return this.watchRepository.findAll();
     }
 
-    public createOne(symbol: string): Observable<void> {
-        return this.watchRepository.createOne(symbol);
+    public createOne(symbol: string, position: number): Observable<void> {
+        const watch: IWatch = new Watch({ symbol, position, createdAt: new Date() });
+        return this.watchRepository.createOne(watch);
     }
 
     public deleteOne(symbol: string): Observable<void> {
         return this.watchRepository.deleteOne(symbol);
+    }
+
+    public updateMany(watches: IWatch[]): Observable<IWatch[]> {
+        return this.watchRepository.updateMany(watches);
     }
 }

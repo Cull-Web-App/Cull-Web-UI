@@ -5,7 +5,7 @@ import PriceComponent from './Price.component';
 import './StockCard.component.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
-import { barDisconnect, unsubscribeBar } from 'state';
+import { barDisconnect, unsubscribeBar } from '../../state';
 import { IBar } from '../../common';
 
 // Define the Props for this component

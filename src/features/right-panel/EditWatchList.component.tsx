@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import SearchBarComponent from './SearchBar.component';
 import { connect } from 'react-redux';
-import { clearSearch, createOneWatch, deleteOneWatch, findManyAssetsWithQuery } from 'state';
+import { clearSearch, createOneWatch, deleteOneWatch, findManyAssetsWithQuery } from '../../state';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
-import { IAsset, IWatch, StrictModeDroppable } from '../../common';
+import { IAsset, IWatch, StrictModeDroppable, Watch } from '../../common';
 import './EditWatchList.component.css';
 import EditWatchListItemComponent from './EditWatchListItem.component';
 import { DragDropContext, Draggable, DraggableProvided, DropResult, Droppable, DroppableProvided } from 'react-beautiful-dnd';
@@ -12,7 +12,7 @@ import { Button } from 'react-bootstrap';
 type EditWatchListProps = EditWatchListDispatchProps & EditWatchListComponentProps & EditWatchListReduxProps;
 interface EditWatchListDispatchProps {
     findManyWithFilter: (({ filter }: { filter: string }) => void);
-    createOne: (({ symbol }: { symbol: string }) => void);
+    createOne: (({ symbol, position }: { symbol: string, position: number }) => void);
     clearSearch: (() => void);
     deleteOne: (({ symbol }: { symbol: string }) => void);
 }
@@ -21,31 +21,31 @@ interface EditWatchListReduxProps {
     searchResults: IAsset[];
 }
 interface EditWatchListComponentProps {
-    onRowsUpdate: ((rows: IAsset[]) => void);
+    onRowsUpdate: ((rows: IWatch[]) => void);
 }
 
 export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, findManyWithFilter, watchList, searchResults, onRowsUpdate }: EditWatchListProps) => {
-    const [rows, setRows] = useState<IAsset[]>([]);
+    const [rows, setRows] = useState<IWatch[]>([]);
     const [isAddMode, setIsAddMode] = useState(false);
 
     useEffect(() => {
         if (searchResults.length === 0) {
-            const watchListRows = watchList.map((watch) => ({ symbol: watch.symbol } as IAsset));
-            setRows(watchListRows);
-            onRowsUpdate(watchListRows);
+            setRows(watchList);
+            onRowsUpdate(watchList);
             setIsAddMode(false);
         } else {
-            setRows(searchResults);
+            const assetsAsWatch: IWatch[] = searchResults.map((asset, index) => new Watch({ symbol: asset.symbol, index }));
+            setRows(assetsAsWatch);
             setIsAddMode(true);
         }
     }, [searchResults, watchList]);
 
-    const handleAdd = (item: IAsset) => {
-        createOne({ symbol: item.symbol });
+    const handleAdd = (item: IWatch, position: number) => {
+        createOne({ symbol: item.symbol, position });
     };
 
-    const handleRemove = (item: string) => {
-        deleteOne({ symbol: item });
+    const handleRemove = (item: IWatch) => {
+        deleteOne({ symbol: item.symbol });
     };
 
     const handleSearchTermChanged = ({ searchTerm }: { searchTerm: string }) => {
@@ -80,18 +80,7 @@ export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, find
                     {(provided: DroppableProvided) => (
                         <div className='edit-modal-rows' {...provided.droppableProps} ref={provided.innerRef}>
                             {rows.map((item, index) => (
-                                <Draggable draggableId={item.symbol} index={index} key={item.symbol}>
-                                    {(provided: DraggableProvided) => (
-                                        <div 
-                                            {...provided.draggableProps} 
-                                            {...provided.dragHandleProps} 
-                                            ref={provided.innerRef}
-                                            key={item.symbol}
-                                        >
-                                            <EditWatchListItemComponent key={item.symbol} asset={item} isAddMode={isAddMode} index={index} icon={isAddMode ? faPlusCircle : faMinusCircle} onClick={() => isAddMode ? handleAdd(item) : handleRemove(item.symbol)} />
-                                        </div>
-                                    )}
-                                </Draggable>
+                                <EditWatchListItemComponent key={item.symbol} asset={item} isAddMode={isAddMode} icon={isAddMode ? faPlusCircle : faMinusCircle} index={index} onClick={() => isAddMode ? handleAdd(item, watchList.length) : handleRemove(item)} />
                             ))}
                             {provided.placeholder}
                         </div>
@@ -111,7 +100,7 @@ const mapStateToProps = (state: any): EditWatchListReduxProps => {
 
 const mapDispatchToProps = (dispatch: any): EditWatchListDispatchProps => {
     return {
-        createOne: ({ symbol }: { symbol: string }) => dispatch(createOneWatch({ symbol })),
+        createOne: ({ symbol, position }: { symbol: string, position: number }) => dispatch(createOneWatch({ symbol, position })),
         clearSearch: () => dispatch(clearSearch()),
         deleteOne: ({ symbol }: { symbol: string }) => dispatch(deleteOneWatch({ symbol })),
         findManyWithFilter: ({ filter }: { filter: string }) => dispatch(findManyAssetsWithQuery({ query: filter }))
@@ -121,4 +110,4 @@ const mapDispatchToProps = (dispatch: any): EditWatchListDispatchProps => {
 export default connect<EditWatchListReduxProps, EditWatchListDispatchProps>(
     mapStateToProps,
     mapDispatchToProps
-)(EditWatchListComponent);
+)(memo(EditWatchListComponent));

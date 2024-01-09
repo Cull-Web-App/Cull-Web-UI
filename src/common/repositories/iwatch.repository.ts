@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 
 export interface IWatchRepository {
     findAll(): Observable<string[]>;
-    createOne(symbol: string): Observable<void>;
+    createOne(watch: IWatch): Observable<void>;
     deleteOne(symbol: string): Observable<void>;
+    updateMany(symbols: IWatch[]): Observable<IWatch[]>;
 }

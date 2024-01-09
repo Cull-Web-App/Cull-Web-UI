@@ -7,13 +7,13 @@ import {
     findManyAssetsWithQuery,
     findManyAssetsWithQuerySuccess,
     findManyAssetsWithQueryError,
+    clearSearch,
     clearSearchSuccess,
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { container } from '../../common/ioc/container.ioc';
 import { ISymbolService } from '../../common';
 import { BaseEpic } from './base.epic';
-import { clearSearch } from 'state';
 
 export class SymbolEpic extends BaseEpic {
     private readonly symbolService!: ISymbolService;

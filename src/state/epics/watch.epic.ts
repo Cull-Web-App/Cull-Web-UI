@@ -9,10 +9,13 @@ import {
     createOneWatchError,
     deleteOneWatch,
     deleteOneWatchSuccess,
-    deleteOneWatchError
+    deleteOneWatchError,
+    updateManyWatch,
+    updateManyWatchSuccess,
+    updateManyWatchError
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
-import { IWatchService, Watch, container } from '../../common';
+import { IWatch, IWatchService, Watch, container } from '../../common';
 import { BaseEpic } from './base.epic';
 
 export class WatchEpic extends BaseEpic {
@@ -21,7 +24,7 @@ export class WatchEpic extends BaseEpic {
     public constructor() {
         super();
         this.watchService = container.get<IWatchService>(IDENTIFIERS.IWATCH_SERVICE);
-        this.addEpics([this.initialize$, this.createOne$, this.deleteOne$]);
+        this.addEpics([this.initialize$, this.createOne$, this.deleteOne$, this.updateMany$]);
     }
 
     public initialize$: Epic<any> = (actions$, state$) => actions$.pipe(
@@ -38,9 +41,9 @@ export class WatchEpic extends BaseEpic {
 
     public createOne$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(createOneWatch),
-        switchMap(({ payload: { symbol } }: { payload: { symbol: string } }) => {
-            return this.watchService.createOne(symbol).pipe(
-                map(_ => createOneWatchSuccess({ watch: new Watch({ symbol: symbol, createdAt: new Date() }) })),
+        switchMap(({ payload: { symbol, position } }: { payload: { symbol: string, position: number } }) => {
+            return this.watchService.createOne(symbol, position).pipe(
+                map(_ => createOneWatchSuccess({ watch: new Watch({ symbol: symbol, position, createdAt: new Date() }) })),
                 catchError(error => [
                     createOneWatchError(error)
                 ])
@@ -59,4 +62,17 @@ export class WatchEpic extends BaseEpic {
             );
         })
     );
+
+    public updateMany$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(updateManyWatch),
+        switchMap(({ payload: { watches } }: { payload: { watches: IWatch[] } }) => {
+            return this.watchService.updateMany(watches).pipe(
+                map(newWatches => updateManyWatchSuccess({ watches: newWatches })),
+                catchError(error => [
+                    updateManyWatchError(error)
+                ])
+            );
+        })
+    );
+
 }

@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Image from 'react-bootstrap/Image';
 import { connect } from 'react-redux';
-import { initializeUserAvatar } from 'state';
+import { initializeUserAvatar } from '../../state';
 
 type UserDropdownProps = UserDropdownReduxProps & UserDropdownDispatchProps & UserDropdownComponentProps;
 interface UserDropdownReduxProps {

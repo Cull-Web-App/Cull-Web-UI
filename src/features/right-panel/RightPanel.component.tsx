@@ -3,7 +3,7 @@ import StockCardComponent from 'features/stock-card/StockCard.component';
 import React, { useEffect } from 'react';
 import { Card } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { initializeWatch } from 'state';
+import { initializeWatch } from '../../state';
 import EditWatchListButtonComponent from './EditWatchListButton.component';
 import { IWatch } from '../../common';
 

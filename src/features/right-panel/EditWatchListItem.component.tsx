@@ -1,7 +1,9 @@
 import React, { memo } from "react";
 import { IconDefinition } from "@fortawesome/fontawesome-common-types";
-import { IAsset } from "../../common";
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { IAsset, IWatch } from "../../common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Draggable, DraggableProvided } from "react-beautiful-dnd";
 import './EditWatchListItem.component.css';
 import Button from "react-bootstrap/Button";
 
@@ -11,7 +13,7 @@ interface EditWatchListItemDispatchProps {
 interface EditWatchListItemReduxProps {
 }
 interface EditWatchListItemComponentProps {
-    asset: IAsset;
+    asset: IWatch;
     isAddMode: boolean;
     icon: IconDefinition;
     index: number;
@@ -19,12 +21,27 @@ interface EditWatchListItemComponentProps {
 }
 
 export const EditWatchListItemComponent = ({ asset, isAddMode, icon, index, onClick }: EditWatchListItemProps) => {
+    const color = isAddMode ? 'green' : 'red';
     return (
-        <div className="row">
-            <Button style={{color: isAddMode ? 'green' : 'red'}} onClick={onClick} className="rounded-icon">
-                <FontAwesomeIcon icon={icon} />
-            </Button>
-            {asset.symbol}
+        <div className="edit-watch-list-item">
+            <Draggable draggableId={asset.symbol} index={index}>
+                {(provided: DraggableProvided) => (
+                    <div 
+                        {...provided.draggableProps} 
+                        ref={provided.innerRef}
+                        key={asset.symbol} 
+                        className="watch-list-row"
+                    >
+                        <Button onClick={onClick} className={`rounded-icon-${color}`}>
+                            <FontAwesomeIcon icon={icon}/>
+                        </Button>
+                        {asset.symbol}
+                        <div {...provided.dragHandleProps} className={`drag-handle ${isAddMode ? 'hidden' : ''}`}>
+                            <FontAwesomeIcon icon={faBars} />
+                        </div>
+                    </div>
+                )}
+            </Draggable>
         </div>
     );
 };

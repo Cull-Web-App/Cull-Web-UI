@@ -1,0 +1,13 @@
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    width: 100%;
+}
+
+.rounded-icon {
+    border-radius: 50%;
+    overflow: hidden;
+}

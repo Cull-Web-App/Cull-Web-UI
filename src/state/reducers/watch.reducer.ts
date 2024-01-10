@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { initializeWatchSuccess, initializeWatchError, createOneWatchSuccess, createOneWatchError, deleteOneWatchSuccess, deleteOneWatchError, updateManyWatchSuccess, updateManyWatchError } from '../actions';
+import { initializeWatchSuccess, initializeWatchError, createOneWatchSuccess, createOneWatchError, deleteOneWatchSuccess, deleteOneWatchError, updateManyWatchSuccess, updateManyWatchError, createManyWatchSuccess, createManyWatchError, deleteManyWatchSuccess, deleteManyWatchError } from '../actions';
 import { IWatch } from '../../common';
 
 interface WatchState {
@@ -31,11 +31,27 @@ export const watch = handleActions<WatchState, string>(
             watches: state.watches,
             error: action.payload
         }),
+        [createManyWatchSuccess.toString()]: (state: WatchState, { payload: { watches } }: any) => ({
+            watches: [...state.watches, ...watches].sort((a: IWatch, b: IWatch) => a.position - b.position),
+            error: null
+        }),
+        [createManyWatchError.toString()]: (state: WatchState, action: any) => ({
+            watches: state.watches,
+            error: action.payload
+        }),
         [deleteOneWatchSuccess.toString()]: (state: WatchState, { payload: { symbol } }: any) => ({
             watches: state.watches.filter(a => a.symbol !== symbol).sort((a: IWatch, b: IWatch) => a.position - b.position),
             error: null
         }),
         [deleteOneWatchError.toString()]: (state: WatchState, action: any) => ({
+            watches: state.watches,
+            error: action.payload
+        }),
+        [deleteManyWatchSuccess.toString()]: (state: WatchState, { payload: { symbols } }: any) => ({
+            watches: state.watches.filter(a => !symbols.includes(a.symbol)).sort((a: IWatch, b: IWatch) => a.position - b.position),
+            error: null
+        }),
+        [deleteManyWatchError.toString()]: (state: WatchState, action: any) => ({
             watches: state.watches,
             error: action.payload
         }),

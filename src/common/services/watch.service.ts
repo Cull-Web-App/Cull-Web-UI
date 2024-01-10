@@ -19,8 +19,16 @@ export class WatchService implements IWatchService {
         return this.watchRepository.createOne(watch);
     }
 
+    public createMany(watches: IWatch[]): Observable<void> {
+        return this.watchRepository.createMany(watches);
+    }
+
     public deleteOne(symbol: string): Observable<void> {
         return this.watchRepository.deleteOne(symbol);
+    }
+
+    public deleteMany(symbols: string[]): Observable<void> {
+        return this.watchRepository.deleteMany(symbols);
     }
 
     public updateMany(watches: IWatch[]): Observable<IWatch[]> {

@@ -10,11 +10,26 @@ interface SearchBarComponentProps {
     expandEnabled?: boolean;
     onSearchTermChange: (({ searchTerm }: { searchTerm: string }) => void);
     onSearch: (({ searchTerm }: { searchTerm: string }) => void);
+    onSearchCallbackUpdate?: (({ setSearchTerm }: { setSearchTerm: (searchTerm: string) => void }) => void);
 }
 
-export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange }: SearchBarProps) => {
+export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange, onSearchCallbackUpdate }: SearchBarProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isExpanded, setIsExpanded] = useState(false);
+
+    useEffect(() => {
+        if (!isExpanded) {
+            setSearchTerm('');
+        }
+    }, [isExpanded]);
+
+    useEffect(() => {
+        // Expose the setSearchTerm function to the parent
+        if (!onSearchCallbackUpdate) {
+            return;
+        }
+        onSearchCallbackUpdate({ setSearchTerm })
+    })
 
     const handleSearch = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -71,7 +86,7 @@ export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange
                     onChange={handleSearchTermChange}
                     onKeyDown={handleKeyDown}
                     onBlur={handleBlur}
-                    autoFocus
+                    autoFocus={!expandEnabled}
                 />
             )}
         </Form.Group>

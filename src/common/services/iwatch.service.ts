@@ -6,4 +6,6 @@ export interface IWatchService {
     createOne(symbol: string, position: number): Observable<void>;
     deleteOne(symbol: string): Observable<void>;
     updateMany(watches: IWatch[]): Observable<IWatch[]>;
+    createMany(watches: IWatch[]): Observable<void>;
+    deleteMany(symbols: string[]): Observable<void>;
 }

@@ -11,9 +11,7 @@ import { DragDropContext, DropResult, DroppableProvided } from 'react-beautiful-
 type EditWatchListProps = EditWatchListDispatchProps & EditWatchListComponentProps & EditWatchListReduxProps;
 interface EditWatchListDispatchProps {
     findManyWithFilter: (({ filter }: { filter: string }) => void);
-    createOne: (({ symbol, position }: { symbol: string, position: number }) => void);
     clearSearch: (() => void);
-    deleteOne: (({ symbol }: { symbol: string }) => void);
 }
 interface EditWatchListReduxProps {
     watchList: IWatch[];
@@ -21,31 +19,53 @@ interface EditWatchListReduxProps {
     assets: Map<string, IAsset>;
 }
 interface EditWatchListComponentProps {
-    onRowsUpdate: ((rows: IWatch[]) => void);
+    onRowsChanged: ((rows: IWatch[]) => void);
+    onRowUpdate: ((rows: IWatch) => void);
+    onRowAdd: ((row: IWatch) => void);
+    onRowDelete: ((row: IWatch) => void);
 }
 
-export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, findManyWithFilter, watchList, assets, searchResults, onRowsUpdate }: EditWatchListProps) => {
+export const EditWatchListComponent = ({ clearSearch, findManyWithFilter, watchList, assets, searchResults, onRowsChanged, onRowUpdate, onRowAdd, onRowDelete }: EditWatchListProps) => {
+    const [currentWatchList, setCurrentWatchList] = useState<IWatch[]>(watchList); // This is the current watch list that is being edited
     const [rows, setRows] = useState<IWatch[]>([]);
     const [isAddMode, setIsAddMode] = useState(false);
+    const [clearSearchCounter, setClearSearchCounter] = useState(0);
 
     useEffect(() => {
         if (searchResults.length === 0) {
-            setRows(watchList);
-            onRowsUpdate(watchList);
             setIsAddMode(false);
         } else {
-            const assetsAsWatch: IWatch[] = searchResults.map((asset, index) => new Watch({ symbol: asset.symbol, index }));
-            setRows(assetsAsWatch);
             setIsAddMode(true);
         }
-    }, [searchResults, watchList, onRowsUpdate]);
+    }, [searchResults]);
+
+    useEffect(() => {
+        // Set the rows based on the mode
+        if (isAddMode) {
+            // Filter out the ones that are already in the watch list
+            const filteredSearchResults = searchResults.filter((asset) => !currentWatchList.some((watch) => watch.symbol === asset.symbol));
+            const assetsAsWatch: IWatch[] = filteredSearchResults.map((asset, index) => new Watch({ symbol: asset.symbol, position: index }));
+            setRows(assetsAsWatch);
+        } else {
+            setRows(currentWatchList);
+        }
+        onRowsChanged(currentWatchList);
+    }, [isAddMode, currentWatchList, searchResults, onRowsChanged]);
 
     const handleAdd = (item: IWatch, position: number) => {
-        createOne({ symbol: item.symbol, position });
+        // Create one ONLY on the currentWatchList -- this edit should not be persisted until the user clicks done
+        setCurrentWatchList([...currentWatchList, new Watch({ symbol: item.symbol, position })]);
+        onRowAdd(item);
+
+        // Set back to remove mode
+        clearSearch();
+        clearSearchCounter === 0 ? setClearSearchCounter(1) : setClearSearchCounter(0);
     };
 
     const handleRemove = (item: IWatch) => {
-        deleteOne({ symbol: item.symbol });
+        // Remove it ONLY on the currentWatchList -- this edit should not be persisted until the user clicks done
+        setCurrentWatchList(currentWatchList.filter((watch) => watch.symbol !== item.symbol));
+        onRowDelete(item);
     };
 
     const handleSearchTermChanged = ({ searchTerm }: { searchTerm: string }) => {
@@ -66,14 +86,14 @@ export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, find
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
 
-        setRows(items);
-        onRowsUpdate(items);
+        setCurrentWatchList(items);
+        onRowUpdate(reorderedItem);
     };
 
     return (
         <div className='edit-modal'>
             <div className='edit-modal-header'>
-                <SearchBarComponent expandEnabled={true} onSearchTermChange={handleSearchTermChanged} onSearch={() => {}} />
+                <SearchBarComponent key={clearSearchCounter} expandEnabled={true} onSearchTermChange={handleSearchTermChanged} onSearch={() => {}}/>
             </div>
             <DragDropContext onDragEnd={handleDragEnd}>
                 <StrictModeDroppable droppableId="watch-list">
@@ -101,9 +121,7 @@ const mapStateToProps = (state: any): EditWatchListReduxProps => {
 
 const mapDispatchToProps = (dispatch: any): EditWatchListDispatchProps => {
     return {
-        createOne: ({ symbol, position }: { symbol: string, position: number }) => dispatch(createOneWatch({ symbol, position })),
         clearSearch: () => dispatch(clearAssetSearch()),
-        deleteOne: ({ symbol }: { symbol: string }) => dispatch(deleteOneWatch({ symbol })),
         findManyWithFilter: ({ filter }: { filter: string }) => dispatch(findManyAssetsWithQuery({ query: filter }))
     };
 }

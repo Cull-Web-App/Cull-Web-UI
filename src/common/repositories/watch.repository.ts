@@ -12,7 +12,7 @@ export class WatchRepository implements IWatchRepository {
     @inject(IDENTIFIERS.IHTTP_REPOSITORY) private readonly httpRepository!: IHttpRepository;
 
     public findAll(): Observable<IWatch[]> {
-        return this.httpRepository.get<IWatch[]>(this.url).pipe(
+        return this.httpRepository.get<IWatch[]>(`${this.url}/many`).pipe(
             map(d => d.data.map(watch => new Watch(watch as unknown as Record<string, string>)) as IWatch[])
         );
     }
@@ -23,14 +23,26 @@ export class WatchRepository implements IWatchRepository {
         );
     }
 
+    public createMany(watches: IWatch[]): Observable<void> {
+        return this.httpRepository.post<string>(`${this.url}/many`, watches).pipe(
+            map(d => undefined)
+        );
+    }
+
     public deleteOne(symbol: string): Observable<void> {
         return this.httpRepository.delete<string>(this.url, { symbol }).pipe(
             map(d => undefined)
         );
     }
 
+    public deleteMany(symbols: string[]): Observable<void> {
+        return this.httpRepository.delete<string>(`${this.url}/many`, symbols.map(s => ({ symbol: s })), true).pipe(
+            map(d => undefined)
+        );
+    }
+
     public updateMany(symbols: IWatch[]): Observable<IWatch[]> {
-        return this.httpRepository.put<IWatch[]>(this.url, symbols).pipe(
+        return this.httpRepository.put<IWatch[]>(`${this.url}/many`, symbols).pipe(
             map(d => d.data.map(watch => new Watch(watch as unknown as Record<string, string>)))
         );
     }

@@ -13,7 +13,13 @@ export const {
     deleteOneWatchError,
     updateManyWatch,
     updateManyWatchSuccess,
-    updateManyWatchError
+    updateManyWatchError,
+    createManyWatch,
+    createManyWatchSuccess,
+    createManyWatchError,
+    deleteManyWatch,
+    deleteManyWatchSuccess,
+    deleteManyWatchError
 } = createActions({
     INITIALIZE_WATCH: undefined,
     INITIALIZE_WATCH_SUCCESS: ({ watches }: { watches: IWatch[] }) => ({ watches }),
@@ -26,5 +32,11 @@ export const {
     DELETE_ONE_WATCH_ERROR: (error: string) => ({ error }),
     UPDATE_MANY_WATCH: ({ watches }: { watches: IWatch[] }) => ({ watches }),
     UPDATE_MANY_WATCH_SUCCESS: ({ watches }: { watches: IWatch[] }) => ({ watches }),
-    UPDATE_MANY_WATCH_ERROR: (error: string) => ({ error })
+    UPDATE_MANY_WATCH_ERROR: (error: string) => ({ error }),
+    CREATE_MANY_WATCH: ({ watches }: { watches: IWatch[] }) => ({ watches }),
+    CREATE_MANY_WATCH_SUCCESS: ({ watches }: { watches: IWatch[] }) => ({ watches }),
+    CREATE_MANY_WATCH_ERROR: (error: string) => ({ error }),
+    DELETE_MANY_WATCH: ({ symbols }: { symbols: string[] }) => ({ symbols }),
+    DELETE_MANY_WATCH_SUCCESS: ({ symbols }: { symbols: string[] }) => ({ symbols }),
+    DELETE_MANY_WATCH_ERROR: (error: string) => ({ error }),
 });

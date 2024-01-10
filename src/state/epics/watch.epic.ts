@@ -13,7 +13,13 @@ import {
     updateManyWatch,
     updateManyWatchSuccess,
     updateManyWatchError,
-    findManyAssets
+    findManyAssets,
+    createManyWatch,
+    createManyWatchSuccess,
+    createManyWatchError,
+    deleteManyWatch,
+    deleteManyWatchSuccess,
+    deleteManyWatchError
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { IAsset, IWatch, IWatchService, Watch, container } from '../../common';
@@ -25,7 +31,15 @@ export class WatchEpic extends BaseEpic {
     public constructor() {
         super();
         this.watchService = container.get<IWatchService>(IDENTIFIERS.IWATCH_SERVICE);
-        this.addEpics([this.initialize$, this.createOne$, this.deleteOne$, this.updateMany$, this.initializeAssetsAfterWatchSuccess$]);
+        this.addEpics([
+            this.initialize$,
+            this.createOne$,
+            this.createMany$,
+            this.deleteOne$,
+            this.deleteMany$,
+            this.updateMany$,
+            this.initializeAssetsAfterWatchSuccess$
+        ]);
     }
 
     public initialize$: Epic<any> = (actions$, state$) => actions$.pipe(
@@ -67,6 +81,18 @@ export class WatchEpic extends BaseEpic {
         })
     );
 
+    public createMany$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(createManyWatch),
+        switchMap(({ payload: { watches } }: { payload: { watches: IWatch[] } }) => {
+            return this.watchService.createMany(watches).pipe(
+                map(_ => createManyWatchSuccess({ watches })),
+                catchError(error => [
+                    createManyWatchError(error)
+                ])
+            );
+        })
+    );
+
     public deleteOne$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(deleteOneWatch),
         switchMap(({ payload: { symbol } }: { payload: { symbol: string } }) => {
@@ -74,6 +100,18 @@ export class WatchEpic extends BaseEpic {
                 map(_ => deleteOneWatchSuccess({ symbol })),
                 catchError(error => [
                     deleteOneWatchError(error)
+                ])
+            );
+        })
+    );
+
+    public deleteMany$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(deleteManyWatch),
+        switchMap(({ payload: { symbols } }: { payload: { symbols: string[] } }) => {
+            return this.watchService.deleteMany(symbols).pipe(
+                map(_ => deleteManyWatchSuccess({ symbols })),
+                catchError(error => [
+                    deleteManyWatchError(error)
                 ])
             );
         })

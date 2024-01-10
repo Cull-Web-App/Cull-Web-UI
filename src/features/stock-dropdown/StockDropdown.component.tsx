@@ -94,7 +94,7 @@ const mapDispatchToProps = (dispatch: any): StockDropdownDispatchProps => {
 }
 
 const mapStateToProps = (state: any): StockDropdownReduxProps => {
-    const { assets } = state.assets;
+    const { assets } = state.asset;
     const { subscribedSymbols } = state.bar;
     return {
         subscribedSymbols: new Set([...subscribedSymbols]),

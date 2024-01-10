@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { initializeAssetsSuccess, initializeAssetsError, findManyAssetsWithQuerySuccess, findManyAssetsWithQueryError, clearSearchSuccess, clearSearchError } from '../actions';
+import { initializeAssetsSuccess, initializeAssetsError, findManyAssetsWithQuerySuccess, findManyAssetsWithQueryError, clearSearchSuccess, clearSearchError, findOneAsset, findOneAssetSuccess, findOneAssetError, findManyAssetsSuccess, findManyAssetsError } from '../actions';
 import { IAsset } from '../../common';
 
 interface AssetState {
@@ -43,6 +43,36 @@ export const asset = handleActions<AssetState, string>(
         [findManyAssetsWithQueryError.toString()]: (state: AssetState, action: any) => ({
             ...state,
             latestQueryResult: [],
+            error: action.payload
+        }),
+        [findOneAssetSuccess.toString()]: (state: AssetState, { payload: { asset } }: any) => {
+            state.assets.set(asset.symbol, asset);
+
+            return {
+                ...state,
+                assets: state.assets,
+                error: null
+            };
+        },
+        [findOneAssetError.toString()]: (state: AssetState, action: any) => ({
+            ...state,
+            error: action.payload
+        }),
+        [findManyAssetsSuccess.toString()]: (state: AssetState, { payload: { assets } }: any) => {
+            assets.forEach((asset: IAsset) => {
+                if (!state.assets.has(asset.symbol)) {
+                    state.assets.set(asset.symbol, asset);
+                }
+            });
+
+            return {
+                ...state,
+                assets: state.assets,
+                error: null
+            };
+        },
+        [findManyAssetsError.toString()]: (state: AssetState, action: any) => ({
+            ...state,
             error: action.payload
         }),
         [clearSearchSuccess.toString()]: (state: AssetState) => ({

@@ -6,8 +6,7 @@ import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { IAsset, IWatch, StrictModeDroppable, Watch } from '../../common';
 import './EditWatchList.component.css';
 import EditWatchListItemComponent from './EditWatchListItem.component';
-import { DragDropContext, Draggable, DraggableProvided, DropResult, Droppable, DroppableProvided } from 'react-beautiful-dnd';
-import { Button } from 'react-bootstrap';
+import { DragDropContext, DropResult, DroppableProvided } from 'react-beautiful-dnd';
 
 type EditWatchListProps = EditWatchListDispatchProps & EditWatchListComponentProps & EditWatchListReduxProps;
 interface EditWatchListDispatchProps {
@@ -39,7 +38,7 @@ export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, find
             setRows(assetsAsWatch);
             setIsAddMode(true);
         }
-    }, [searchResults, watchList]);
+    }, [searchResults, watchList, onRowsUpdate]);
 
     const handleAdd = (item: IWatch, position: number) => {
         createOne({ symbol: item.symbol, position });

@@ -14,7 +14,9 @@ import {
     updateManyWatchSuccess,
     updateManyWatchError,
     findManyAssetsWithQuery,
-    clearSearch
+    clearSearch,
+    findOneAsset,
+    findManyAssets
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { IAsset, IWatch, IWatchService, Watch, container } from '../../common';
@@ -45,14 +47,14 @@ export class WatchEpic extends BaseEpic {
         ofType(initializeWatchSuccess),
         withLatestFrom(
             state$.pipe(
-                map(state => state.assets.assets)
+                map(state => state.asset.assets)
             )
         ),
-        switchMap(([{ payload: { watches } }, assets]: [{ payload: { watches: IWatch[] } }, Map<string, IAsset>]) => {
+        map(([{ payload: { watches } }, assets]: [{ payload: { watches: IWatch[] } }, Map<string, IAsset>]) => {
             const watchesWithoutAsset = watches.filter((watch: IWatch) => !assets.has(watch.symbol));
 
             // Look up these assets
-            return [...watchesWithoutAsset.map(w => findManyAssetsWithQuery({ query: w.symbol })), clearSearch()];
+            return findManyAssets({ symbols: watchesWithoutAsset.map((watch: IWatch) => watch.symbol) });
         })
     );
 

@@ -9,6 +9,12 @@ import {
     findManyAssetsWithQueryError,
     clearSearch,
     clearSearchSuccess,
+    findOneAsset,
+    findOneAssetSuccess,
+    findOneAssetError,
+    findManyAssets,
+    findManyAssetsSuccess,
+    findManyAssetsError,
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { container } from '../../common/ioc/container.ioc';
@@ -21,7 +27,7 @@ export class AssetEpic extends BaseEpic {
     public constructor() {
         super();
         this.assetService = container.get<IAssetService>(IDENTIFIERS.IASSET_SERVICE);
-        this.addEpics([this.initializeAssets$, this.findManyWithFilter$, this.clearSearch$]);
+        this.addEpics([this.initializeAssets$, this.findManyWithFilter$, this.findOne$, this.findMany$, this.clearSearch$]);
     }
 
     public initializeAssets$: Epic<any> = (actions$, state$) => actions$.pipe(
@@ -43,6 +49,30 @@ export class AssetEpic extends BaseEpic {
                 map(assets => findManyAssetsWithQuerySuccess({ assets })),
                 catchError(error => [
                     findManyAssetsWithQueryError(error)
+                ])
+            );
+        })
+    );
+
+    public findOne$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(findOneAsset),
+        switchMap(({ payload: { symbol } }: { payload: { symbol: string } }) => {
+            return this.assetService.findOne(symbol).pipe(
+                map(asset => findOneAssetSuccess({ asset })),
+                catchError(error => [
+                    findOneAssetError(error)
+                ])
+            );
+        })
+    );
+
+    public findMany$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(findManyAssets),
+        switchMap(({ payload: { symbols } }: { payload: { symbols: string[] } }) => {
+            return this.assetService.findMany(symbols).pipe(
+                map(assets => findManyAssetsSuccess({ assets })),
+                catchError(error => [
+                    findManyAssetsError(error)
                 ])
             );
         })

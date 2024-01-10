@@ -16,4 +16,10 @@ export class AssetRepository implements IAssetRepository {
             map(d => d.data.map(item => new Asset(item as unknown as Record<string, string | boolean | string[] | number>)) as IAsset[])
         );
     }
+
+    public findOne(symbol: string): Observable<IAsset> {
+        return this.httpRepository.get<IAsset>(`${this.url}/${symbol}`).pipe(
+            map(d => new Asset(d.data as unknown as Record<string, string | boolean | string[] | number>) as IAsset)
+        );
+    }
 }

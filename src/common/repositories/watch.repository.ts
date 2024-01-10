@@ -11,9 +11,9 @@ export class WatchRepository implements IWatchRepository {
 
     @inject(IDENTIFIERS.IHTTP_REPOSITORY) private readonly httpRepository!: IHttpRepository;
 
-    public findAll(): Observable<string[]> {
-        return this.httpRepository.get<string[]>(this.url).pipe(
-            map(d => d.data as string[])
+    public findAll(): Observable<IWatch[]> {
+        return this.httpRepository.get<IWatch[]>(this.url).pipe(
+            map(d => d.data.map(watch => new Watch(watch as unknown as Record<string, string>)) as IWatch[])
         );
     }
 

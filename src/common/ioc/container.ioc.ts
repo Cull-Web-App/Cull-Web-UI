@@ -3,8 +3,8 @@ import { Container } from 'inversify';
 import {
     IHttpRepository,
     HttpRepository,
-    ISymbolRepository,
-    SymbolRepository,
+    IAssetRepository,
+    AssetRepository,
     ISignalRRepository,
     SignalRRepository,
     IBarRepository,
@@ -15,8 +15,8 @@ import {
     IUserAvatarRepository
 } from '../repositories';
 import {
-    SymbolService,
-    ISymbolService,
+    AssetService,
+    IAssetService,
     IBarService,
     BarService,
     PreferenceService,
@@ -33,8 +33,8 @@ import { IPublicClientApplication, PublicClientApplication } from '@azure/msal-b
 
 const container: Container = new Container();
 container.bind<IHttpRepository>(IDENTIFIERS.IHTTP_REPOSITORY).to(HttpRepository);
-container.bind<ISymbolRepository>(IDENTIFIERS.ISYMBOL_REPOSITORY).to(SymbolRepository);
-container.bind<ISymbolService>(IDENTIFIERS.ISYMBOL_SERVICE).to(SymbolService);
+container.bind<IAssetRepository>(IDENTIFIERS.IASSET_REPOSITORY).to(AssetRepository);
+container.bind<IAssetService>(IDENTIFIERS.IASSET_SERVICE).to(AssetService);
 container.bind<ISignalRRepository>(IDENTIFIERS.ISIGNALR_REPOSITORY).to(SignalRRepository);
 container.bind<IBarRepository>(IDENTIFIERS.IBAR_REPOSITORY).to(BarRepository);
 container.bind<IBarService>(IDENTIFIERS.IBAR_SERVICE).to(BarService);

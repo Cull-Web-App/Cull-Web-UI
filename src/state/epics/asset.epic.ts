@@ -1,9 +1,9 @@
 import { ofType, Epic } from 'redux-observable';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import {
-    initializeSymbols,
-    initializeSymbolsSuccess,
-    initializeSymbolsError,
+    initializeAssets,
+    initializeAssetsSuccess,
+    initializeAssetsError,
     findManyAssetsWithQuery,
     findManyAssetsWithQuerySuccess,
     findManyAssetsWithQueryError,
@@ -12,25 +12,25 @@ import {
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { container } from '../../common/ioc/container.ioc';
-import { ISymbolService } from '../../common';
+import { IAssetService as IAssetService } from '../../common';
 import { BaseEpic } from './base.epic';
 
-export class SymbolEpic extends BaseEpic {
-    private readonly symbolService!: ISymbolService;
+export class AssetEpic extends BaseEpic {
+    private readonly assetService!: IAssetService;
 
     public constructor() {
         super();
-        this.symbolService = container.get<ISymbolService>(IDENTIFIERS.ISYMBOL_SERVICE);
-        this.addEpics([this.initializeSymbols$, this.findManyWithFilter$, this.clearSearch$]);
+        this.assetService = container.get<IAssetService>(IDENTIFIERS.IASSET_SERVICE);
+        this.addEpics([this.initializeAssets$, this.findManyWithFilter$, this.clearSearch$]);
     }
 
-    public initializeSymbols$: Epic<any> = (actions$, state$) => actions$.pipe(
-        ofType(initializeSymbols),
+    public initializeAssets$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(initializeAssets),
         switchMap(() => {
-            return this.symbolService.findMany('').pipe(
-                map(symbols => initializeSymbolsSuccess({ symbols })),
+            return this.assetService.findMany('').pipe(
+                map(assets => initializeAssetsSuccess({ assets })),
                 catchError(error => [
-                    initializeSymbolsError(error)
+                    initializeAssetsError(error)
                 ])
             );
         })
@@ -39,7 +39,7 @@ export class SymbolEpic extends BaseEpic {
     public findManyWithFilter$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(findManyAssetsWithQuery),
         switchMap(({ payload: { query } }: { payload: { query: string } }) => {
-            return this.symbolService.findMany(query).pipe(
+            return this.assetService.findMany(query).pipe(
                 map(assets => findManyAssetsWithQuerySuccess({ assets })),
                 catchError(error => [
                     findManyAssetsWithQueryError(error)

@@ -1,4 +1,4 @@
-export * from './symbol.epic';
+export * from './asset.epic';
 export * from './bar.epic';
 export * from './base.epic';
 export * from './ibase.epic';

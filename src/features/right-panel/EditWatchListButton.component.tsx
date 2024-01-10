@@ -50,8 +50,8 @@ export const EditWatchListButtonComponent = ({ updateMany }: EditWatchListButton
             </Button>
             <Modal show={isModalOpen} onHide={handleCloseModal}>
                 <Modal.Header>
-                    <Modal.Title>Edit Watch List</Modal.Title>
                     <Button onClick={handleCloseModal}>Close</Button>
+                    <Modal.Title>Edit Watch List</Modal.Title>
                     <Button onClick={handleDone}>Done</Button>
                 </Modal.Header>
                 <Modal.Body>

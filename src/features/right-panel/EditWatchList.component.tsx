@@ -19,12 +19,13 @@ interface EditWatchListDispatchProps {
 interface EditWatchListReduxProps {
     watchList: IWatch[];
     searchResults: IAsset[];
+    assets: Map<string, IAsset>;
 }
 interface EditWatchListComponentProps {
     onRowsUpdate: ((rows: IWatch[]) => void);
 }
 
-export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, findManyWithFilter, watchList, searchResults, onRowsUpdate }: EditWatchListProps) => {
+export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, findManyWithFilter, watchList, assets, searchResults, onRowsUpdate }: EditWatchListProps) => {
     const [rows, setRows] = useState<IWatch[]>([]);
     const [isAddMode, setIsAddMode] = useState(false);
 
@@ -80,7 +81,7 @@ export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, find
                     {(provided: DroppableProvided) => (
                         <div className='edit-modal-rows' {...provided.droppableProps} ref={provided.innerRef}>
                             {rows.map((item, index) => (
-                                <EditWatchListItemComponent key={item.symbol} asset={item} isAddMode={isAddMode} icon={isAddMode ? faPlusCircle : faMinusCircle} index={index} onClick={() => isAddMode ? handleAdd(item, watchList.length) : handleRemove(item)} />
+                                <EditWatchListItemComponent key={item.symbol} watch={item} asset={assets.get(item.symbol)!} isAddMode={isAddMode} icon={isAddMode ? faPlusCircle : faMinusCircle} index={index} onClick={() => isAddMode ? handleAdd(item, watchList.length) : handleRemove(item)} />
                             ))}
                             {provided.placeholder}
                         </div>
@@ -94,7 +95,8 @@ export const EditWatchListComponent = ({ createOne, clearSearch, deleteOne, find
 const mapStateToProps = (state: any): EditWatchListReduxProps => {
     return {
         watchList: state.watch.watches,
-        searchResults: state.symbols.latestQueryResult
+        searchResults: state.asset.latestQueryResult,
+        assets: state.asset.assets
     };
 }
 

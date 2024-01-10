@@ -13,29 +13,31 @@ interface EditWatchListItemDispatchProps {
 interface EditWatchListItemReduxProps {
 }
 interface EditWatchListItemComponentProps {
-    asset: IWatch;
+    watch: IWatch;
+    asset: IAsset;
     isAddMode: boolean;
     icon: IconDefinition;
     index: number;
     onClick: (() => void);
 }
 
-export const EditWatchListItemComponent = ({ asset, isAddMode, icon, index, onClick }: EditWatchListItemProps) => {
+export const EditWatchListItemComponent = ({ watch, asset, isAddMode, icon, index, onClick }: EditWatchListItemProps) => {
     const color = isAddMode ? 'green' : 'red';
     return (
         <div className="edit-watch-list-item">
-            <Draggable draggableId={asset.symbol} index={index}>
+            <Draggable draggableId={watch.symbol} index={index}>
                 {(provided: DraggableProvided) => (
                     <div 
                         {...provided.draggableProps} 
                         ref={provided.innerRef}
-                        key={asset.symbol} 
+                        key={watch.symbol} 
                         className="watch-list-row"
                     >
                         <Button onClick={onClick} className={`rounded-icon-${color}`}>
                             <FontAwesomeIcon icon={icon}/>
                         </Button>
-                        {asset.symbol}
+                        <div className="asset-symbol=text">{watch.symbol}</div>
+                        <div className="asset-name-text">{asset.name}</div>
                         <div {...provided.dragHandleProps} className={`drag-handle ${isAddMode ? 'hidden' : ''}`}>
                             <FontAwesomeIcon icon={faBars} />
                         </div>

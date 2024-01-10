@@ -1,6 +1,6 @@
 export const IDENTIFIERS = {
-    ISYMBOL_SERVICE: Symbol.for('ISymbolService'),
-    ISYMBOL_REPOSITORY: Symbol.for('ISymbolRepository'),
+    IASSET_SERVICE: Symbol.for('IAssetService'),
+    IASSET_REPOSITORY: Symbol.for('IAssetRepository'),
     IHTTP_REPOSITORY: Symbol.for('IHttpRepository'),
     ISIGNALR_REPOSITORY: Symbol.for('ISignalRRepository'),
     IBAR_REPOSITORY: Symbol.for('IBarRepository'),

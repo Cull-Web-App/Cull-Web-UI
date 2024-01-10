@@ -1,5 +1,5 @@
 import { ofType, Epic } from 'redux-observable';
-import { map, catchError, switchMap } from 'rxjs/operators';
+import { map, catchError, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
     initializeWatch,
     initializeWatchSuccess,
@@ -12,10 +12,12 @@ import {
     deleteOneWatchError,
     updateManyWatch,
     updateManyWatchSuccess,
-    updateManyWatchError
+    updateManyWatchError,
+    findManyAssetsWithQuery,
+    clearSearch
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
-import { IWatch, IWatchService, Watch, container } from '../../common';
+import { IAsset, IWatch, IWatchService, Watch, container } from '../../common';
 import { BaseEpic } from './base.epic';
 
 export class WatchEpic extends BaseEpic {
@@ -24,7 +26,7 @@ export class WatchEpic extends BaseEpic {
     public constructor() {
         super();
         this.watchService = container.get<IWatchService>(IDENTIFIERS.IWATCH_SERVICE);
-        this.addEpics([this.initialize$, this.createOne$, this.deleteOne$, this.updateMany$]);
+        this.addEpics([this.initialize$, this.createOne$, this.deleteOne$, this.updateMany$, this.initializeAssetsAfterWatchSuccess$]);
     }
 
     public initialize$: Epic<any> = (actions$, state$) => actions$.pipe(
@@ -36,6 +38,21 @@ export class WatchEpic extends BaseEpic {
                     initializeWatchError(error)
                 ])
             );
+        })
+    );
+
+    public initializeAssetsAfterWatchSuccess$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(initializeWatchSuccess),
+        withLatestFrom(
+            state$.pipe(
+                map(state => state.assets.assets)
+            )
+        ),
+        switchMap(([{ payload: { watches } }, assets]: [{ payload: { watches: IWatch[] } }, Map<string, IAsset>]) => {
+            const watchesWithoutAsset = watches.filter((watch: IWatch) => !assets.has(watch.symbol));
+
+            // Look up these assets
+            return [...watchesWithoutAsset.map(w => findManyAssetsWithQuery({ query: w.symbol })), clearSearch()];
         })
     );
 

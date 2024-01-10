@@ -10,7 +10,7 @@ export class WatchService implements IWatchService {
 
     @inject(IDENTIFIERS.IWATCH_REPOSITORY) private readonly watchRepository!: IWatchRepository;
 
-    public findAll(): Observable<string[]> {
+    public findAll(): Observable<IWatch[]> {
         return this.watchRepository.findAll();
     }
 

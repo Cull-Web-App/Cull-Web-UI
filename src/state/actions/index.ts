@@ -1,4 +1,4 @@
-export * from './symbol.action';
+export * from './asset.action';
 export * from './bar.action';
 export * from './preference.action';
 export * from './watch.action';

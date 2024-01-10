@@ -1,4 +1,4 @@
-import { ISymbolRepository } from './isymbol.repository';
+import { IAssetRepository } from './iasset.repository';
 import { injectable, inject } from 'inversify';
 import { Observable, map } from 'rxjs';
 import { IDENTIFIERS } from '../ioc/identifiers.ioc';
@@ -6,8 +6,8 @@ import { IHttpRepository } from './ihttp.repository';
 import { Asset, IAsset } from '../models';
 
 @injectable()
-export class SymbolRepository implements ISymbolRepository {
-    private readonly url = 'https://localhost:7221/Symbol';
+export class AssetRepository implements IAssetRepository {
+    private readonly url = 'https://localhost:7221/Asset';
 
     @inject(IDENTIFIERS.IHTTP_REPOSITORY) private readonly httpRepository!: IHttpRepository;
 

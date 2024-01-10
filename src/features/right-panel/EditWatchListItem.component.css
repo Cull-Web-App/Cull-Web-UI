@@ -45,4 +45,14 @@
     .hidden {
         display: none;
     }
+
+    .asset-symbol-text {
+        font-size: 16px; /* Adjust as needed */
+        font-weight: bold;
+    }
+    
+    .asset-name-text {
+        font-size: 10px; /* Adjust as needed */
+        color: #888; /* Adjust as needed */
+    }
 }

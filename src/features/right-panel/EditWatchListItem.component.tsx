@@ -36,8 +36,10 @@ export const EditWatchListItemComponent = ({ watch, asset, isAddMode, icon, inde
                         <Button onClick={onClick} className={`rounded-icon-${color}`}>
                             <FontAwesomeIcon icon={icon}/>
                         </Button>
-                        <div className="asset-symbol=text">{watch.symbol}</div>
-                        <div className="asset-name-text">{asset.name}</div>
+                        <div>
+                            <div className="asset-symbol-text">{watch.symbol}</div>
+                            <div className="asset-name-text">{asset.name}</div>
+                        </div>
                         <div {...provided.dragHandleProps} className={`drag-handle ${isAddMode ? 'hidden' : ''}`}>
                             <FontAwesomeIcon icon={faBars} />
                         </div>

@@ -14,9 +14,9 @@ export const {
     findManyAssets,
     findManyAssetsSuccess,
     findManyAssetsError,
-    clearSearch,
-    clearSearchSuccess,
-    clearSearchError
+    clearAssetSearch,
+    clearAssetSearchSuccess,
+    clearAssetSearchError
 } = createActions({
     INITIALIZE_ASSETS: undefined,
     INITIALIZE_ASSETS_SUCCESS: (assets: IAsset[]) => assets,
@@ -30,7 +30,7 @@ export const {
     FIND_MANY_ASSETS: ({ symbols }: { symbols: string[] }) => ({ symbols }),
     FIND_MANY_ASSETS_SUCCESS: ({ assets }: { assets: IAsset[] }) => ({ assets }),
     FIND_MANY_ASSETS_ERROR: (error: string) => error,
-    CLEAR_SEARCH: undefined,
-    CLEAR_SEARCH_SUCCESS: undefined,
-    CLEAR_SEARCH_ERROR: (error: string) => error
+    CLEAR_ASSET_SEARCH: undefined,
+    CLEAR_ASSET_SEARCH_SUCCESS: undefined,
+    CLEAR_ASSET_SEARCH_ERROR: (error: string) => error
  });

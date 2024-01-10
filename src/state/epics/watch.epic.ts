@@ -13,9 +13,6 @@ import {
     updateManyWatch,
     updateManyWatchSuccess,
     updateManyWatchError,
-    findManyAssetsWithQuery,
-    clearSearch,
-    findOneAsset,
     findManyAssets
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';

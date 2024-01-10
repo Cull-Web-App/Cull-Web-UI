@@ -1,6 +1,6 @@
 .search-icon {
-  color: var(--text-color);
-  cursor: pointer;
+    color: var(--text-color);
+    cursor: pointer;
 }
 
 .search-box {

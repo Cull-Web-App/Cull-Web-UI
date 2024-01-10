@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { initializeAssetsSuccess, initializeAssetsError, findManyAssetsWithQuerySuccess, findManyAssetsWithQueryError, clearSearchSuccess, clearSearchError, findOneAsset, findOneAssetSuccess, findOneAssetError, findManyAssetsSuccess, findManyAssetsError } from '../actions';
+import { initializeAssetsSuccess, initializeAssetsError, findManyAssetsWithQuerySuccess, findManyAssetsWithQueryError, clearAssetSearchSuccess, clearAssetSearchError, findOneAsset, findOneAssetSuccess, findOneAssetError, findManyAssetsSuccess, findManyAssetsError } from '../actions';
 import { IAsset } from '../../common';
 
 interface AssetState {
@@ -75,11 +75,11 @@ export const asset = handleActions<AssetState, string>(
             ...state,
             error: action.payload
         }),
-        [clearSearchSuccess.toString()]: (state: AssetState) => ({
+        [clearAssetSearchSuccess.toString()]: (state: AssetState) => ({
             ...state,
             latestQueryResult: []
         }),
-        [clearSearchError.toString()]: (state: AssetState, action: any) => ({
+        [clearAssetSearchError.toString()]: (state: AssetState, action: any) => ({
             ...state,
             latestQueryResult: [],
             error: action.payload

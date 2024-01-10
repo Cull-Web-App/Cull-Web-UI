@@ -7,8 +7,8 @@ import {
     findManyAssetsWithQuery,
     findManyAssetsWithQuerySuccess,
     findManyAssetsWithQueryError,
-    clearSearch,
-    clearSearchSuccess,
+    clearAssetSearch,
+    clearAssetSearchSuccess,
     findOneAsset,
     findOneAssetSuccess,
     findOneAssetError,
@@ -79,7 +79,7 @@ export class AssetEpic extends BaseEpic {
     );
 
     public clearSearch$: Epic<any> = (actions$, state$) => actions$.pipe(
-        ofType(clearSearch),
-        map(() => clearSearchSuccess())
+        ofType(clearAssetSearch),
+        map(() => clearAssetSearchSuccess())
     );
 }

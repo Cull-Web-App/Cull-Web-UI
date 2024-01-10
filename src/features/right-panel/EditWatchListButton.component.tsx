@@ -6,18 +6,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from 'react-bootstrap/Button';
 import { IWatch } from '../../common';
 import { connect } from 'react-redux';
-import { updateManyWatch } from '../../state';
+import { clearAssetSearch, updateManyWatch } from '../../state';
 
 type EditWatchListButtonProps = EditWatchListButtonDispatchProps & EditWatchListButtonComponentProps & EditWatchListButtonReduxProps;
 interface EditWatchListButtonDispatchProps {
     updateMany: (({ rows }: { rows: IWatch[] }) => void);
+    clearSearch: (() => void);
 }
 interface EditWatchListButtonReduxProps {
 }
 interface EditWatchListButtonComponentProps {
 }
 
-export const EditWatchListButtonComponent = ({ updateMany }: EditWatchListButtonProps) => {
+export const EditWatchListButtonComponent = ({ updateMany, clearSearch }: EditWatchListButtonProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentRows, setCurrentRows] = useState<IWatch[]>([]);
 
@@ -27,6 +28,7 @@ export const EditWatchListButtonComponent = ({ updateMany }: EditWatchListButton
 
     const handleCloseModal = () => {
         setCurrentRows([]);
+        clearSearch();
         setIsModalOpen(false);
     };
 
@@ -36,6 +38,7 @@ export const EditWatchListButtonComponent = ({ updateMany }: EditWatchListButton
             row.position = index;
         });
         updateMany({ rows: currentRows });
+        clearSearch();
         setIsModalOpen(false);
     };
 
@@ -64,7 +67,8 @@ export const EditWatchListButtonComponent = ({ updateMany }: EditWatchListButton
 
 const mapDispatchToProps = (dispatch: any): EditWatchListButtonDispatchProps => {
     return {
-        updateMany: ({ rows }: { rows: IWatch[] }) => dispatch(updateManyWatch({ watches: rows }))
+        updateMany: ({ rows }: { rows: IWatch[] }) => dispatch(updateManyWatch({ watches: rows })),
+        clearSearch: () => dispatch(clearAssetSearch())
     };
 };
 

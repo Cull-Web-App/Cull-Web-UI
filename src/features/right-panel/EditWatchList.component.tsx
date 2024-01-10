@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import SearchBarComponent from './SearchBar.component';
 import { connect } from 'react-redux';
-import { clearSearch, createOneWatch, deleteOneWatch, findManyAssetsWithQuery } from '../../state';
+import { clearAssetSearch, createOneWatch, deleteOneWatch, findManyAssetsWithQuery } from '../../state';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { IAsset, IWatch, StrictModeDroppable, Watch } from '../../common';
 import './EditWatchList.component.css';
@@ -102,7 +102,7 @@ const mapStateToProps = (state: any): EditWatchListReduxProps => {
 const mapDispatchToProps = (dispatch: any): EditWatchListDispatchProps => {
     return {
         createOne: ({ symbol, position }: { symbol: string, position: number }) => dispatch(createOneWatch({ symbol, position })),
-        clearSearch: () => dispatch(clearSearch()),
+        clearSearch: () => dispatch(clearAssetSearch()),
         deleteOne: ({ symbol }: { symbol: string }) => dispatch(deleteOneWatch({ symbol })),
         findManyWithFilter: ({ filter }: { filter: string }) => dispatch(findManyAssetsWithQuery({ query: filter }))
     };

@@ -17,7 +17,7 @@ export const MenuComponent = ({ tabMap }: MenuProps) => {
         if (tabMap.has(key)) {
             setKey(key);
         }
-    }, []);
+    }, [tabMap]);
 
     return (
         <div>

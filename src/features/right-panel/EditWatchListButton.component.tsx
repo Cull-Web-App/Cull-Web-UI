@@ -8,6 +8,8 @@ import { IWatch } from '../../common';
 import { connect } from 'react-redux';
 import { clearAssetSearch, createManyWatch, deleteManyWatch, updateManyWatch } from '../../state';
 
+import './EditWatchListButton.component.scss';
+
 type EditWatchListButtonProps = EditWatchListButtonDispatchProps & EditWatchListButtonComponentProps & EditWatchListButtonReduxProps;
 interface EditWatchListButtonDispatchProps {
     createMany: (({ rows }: { rows: IWatch[] }) => void);
@@ -105,10 +107,10 @@ export const EditWatchListButtonComponent = ({ createMany, deleteMany, updateMan
 
 
     return (
-        <div>
-            <Button onClick={handleOpenModal}>
+        <div className="edit-button-container">
+            <div className="edit-button-icon" onClick={handleOpenModal}>
                 <FontAwesomeIcon icon={faEdit} />
-            </Button>
+            </div>
             <Modal show={isModalOpen} onHide={handleCloseModal}>
                 <Modal.Header>
                     <Button onClick={handleCloseModal}>Close</Button>

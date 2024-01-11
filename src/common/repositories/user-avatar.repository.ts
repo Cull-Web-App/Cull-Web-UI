@@ -1,6 +1,6 @@
 import { IUserAvatarRepository } from './iuser-avatar.repository';
 import { injectable, inject } from 'inversify';
-import { Observable, catchError, from, map, of, switchMap, throwError } from 'rxjs';
+import { Observable, catchError, from, map, switchMap, throwError } from 'rxjs';
 import { IDENTIFIERS } from '../ioc/identifiers.ioc';
 import { IHttpRepository } from './ihttp.repository';
 import { IPublicClientApplication } from '@azure/msal-browser';

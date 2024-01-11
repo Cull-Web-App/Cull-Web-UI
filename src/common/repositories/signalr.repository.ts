@@ -2,7 +2,6 @@ import { ISignalRRepository } from "./isignalr.repository";
 import { injectable } from "inversify";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { Observable, from, switchMap, timeout } from "rxjs";
-import { time } from "console";
 
 @injectable()
 export class SignalRRepository implements ISignalRRepository {

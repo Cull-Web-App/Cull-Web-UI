@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { initializeAssetsSuccess, initializeAssetsError, findManyAssetsWithQuerySuccess, findManyAssetsWithQueryError, clearAssetSearchSuccess, clearAssetSearchError, findOneAsset, findOneAssetSuccess, findOneAssetError, findManyAssetsSuccess, findManyAssetsError } from '../actions';
+import { initializeAssetsSuccess, initializeAssetsError, findManyAssetsWithQuerySuccess, findManyAssetsWithQueryError, clearAssetSearchSuccess, clearAssetSearchError, findOneAssetSuccess, findOneAssetError, findManyAssetsSuccess, findManyAssetsError } from '../actions';
 import { IAsset } from '../../common';
 
 interface AssetState {

@@ -47,7 +47,7 @@ export const AppComponent = ({ darkMode, initializePreferences }: AppProps) => {
             ['about', ['About', <AboutComponent></AboutComponent>]]
         ]);
         setTabMap(tabMap);
-    }, []);
+    }, [initializePreferences]);
 
     useEffect(() => {
         if (darkMode) {

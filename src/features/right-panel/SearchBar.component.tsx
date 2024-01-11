@@ -1,19 +1,17 @@
-import React, { FormEvent, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import './SearchBar.component.css';
+import './SearchBar.component.scss';
 
 type SearchBarProps = SearchBarComponentProps;
 interface SearchBarComponentProps {
     expandEnabled?: boolean;
     onSearchTermChange: (({ searchTerm }: { searchTerm: string }) => void);
     onSearch: (({ searchTerm }: { searchTerm: string }) => void);
-    onSearchCallbackUpdate?: (({ setSearchTerm }: { setSearchTerm: (searchTerm: string) => void }) => void);
 }
 
-export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange, onSearchCallbackUpdate }: SearchBarProps) => {
+export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange }: SearchBarProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -22,14 +20,6 @@ export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange
             setSearchTerm('');
         }
     }, [isExpanded]);
-
-    useEffect(() => {
-        // Expose the setSearchTerm function to the parent
-        if (!onSearchCallbackUpdate) {
-            return;
-        }
-        onSearchCallbackUpdate({ setSearchTerm })
-    })
 
     const handleSearch = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -73,7 +63,7 @@ export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange
     };
 
     return (
-        <Form.Group controlId="searchForm" className='d-flex align-items-center' onSubmit={handleSearch}>
+        <Form.Group controlId="searchForm" className='d-flex align-items-center search-container' onSubmit={handleSearch}>
             <div className={`search-icon ${(isExpanded || expandEnabled) ? 'expanded': ''}`} onClick={handleExpand}>
                 <FontAwesomeIcon icon={faSearch}></FontAwesomeIcon>
             </div>

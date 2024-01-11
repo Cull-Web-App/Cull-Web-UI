@@ -20,7 +20,7 @@ import {
     findManyBarError
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
-import { Bar, IBar, IBarService, container } from '../../common';
+import { IBar, IBarService, container } from '../../common';
 import { of } from 'rxjs';
 import { BaseEpic } from './base.epic';
 

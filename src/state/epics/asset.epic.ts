@@ -18,7 +18,7 @@ import {
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { container } from '../../common/ioc/container.ioc';
-import { IAssetService as IAssetService } from '../../common';
+import { IAssetService } from '../../common';
 import { BaseEpic } from './base.epic';
 
 export class AssetEpic extends BaseEpic {

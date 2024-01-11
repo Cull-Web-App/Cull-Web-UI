@@ -22,7 +22,7 @@ interface RightPanelComponentProps {
 export const RightPanelComponent = ({ watchList, findAll }: RightPanelProps) => {
     useEffect(() => {
         findAll();
-    }, []);
+    }, [findAll]);
 
     const handleSearch = ({ searchTerm }: { searchTerm: string }) => {
         console.log(searchTerm);

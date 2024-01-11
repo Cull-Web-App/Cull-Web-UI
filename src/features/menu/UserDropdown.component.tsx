@@ -23,7 +23,7 @@ export const UserDropdownComponent = ({ initializeUserAvatar, avatar }: UserDrop
 
     useEffect(() => {
         initializeUserAvatar();
-    }, []);
+    }, [initializeUserAvatar]);
 
     const handleLogout = () => {
         instance.logoutRedirect();

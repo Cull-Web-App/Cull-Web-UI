@@ -4,7 +4,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { IAsset, IWatch } from "../../common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Draggable, DraggableProvided } from "react-beautiful-dnd";
-import './EditWatchListItem.component.css';
+import './EditWatchListItem.component.scss';
 import Button from "react-bootstrap/Button";
 
 type EditWatchListItemProps = EditWatchListItemDispatchProps & EditWatchListItemComponentProps & EditWatchListItemReduxProps;

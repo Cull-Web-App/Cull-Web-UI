@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { clearAssetSearch, findManyAssetsWithQuery } from '../../state';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { IAsset, IWatch, StrictModeDroppable, Watch } from '../../common';
-import './EditWatchList.component.css';
+import './EditWatchList.component.scss';
 import EditWatchListItemComponent from './EditWatchListItem.component';
 import { DragDropContext, DropResult, DroppableProvided } from 'react-beautiful-dnd';
 import { AutoSizer, List, CellMeasurer, CellMeasurerCache, ListRowProps } from 'react-virtualized';

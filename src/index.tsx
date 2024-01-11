@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
-import './index.css';
 import AuthenticatedAppComponent from './AuthenticatedApp.component';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
@@ -12,7 +11,7 @@ import { InversifyProvider } from './common';
 import { container } from './common/ioc/container.ioc';
 import { bar, AssetEpic, asset, preference, BarEpic, IBaseEpic, PreferenceEpic, WatchEpic, watch, UserEpic, user } from './state';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './index.css';
+import './index.scss';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement

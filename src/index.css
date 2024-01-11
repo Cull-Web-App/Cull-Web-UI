@@ -47,3 +47,33 @@ code {
 ::-ms-input-placeholder {
     color: var(--placeholder-color) !important;
 }
+
+/* Webkit-based browsers (Chrome, Safari) */
+/* Dark Mode Styling */
+::-webkit-scrollbar {
+    height: 6px;
+    /* Width of the scrollbar */
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: var(--scroll-bar-background-color);
+    /* Background color of the track */
+    border-radius: 8px;
+    /* Rounded corners */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #666;
+    /* Color of the scroll thumb */
+    border-radius: 8px;
+    /* Rounded corners */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #999;
+    /* Color of the scroll thumb on hover */
+}

@@ -1,8 +1,9 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { barConnect, barDisconnect, subscribeBar, unsubscribeBar } from '../../state';
 import { ConnectionStatus } from '../../common';
 import Card from 'react-bootstrap/Card';
+import { Subject, takeUntil, timer } from 'rxjs';
 
 type WatchListItemProps = WatchListItemComponentProps & WatchListItemReduxProps & WatchListItemDispatchProps;
 interface WatchListItemReduxProps {
@@ -19,6 +20,8 @@ interface WatchListItemComponentProps {
 }
 
 export const WatchListItemComponent = ({ symbol, connectionStatus, connect, disconnect, subscribe, unsubscribe }: WatchListItemProps) => {
+    const unsubscribe$ = useRef(new Subject<void>()).current;
+
     useEffect(() => {
         if (connectionStatus === ConnectionStatus.Disconnected) {
             connect();
@@ -26,9 +29,14 @@ export const WatchListItemComponent = ({ symbol, connectionStatus, connect, disc
     }, [connectionStatus]);
 
     useEffect(() => {
-        subscribe(symbol);
+        timer(1000).pipe(
+            takeUntil(unsubscribe$)
+        ).subscribe(() => {
+            subscribe(symbol);
+        });
 
         return () => {
+            unsubscribe$.next();
             unsubscribe(symbol);
         };
     }, [symbol]);

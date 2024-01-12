@@ -11,3 +11,4 @@ export * from './iasset.model';
 export * from './iwatch.model';
 export * from './watch.model';
 export * from './connection-status.model';
+export * from './subscription-status.model';

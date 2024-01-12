@@ -9,20 +9,24 @@ import {
     findManyBarError,
     findManyBarSuccess,
     receiveBarSuccess,
+    subscribeBar,
     subscribeBarError,
     subscribeBarSuccess,
     unsubscribeBarError,
     unsubscribeBarSuccess,
     updateConnectionStatusError,
-    updateConnectionStatusSuccess
+    updateConnectionStatusSuccess,
+    updateSubscriptionStatusError,
+    updateSubscriptionStatusSuccess
 } from '../actions';
-import { IBar, ConnectionStatus } from '../../common';
+import { IBar, ConnectionStatus, SubscriptionStatus } from '../../common';
 
 interface BarState {
     subscribedSymbols: string[];
     subscribersPerSymbol: Map<string, number>;
     barMap: Record<string, IBar[]>;
     connectionStatus: ConnectionStatus;
+    subscriptionStatusPerSymbol: Map<string, SubscriptionStatus>;
     error: string | null;
 }
 
@@ -31,6 +35,7 @@ const initialState: BarState = {
     subscribersPerSymbol: new Map(),
     barMap: {},
     connectionStatus: ConnectionStatus.Disconnected,
+    subscriptionStatusPerSymbol: new Map(),
     error: null
 };
 
@@ -61,7 +66,8 @@ export const bar = handleActions<BarState, string>(
             return {
                 ...state,
                 subscribedSymbols: subscribedSymbols,
-                subscribersPerSymbol: state.subscribersPerSymbol.set(action.payload.symbol, currentSubscribers + 1)
+                subscribersPerSymbol: state.subscribersPerSymbol.set(action.payload.symbol, currentSubscribers + 1),
+                subscriptionStatusPerSymbol: state.subscriptionStatusPerSymbol.set(action.payload.symbol, SubscriptionStatus.Subscribed)
             };
         },
         [subscribeBarError.toString()]: (state: BarState, action: any) => ({
@@ -69,12 +75,13 @@ export const bar = handleActions<BarState, string>(
             error: action.payload
         }),
         [unsubscribeBarSuccess.toString()]: (state: BarState, action: any) => {
-            const newSubscribers = (state.subscribersPerSymbol.get(action.payload.symbol) || 0) - 1;
+            const newSubscribers = (state.subscribersPerSymbol.get(action.payload.symbol) || 1) - 1;
             const subscribedSymbols = newSubscribers > 0 ? state.subscribedSymbols : state.subscribedSymbols.filter((symbol: string) => symbol !== action.payload.symbol);
             return {
                 ...state,
                 subscribedSymbols: subscribedSymbols,
-                subscribersPerSymbol: state.subscribersPerSymbol.set(action.payload.symbol, newSubscribers)
+                subscribersPerSymbol: state.subscribersPerSymbol.set(action.payload.symbol, newSubscribers),
+                subscriptionStatusPerSymbol: state.subscriptionStatusPerSymbol.set(action.payload.symbol, SubscriptionStatus.Unsubscribed)
             };
         },
         [unsubscribeBarError.toString()]: (state: BarState, action: any) => ({
@@ -192,6 +199,17 @@ export const bar = handleActions<BarState, string>(
             connectionStatus: action.payload.status
         }),
         [updateConnectionStatusError.toString()]: (state: BarState, action: any) => ({
+            ...state,
+            error: action.payload
+        }),
+        [updateSubscriptionStatusSuccess.toString()]: (state: BarState, action: any) => {
+            const { symbol, status } = action.payload;
+            return {
+                ...state,
+                subscriptionStatusPerSymbol: state.subscriptionStatusPerSymbol.set(symbol, status)
+            };
+        },
+        [updateSubscriptionStatusError.toString()]: (state: BarState, action: any) => ({
             ...state,
             error: action.payload
         })

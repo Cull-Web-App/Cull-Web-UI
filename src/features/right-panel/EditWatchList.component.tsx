@@ -28,6 +28,7 @@ interface EditWatchListComponentProps {
 
 export const EditWatchListComponent = ({ clearSearch, findManyWithFilter, watchList, assets, searchResults, onRowsChanged, onRowUpdate, onRowAdd, onRowDelete }: EditWatchListProps) => {
     const [currentWatchList, setCurrentWatchList] = useState<IWatch[]>(watchList); // This is the current watch list that is being edited
+    const [currentSearchTerm, setCurrentSearchTerm] = useState(''); // This is the current search term that is being used to find assets
     const [rows, setRows] = useState<IWatch[]>([]);
     const [isAddMode, setIsAddMode] = useState(false);
     const [clearSearchCounter, setClearSearchCounter] = useState(0);
@@ -39,12 +40,12 @@ export const EditWatchListComponent = ({ clearSearch, findManyWithFilter, watchL
     });
 
     useEffect(() => {
-        if (searchResults.length === 0) {
+        if (searchResults.length === 0 && currentSearchTerm === '') {
             setIsAddMode(false);
         } else {
             setIsAddMode(true);
         }
-    }, [searchResults]);
+    }, [searchResults, currentSearchTerm]);
 
     useEffect(() => {
         // Set the rows based on the mode
@@ -65,6 +66,7 @@ export const EditWatchListComponent = ({ clearSearch, findManyWithFilter, watchL
         onRowAdd(item);
 
         // Set back to remove mode
+        setCurrentSearchTerm('');
         clearSearch();
         clearSearchCounter === 0 ? setClearSearchCounter(1) : setClearSearchCounter(0);
     };
@@ -76,6 +78,7 @@ export const EditWatchListComponent = ({ clearSearch, findManyWithFilter, watchL
     };
 
     const handleSearchTermChanged = ({ searchTerm }: { searchTerm: string }) => {
+        setCurrentSearchTerm(searchTerm);
         if (searchTerm === '') {
             clearSearch();
             return;
@@ -133,18 +136,27 @@ export const EditWatchListComponent = ({ clearSearch, findManyWithFilter, watchL
                 <StrictModeDroppable droppableId="watch-list">
                     {(provided: DroppableProvided) => (
                         <div className='edit-modal-rows' {...provided.droppableProps} ref={provided.innerRef}>
-                            <AutoSizer>
-                                {({ height, width }: { height: number, width: number }) => (
-                                    <List
-                                        height={height}
-                                        deferredMeasurementCache={cache}
-                                        rowHeight={cache.rowHeight}
-                                        rowCount={rows.length}
-                                        rowRenderer={RenderRow}
-                                        width={width}
-                                    />
-                                )}
-                            </AutoSizer>
+                            {rows.length === 0 && (
+                                <div className='edit-modal-empty'>
+                                    <div className='edit-modal-empty-text'>
+                                        {isAddMode ?  `The Symbol ${currentSearchTerm} does not exist ` : 'Type in a symbol to add it to your watch list'}
+                                    </div>
+                                </div>
+                            )}
+                            {rows.length > 0 && (
+                                <AutoSizer>
+                                    {({ height, width }: { height: number, width: number }) => (
+                                        <List
+                                            height={height}
+                                            deferredMeasurementCache={cache}
+                                            rowHeight={cache.rowHeight}
+                                            rowCount={rows.length}
+                                            rowRenderer={RenderRow}
+                                            width={width}
+                                        />
+                                    )}
+                                </AutoSizer>
+                            )}
                             {provided.placeholder}
                         </div>
                     )}

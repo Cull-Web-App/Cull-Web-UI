@@ -1,32 +1,86 @@
 import { handleActions } from 'redux-actions';
-import { findManyBarSuccess, receiveBarSuccess, subscribeBarSuccess, unsubscribeBarSuccess,  } from '../actions';
-import { IBar } from '../../common';
+import {
+    barConnect,
+    barConnectError,
+    barConnectSuccess,
+    barDisconnect,
+    barDisconnectError,
+    barDisconnectSuccess,
+    findManyBarError,
+    findManyBarSuccess,
+    receiveBarSuccess,
+    subscribeBarError,
+    subscribeBarSuccess,
+    unsubscribeBarError,
+    unsubscribeBarSuccess,
+    updateConnectionStatusError,
+    updateConnectionStatusSuccess
+} from '../actions';
+import { IBar, ConnectionStatus } from '../../common';
 
 interface BarState {
     subscribedSymbols: string[];
+    subscribersPerSymbol: Map<string, number>;
     barMap: Record<string, IBar[]>;
+    connectionStatus: ConnectionStatus;
+    error: string | null;
 }
 
 const initialState: BarState = {
     subscribedSymbols: [],
-    barMap: {}
+    subscribersPerSymbol: new Map(),
+    barMap: {},
+    connectionStatus: ConnectionStatus.Disconnected,
+    error: null
 };
 
 // TODO: fix anys
 export const bar = handleActions<BarState, string>(
     {
+        [barConnectSuccess.toString()]: (state: BarState, action: any) => ({
+            ...state,
+            connectionStatus: ConnectionStatus.Connected
+        }),
+        [barConnectError.toString()]: (state: BarState, action: any) => ({
+            ...state,
+            connectionStatus: ConnectionStatus.Disconnected,
+            error: action.payload
+        }),
+        [barDisconnectSuccess.toString()]: (state: BarState, action: any) => ({
+            ...state,
+            connectionStatus: ConnectionStatus.Disconnected
+        }),
+        [barDisconnectError.toString()]: (state: BarState, action: any) => ({
+            ...state,
+            connectionStatus: ConnectionStatus.Connected,
+            error: action.payload
+        }),
         [subscribeBarSuccess.toString()]: (state: BarState, action: any) => {
+            const currentSubscribers = state.subscribersPerSymbol.get(action.payload.symbol) || 0;
+            const subscribedSymbols = currentSubscribers > 0 ? state.subscribedSymbols : [...state.subscribedSymbols, action.payload.symbol];
             return {
                 ...state,
-                subscribedSymbols: [...state.subscribedSymbols, action.payload.symbol]
+                subscribedSymbols: subscribedSymbols,
+                subscribersPerSymbol: state.subscribersPerSymbol.set(action.payload.symbol, currentSubscribers + 1)
             };
         },
+        [subscribeBarError.toString()]: (state: BarState, action: any) => ({
+            ...state,
+            error: action.payload
+        }),
         [unsubscribeBarSuccess.toString()]: (state: BarState, action: any) => {
+            const newSubscribers = (state.subscribersPerSymbol.get(action.payload.symbol) || 0) - 1;
+            const subscribedSymbols = newSubscribers > 0 ? state.subscribedSymbols : state.subscribedSymbols.filter((symbol: string) => symbol !== action.payload.symbol);
             return {
                 ...state,
-                subscribedSymbols: state.subscribedSymbols.filter((symbol: string) => symbol !== action.payload.symbol)
+                subscribedSymbols: subscribedSymbols,
+                subscribersPerSymbol: state.subscribersPerSymbol.set(action.payload.symbol, newSubscribers)
             };
         },
+        [unsubscribeBarError.toString()]: (state: BarState, action: any) => ({
+            ...state,
+            error: action.payload
+        }),
         [receiveBarSuccess.toString()]: (state: BarState, action: any) => {
             const { symbol, bar } = action.payload;
 
@@ -128,7 +182,19 @@ export const bar = handleActions<BarState, string>(
                     };
                 }
             }
-        }
+        },
+        [findManyBarError.toString()]: (state: BarState, action: any) => ({
+            ...state,
+            error: action.payload
+        }),
+        [updateConnectionStatusSuccess.toString()]: (state: BarState, action: any) => ({
+            ...state,
+            connectionStatus: action.payload.status
+        }),
+        [updateConnectionStatusError.toString()]: (state: BarState, action: any) => ({
+            ...state,
+            error: action.payload
+        })
     },
     initialState
 );

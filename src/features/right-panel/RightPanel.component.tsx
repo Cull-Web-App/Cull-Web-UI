@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { initializeWatch } from '../../state';
 import EditWatchListButtonComponent from './EditWatchListButton.component';
 import { IWatch } from '../../common';
+import WatchListItemComponent from './WatchListItem.component';
 
 type RightPanelProps = RightPanelDispatchProps & RightPanelComponentProps & RightPanelReduxProps;
 interface RightPanelDispatchProps {
@@ -40,7 +41,7 @@ export const RightPanelComponent = ({ watchList, findAll }: RightPanelProps) => 
                 </Card.Header>
                 <Card.Body>
                     {
-                        watchList.map((watch) => <StockCardComponent key={watch.symbol} symbol={watch.symbol}></StockCardComponent>)
+                        watchList.map((watch) => <WatchListItemComponent key={watch.symbol} symbol={watch.symbol}></WatchListItemComponent>)
                     }
                 </Card.Body>
             </Card>

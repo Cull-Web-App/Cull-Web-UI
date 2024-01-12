@@ -1,7 +1,10 @@
 import { ISignalRRepository } from "./isignalr.repository";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { Observable, from, switchMap, timeout } from "rxjs";
+import { IPublicClientApplication } from "@azure/msal-browser";
+import { IDENTIFIERS } from "../ioc/identifiers.ioc";
+import { scopeMap } from "../config";
 
 @injectable()
 export class SignalRRepository implements ISignalRRepository {
@@ -9,6 +12,7 @@ export class SignalRRepository implements ISignalRRepository {
     protected connectionPromise: Promise<void> | null = null;
 
     private readonly hubConnectionBuilder!: HubConnectionBuilder;
+    @inject(IDENTIFIERS.IMSAL_INSTANCE) private readonly msalInstance!: IPublicClientApplication;
 
     public constructor() {
         this.hubConnectionBuilder = new HubConnectionBuilder();
@@ -20,7 +24,19 @@ export class SignalRRepository implements ISignalRRepository {
             return from(this.connectionPromise!);
         }
         this.connection = this.hubConnectionBuilder.withUrl(url, {
-            accessTokenFactory: () => sessionStorage.getItem('accessToken') || ''
+            accessTokenFactory: async () => {
+                const account = this.msalInstance.getAllAccounts()[0];
+                if (!account) {
+                    throw new Error('No account found');
+                }
+                const baseUrl = new URL(url).origin;
+                const scopes = scopeMap.get(baseUrl);
+                if (!scopes) {
+                    throw new Error(`No scopes found for ${baseUrl}`);
+                }
+                const token = await this.msalInstance.acquireTokenSilent({ scopes, account }).catch(e => console.error(e)) as any;
+                return token.accessToken;
+            }
         }).withAutomaticReconnect().build();
         this.connectionPromise = this.connection.start();
 

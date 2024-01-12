@@ -13,8 +13,8 @@ interface EditWatchListItemDispatchProps {
 interface EditWatchListItemReduxProps {
 }
 interface EditWatchListItemComponentProps {
-    watch: IWatch;
-    asset: IAsset;
+    watch: IWatch | null;
+    asset: IAsset | null;
     isAddMode: boolean;
     icon: IconDefinition;
     index: number;
@@ -23,6 +23,9 @@ interface EditWatchListItemComponentProps {
 
 export const EditWatchListItemComponent = ({ watch, asset, isAddMode, icon, index, onClick }: EditWatchListItemProps) => {
     const color = isAddMode ? 'green' : 'red';
+    if (!watch || !asset) {
+        return null;
+    }
     return (
         <div className="edit-watch-list-item">
             <Draggable draggableId={watch.symbol} index={index}>

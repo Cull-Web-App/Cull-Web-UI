@@ -26,6 +26,10 @@ export class BarRepository implements IBarRepository {
         this.signalRRepository.registerAll(registrationMap);
     }
 
+    public deregisterAll(registrationMap: Map<string, (...args: any[]) => void>): void {
+        this.signalRRepository.deregisterAll(registrationMap);
+    }
+
     public invoke<T>(event: string, ...args: any[]): Observable<T> {
         return this.signalRRepository.invoke(event, ...args);
     }

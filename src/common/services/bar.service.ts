@@ -23,6 +23,12 @@ export class BarService implements IBarService {
         ]));
     }
 
+    public deregisterAll(registrationMap: Map<string, (...args: any[]) => void>): void {
+        this.barRepository.deregisterAll(new Map<string, (...args: any[]) => void>([
+            ['ReceiveBar', () => registrationMap.get('ReceiveBar')!()]
+        ]));
+    }
+
     public subscribe(symbol: string): Observable<void> {
         return this.barRepository.invoke('Subscribe', symbol);
     }

@@ -1,5 +1,5 @@
 import { ofType, Epic } from 'redux-observable';
-import { map, catchError, switchMap } from 'rxjs/operators';
+import { map, catchError, switchMap, withLatestFrom, mergeMap, concatMap } from 'rxjs/operators';
 import {
     barConnect,
     barConnectSuccess,
@@ -17,11 +17,13 @@ import {
     unsubscribeBarError,
     findManyBar,
     findManyBarSuccess,
-    findManyBarError
+    findManyBarError,
+    updateConnectionStatus,
+    updateConnectionStatusSuccess
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
-import { IBar, IBarService, container } from '../../common';
-import { of } from 'rxjs';
+import { ConnectionStatus, IBar, IBarService, container } from '../../common';
+import { EMPTY, of } from 'rxjs';
 import { BaseEpic } from './base.epic';
 
 export class BarEpic extends BaseEpic {
@@ -30,12 +32,30 @@ export class BarEpic extends BaseEpic {
     public constructor() {
         super();
         this.barService = container.get<IBarService>(IDENTIFIERS.IBAR_SERVICE);
-        this.addEpics([this.connect$, this.disconnect$, this.subscribeBar$, this.receiveBar$, this.unsubscribeBar$, this.findMany$]);
+        this.addEpics([
+            this.connect$,
+            this.disconnect$,
+            this.subscribeBar$,
+            this.receiveBar$,
+            this.unsubscribeBar$,
+            this.findMany$,
+            this.updateConnectionStatus$
+        ]);
     }
 
     public connect$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(barConnect),
-        switchMap(() => {
+        withLatestFrom(
+            state$.pipe(map(state => state.bar.connectionStatus))
+        ),
+        concatMap(([_, connectionStatus]: [unknown, ConnectionStatus]) => {
+            if (connectionStatus === ConnectionStatus.Connecting) {
+                return EMPTY;
+            } else if (connectionStatus === ConnectionStatus.Connected) {
+                return of(barConnectSuccess());
+            }
+
+            store.dispatch(updateConnectionStatus({ status: ConnectionStatus.Connecting }));
             return this.barService.connect().pipe(
                 map(_ => {
                     this.barService.registerAll(new Map<string, (...args: any[]) => void>([
@@ -50,11 +70,25 @@ export class BarEpic extends BaseEpic {
         })
     );
 
-    public disconnect$: Epic<any> = (actions$, state$) => actions$.pipe(
+    public disconnect$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(barDisconnect),
-        switchMap(() => {
+        withLatestFrom(
+            state$.pipe(map(state => state.bar.connectionStatus))
+        ),
+        concatMap(([_, connectionStatus]: [unknown, ConnectionStatus]) => {
+            if (connectionStatus === ConnectionStatus.Disconnecting) {
+                return EMPTY;
+            } else if (connectionStatus === ConnectionStatus.Disconnected) {
+                return of(barDisconnectSuccess());
+            }
+
+            store.dispatch(updateConnectionStatus({ status: ConnectionStatus.Disconnecting }));
             return this.barService.disconnect().pipe(
-                map(_ => barDisconnectSuccess()),
+                map(_ => {
+                    this.barService.deregisterAll(new Map<string, (...args: any[]) => void>([
+                        ['ReceiveBar', () => EMPTY]
+                    ]));
+                }),
                 catchError(error => [
                     barDisconnectError(error)
                 ])
@@ -64,7 +98,13 @@ export class BarEpic extends BaseEpic {
 
     public subscribeBar$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(subscribeBar),
-        switchMap(({ payload: { symbol }}: { payload: { symbol: string } }) => {
+        withLatestFrom(
+            state$.pipe(map(state => state.bar.subscribersPerSymbol))
+        ),
+        concatMap(([{ payload: { symbol }}, subscribersPerSymbol]: [{ payload: { symbol: string } }, Map<string, number>]) => {
+            if ((subscribersPerSymbol.get(symbol) || 0) > 0) {
+                return of(subscribeBarSuccess({ symbol }));
+            }
             return this.barService.subscribe(symbol).pipe(
                 map(_ => subscribeBarSuccess({ symbol })),
                 catchError(error => [
@@ -76,7 +116,13 @@ export class BarEpic extends BaseEpic {
 
     public unsubscribeBar$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(unsubscribeBar),
-        switchMap(({ payload: { symbol }}: { payload: { symbol: string } }) => {
+        withLatestFrom(
+            state$.pipe(map(state => state.bar.subscribersPerSymbol))
+        ),
+        concatMap(([{ payload: { symbol }}, subscribersPerSymbol]: [{ payload: { symbol: string } }, Map<string, number>]) => {
+            if ((subscribersPerSymbol.get(symbol) || 0) > 1) {
+                return of(unsubscribeBarSuccess({ symbol }));
+            }
             return this.barService.unsubscribe(symbol).pipe(
                 map(_ => unsubscribeBarSuccess({ symbol })),
                 catchError(error => [
@@ -102,6 +148,13 @@ export class BarEpic extends BaseEpic {
                     findManyBarError(error)
                 ])
             );
+        })
+    );
+
+    public updateConnectionStatus$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(updateConnectionStatus),
+        switchMap(({ payload: { status } }: { payload: { status: ConnectionStatus } }) => {
+            return of(updateConnectionStatusSuccess({ status }));
         })
     );
 }

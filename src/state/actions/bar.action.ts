@@ -1,4 +1,4 @@
-import { IBar } from '../../common';
+import { ConnectionStatus, IBar } from '../../common';
 import { createActions } from 'redux-actions';
 
 export const {
@@ -18,7 +18,10 @@ export const {
     unsubscribeBarError,
     findManyBar,
     findManyBarSuccess,
-    findManyBarError
+    findManyBarError,
+    updateConnectionStatus,
+    updateConnectionStatusSuccess,
+    updateConnectionStatusError
 } = createActions({
     BAR_CONNECT: undefined,
     BAR_CONNECT_SUCCESS: undefined,
@@ -36,5 +39,8 @@ export const {
     UNSUBSCRIBE_BAR_ERROR: (error: string) => error,
     FIND_MANY_BAR: ({ symbol, from, to }: { symbol: string, from: Date, to: Date }) => ({ symbol, from, to }),
     FIND_MANY_BAR_SUCCESS: ({ symbol, bars }: { symbol: string, bars: IBar[] }) => ({ symbol, bars }),
-    FIND_MANY_BAR_ERROR: (error: string) => error
+    FIND_MANY_BAR_ERROR: (error: string) => error,
+    UPDATE_CONNECTION_STATUS: ({ status }: { status: ConnectionStatus }) => ({ status }),
+    UPDATE_CONNECTION_STATUS_SUCCESS: ({ status }: { status: ConnectionStatus }) => ({ status }),
+    UPDATE_CONNECTION_STATUS_ERROR: (error: string) => error
  });

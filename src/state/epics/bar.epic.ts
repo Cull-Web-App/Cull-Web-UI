@@ -1,5 +1,5 @@
 import { ofType, Epic } from 'redux-observable';
-import { map, catchError, switchMap, withLatestFrom, mergeMap, concatMap } from 'rxjs/operators';
+import { map, catchError, filter, switchMap, withLatestFrom, mergeMap, concatMap, take } from 'rxjs/operators';
 import {
     barConnect,
     barConnectSuccess,
@@ -101,17 +101,26 @@ export class BarEpic extends BaseEpic {
 
     public subscribeBar$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(subscribeBar),
-        withLatestFrom(
-            state$.pipe(map(state => state.bar.subscribersPerSymbol)),
-            state$.pipe(map(state => state.bar.subscriptionStatusPerSymbol))
-        ),
-        concatMap(([{ payload: { symbol }}, subscribersPerSymbol, subscriptionStatusPerSymbol]: [{ payload: { symbol: string } }, Map<string, number>, Map<string, SubscriptionStatus>]) => {
-            if (subscriptionStatusPerSymbol.get(symbol) === SubscriptionStatus.Subscribing) {
-                return EMPTY;
-            } else if ((subscribersPerSymbol.get(symbol) || 0) > 0 && subscriptionStatusPerSymbol.get(symbol) === SubscriptionStatus.Subscribed) {
+        concatMap(({ payload: { symbol } }: { payload: { symbol: string } }) => state$.pipe(
+            map(state => (state.bar.subscriptionStatusPerSymbol.get(symbol) ?? SubscriptionStatus.Unsubscribed)),
+            filter((subscriptionStatus: SubscriptionStatus) => subscriptionStatus !== SubscriptionStatus.Subscribing),
+            withLatestFrom(
+                state$.pipe(map(state => state.bar.subscribersPerSymbol)),
+            ),
+            map(([subscriptionStatus, subscribersPerSymbol]: [string, Map<string, number>]) => [
+                symbol,
+                (subscribersPerSymbol.get(symbol) ?? 0),
+                subscriptionStatus
+            ] as [string, number, SubscriptionStatus]),
+            take(1)
+        )),
+        concatMap(([symbol, subscribers, subscriptionStatus]: [string, number, SubscriptionStatus]) => {
+            if (subscribers > 0 && subscriptionStatus === SubscriptionStatus.Subscribed) {
                 return of(subscribeBarSuccess({ symbol }));
             }
 
+            // Need to update the subscription status here -- this is because the subscribe method can take time
+            // and we don't want to send multiple subscribe requests when one is already in progress
             store.dispatch(updateSubscriptionStatus({ symbol, status: SubscriptionStatus.Subscribing }));
             return this.barService.subscribe(symbol).pipe(
                 map(_ => subscribeBarSuccess({ symbol })),
@@ -124,17 +133,26 @@ export class BarEpic extends BaseEpic {
 
     public unsubscribeBar$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(unsubscribeBar),
-        withLatestFrom(
-            state$.pipe(map(state => state.bar.subscribersPerSymbol)),
-            state$.pipe(map(state => state.bar.subscriptionStatusPerSymbol))
-        ),
-        concatMap(([{ payload: { symbol }}, subscribersPerSymbol, subscriptionStatusPerSymbol]: [{ payload: { symbol: string } }, Map<string, number>, Map<string, SubscriptionStatus>]) => {
-            if (subscriptionStatusPerSymbol.get(symbol) === SubscriptionStatus.Unsubscribing) {
-                return EMPTY;
-            } else if ((subscribersPerSymbol.get(symbol) || 1) > 1 && subscriptionStatusPerSymbol.get(symbol) === SubscriptionStatus.Unsubscribed) {
+        concatMap(({ payload: { symbol } }: { payload: { symbol: string } }) => state$.pipe(
+            map(state => (state.bar.subscriptionStatusPerSymbol.get(symbol) ?? SubscriptionStatus.Unsubscribed)),
+            filter((subscriptionStatus: SubscriptionStatus) => subscriptionStatus !== SubscriptionStatus.Unsubscribing),
+            withLatestFrom(
+                state$.pipe(map(state => state.bar.subscribersPerSymbol)),
+            ),
+            map(([subscriptionStatus, subscribersPerSymbol]: [string, Map<string, number>]) => [
+                symbol,
+                (subscribersPerSymbol.get(symbol) ?? 0),
+                subscriptionStatus
+            ] as [string, number, SubscriptionStatus]),
+            take(1)
+        )),
+        concatMap(([symbol, subscribers, subscriptionStatus]: [string, number, SubscriptionStatus]) => {
+            if (subscribers === 0 && subscriptionStatus === SubscriptionStatus.Unsubscribed) {
                 return of(unsubscribeBarSuccess({ symbol }));
             }
 
+            // Need to update the subscription status here -- this is because the subscribe method can take time
+            // and we don't want to send multiple subscribe requests when one is already in progress
             store.dispatch(updateSubscriptionStatus({ symbol, status: SubscriptionStatus.Unsubscribing }));
             return this.barService.unsubscribe(symbol).pipe(
                 map(_ => unsubscribeBarSuccess({ symbol })),

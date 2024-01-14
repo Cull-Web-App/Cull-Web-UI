@@ -1,15 +1,12 @@
 import { handleActions } from 'redux-actions';
 import { initializeAssetsSuccess, initializeAssetsError, findManyAssetsWithQuerySuccess, findManyAssetsWithQueryError, clearAssetSearchSuccess, clearAssetSearchError, findOneAssetSuccess, findOneAssetError, findManyAssetsSuccess, findManyAssetsError } from '../actions';
 import { IAsset } from '../../common';
+import { IAssetPartition } from '../partitions';
 
-interface AssetState {
-    assets: Map<string, IAsset>;
-    latestQueryResult: IAsset[];
-    error: string | null;
-}
+type AssetState = IAssetPartition;
 
 const initialState: AssetState = {
-    assets: new Map<string, IAsset>(),
+    assets: {},
     latestQueryResult: [],
     error: null
 };
@@ -18,24 +15,31 @@ const initialState: AssetState = {
 export const asset = handleActions<AssetState, string>(
     {
         [initializeAssetsSuccess.toString()]: (state: AssetState, { payload: { assets } }: any) => ({
-            assets: new Map<string, IAsset>([...assets.map((asset: IAsset) => [asset.symbol, asset] as [string, IAsset])]),
+            assets: {
+                ...state.assets,
+                ...assets.reduce((acc: Record<string, IAsset>, asset: IAsset) => ({
+                    ...acc,
+                    [asset.symbol]: asset
+                }), {})
+            },
             latestQueryResult: [],
             error: null
         }),
         [initializeAssetsError.toString()]: (state: AssetState, action: any) => ({
-            assets: new Map<string, IAsset>(),
+            assets: {},
             latestQueryResult: [],
             error: action.payload
         }),
         [findManyAssetsWithQuerySuccess.toString()]: (state: AssetState, { payload: { assets } }: any) => {
+            let newAssets = { ...state.assets };
             assets.forEach((asset: IAsset) => {
-                if (!state.assets.has(asset.symbol)) {
-                    state.assets.set(asset.symbol, asset);
+                if (!newAssets[asset.symbol]) {
+                    newAssets[asset.symbol] = asset;
                 }
             });
 
             return {
-                assets: state.assets,
+                assets: newAssets,
                 latestQueryResult: assets,
                 error: null
             };
@@ -46,11 +50,12 @@ export const asset = handleActions<AssetState, string>(
             error: action.payload
         }),
         [findOneAssetSuccess.toString()]: (state: AssetState, { payload: { asset } }: any) => {
-            state.assets.set(asset.symbol, asset);
-
             return {
                 ...state,
-                assets: state.assets,
+                assets: {
+                    ...state.assets,
+                    [asset.symbol]: asset
+                },
                 error: null
             };
         },
@@ -59,15 +64,16 @@ export const asset = handleActions<AssetState, string>(
             error: action.payload
         }),
         [findManyAssetsSuccess.toString()]: (state: AssetState, { payload: { assets } }: any) => {
+            let newAssets = { ...state.assets };
             assets.forEach((asset: IAsset) => {
-                if (!state.assets.has(asset.symbol)) {
-                    state.assets.set(asset.symbol, asset);
+                if (!newAssets[asset.symbol]) {
+                    newAssets[asset.symbol] = asset;
                 }
             });
 
             return {
                 ...state,
-                assets: state.assets,
+                assets: newAssets,
                 error: null
             };
         },

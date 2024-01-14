@@ -1,27 +1,26 @@
 import React, { memo, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { barConnect, barDisconnect, subscribeBar, unsubscribeBar } from '../../state';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { barConnect, barDisconnect, selectBarsForSymbol, selectConnectionStatus, selectSubscriptionStatusForSymbol, subscribeBar, unsubscribeBar } from '../../state';
 import { ConnectionStatus, IBar, SubscriptionStatus } from '../../common';
 import Card from 'react-bootstrap/Card';
 import SparkChartComponent from './SparkChart.component';
+import { IRootPartition } from 'state/partitions';
 
-type WatchListItemProps = WatchListItemComponentProps & WatchListItemReduxProps & WatchListItemDispatchProps;
-interface WatchListItemReduxProps {
-    connectionStatus: ConnectionStatus;
-    subscriptionStatusMap: Map<string, SubscriptionStatus>;
-    barMap: Map<string, IBar[]>;
-}
-interface WatchListItemDispatchProps {
-    connect: (() => void);
-    disconnect: (() => void);
-    subscribe: ((symbol: string) => void);
-    unsubscribe: ((symbol: string) => void);
-}
+type WatchListItemProps = WatchListItemComponentProps;
 interface WatchListItemComponentProps {
     symbol: string;
 }
 
-export const WatchListItemComponent = ({ symbol, barMap, connectionStatus, subscriptionStatusMap, connect, disconnect, subscribe, unsubscribe }: WatchListItemProps) => {
+export const WatchListItemComponent = ({ symbol }: WatchListItemProps) => {
+    const dispatch = useDispatch();
+    const connect = () => dispatch(barConnect());
+    const subscribe = () => dispatch(subscribeBar({ symbol }));
+    const unsubscribe = () => dispatch(unsubscribeBar({ symbol }));
+
+    const connectionStatus = useSelector(selectConnectionStatus);
+    const bars = useSelector((state: IRootPartition) => selectBarsForSymbol(state, symbol));
+    const subscriptionStatus = useSelector((state: IRootPartition) => selectSubscriptionStatusForSymbol(state, symbol));
+
     useEffect(() => {
         if (connectionStatus === ConnectionStatus.Disconnected) {
             connect();
@@ -29,45 +28,25 @@ export const WatchListItemComponent = ({ symbol, barMap, connectionStatus, subsc
     }, [connectionStatus]);
 
     useEffect(() => {
-        if ((subscriptionStatusMap.get(symbol) ?? SubscriptionStatus.Unsubscribed) === SubscriptionStatus.Unsubscribed) {
-            subscribe(symbol);
+        if (subscriptionStatus === SubscriptionStatus.Unsubscribed) {
+            subscribe();
         }
 
         return () => {
-            if ((subscriptionStatusMap.get(symbol) ?? SubscriptionStatus.Unsubscribed) === SubscriptionStatus.Subscribed) {
-                unsubscribe(symbol);
+            if (subscriptionStatus === SubscriptionStatus.Subscribed) {
+                unsubscribe();
             }
         };
-    }, [symbol, subscribe, unsubscribe]);
+    }, [symbol]);
 
     return (
         <Card bg='dark' text='white' className='stock-card shadow' data-testid="stock-card">
             <Card.Body>
                 <Card.Title data-testid="stock-card-title">{symbol}</Card.Title>
-                <SparkChartComponent symbol={symbol} bars={barMap.get(symbol) ?? []}></SparkChartComponent>
+                <SparkChartComponent symbol={symbol} bars={bars}></SparkChartComponent>
             </Card.Body>
         </Card>
     );
-}
-
-const mapStateToProps = (state: any): WatchListItemReduxProps => {
-    return {
-        connectionStatus: state.bar.connectionStatus,
-        subscriptionStatusMap: state.bar.subscriptionStatusPerSymbol,
-        barMap: new Map<string, IBar[]>(Object.entries(state.bar.barMap))
-    };
 };
 
-const mapDispatchToProps = (dispatch: any): WatchListItemDispatchProps => {
-    return {
-        connect: () => dispatch(barConnect()),
-        disconnect: () => dispatch(barDisconnect()),
-        subscribe: (symbol: string) => dispatch(subscribeBar({ symbol })),
-        unsubscribe: (symbol: string) => dispatch(unsubscribeBar({ symbol })),
-    };
-};
-
-export default connect<WatchListItemReduxProps, WatchListItemDispatchProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)(memo(WatchListItemComponent));
+export default memo(WatchListItemComponent);

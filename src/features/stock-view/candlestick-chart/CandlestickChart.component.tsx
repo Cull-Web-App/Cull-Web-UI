@@ -42,6 +42,7 @@ const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, findMan
     const containerRef = useRef<SVGSVGElement>(null);
     const xAxisRef = useRef<SVGGElement>(null);
     const yAxisRef = useRef<SVGGElement>(null);
+
     const [scaledBars, setScaledBars] = useState<IScaledBar[]>([]);
     const [cursorX, setCursorX] = useState<number | null>(null);
     const [cursorY, setCursorY] = useState<number | null>(null);

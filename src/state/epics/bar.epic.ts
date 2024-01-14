@@ -102,7 +102,9 @@ export class BarEpic extends BaseEpic {
     public subscribeBar$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(subscribeBar),
         withLatestFrom(
-            state$.pipe(map(state => state.bar.subscriptionStatusPerSymbol))
+            state$.pipe(
+                map(state => new Map<string, SubscriptionStatus>(Object.entries(state.bar.subscriptionStatusPerSymbol)))
+            )
         ),
         concatMap(([{ payload: { symbol } }, subscriptionStatus]: [{ payload: { symbol: string } }, Map<string, SubscriptionStatus>]) => {
             const currentSubscriptionStatus = subscriptionStatus.get(symbol) ?? SubscriptionStatus.Unsubscribed;
@@ -125,7 +127,9 @@ export class BarEpic extends BaseEpic {
     public unsubscribeBar$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(unsubscribeBar),
         withLatestFrom(
-            state$.pipe(map(state => state.bar.subscriptionStatusPerSymbol))
+            state$.pipe(
+                map(state => new Map<string, SubscriptionStatus>(Object.entries(state.bar.subscriptionStatusPerSymbol)))
+            )
         ),
         concatMap(([{ payload: { symbol } }, subscriptionStatus]: [{ payload: { symbol: string } }, Map<string, SubscriptionStatus>]) => {
             const currentSubscriptionStatus = subscriptionStatus.get(symbol) ?? SubscriptionStatus.Unsubscribed;

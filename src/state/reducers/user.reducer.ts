@@ -1,10 +1,8 @@
 import { handleActions } from 'redux-actions';
 import { initializeUserAvatarSuccess, initializeUserAvatarError } from '../actions';
+import { IUserPartition } from '../partitions';
 
-interface UserState {
-    avatar: Blob | null;
-    error: string | null;
-}
+type UserState = IUserPartition;
 
 const initialState: UserState = {
     avatar: null,

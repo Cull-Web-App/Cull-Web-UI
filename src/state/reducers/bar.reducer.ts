@@ -20,22 +20,16 @@ import {
     updateSubscriptionStatusSuccess
 } from '../actions';
 import { IBar, ConnectionStatus, SubscriptionStatus } from '../../common';
+import { IBarPartition } from '../partitions';
 
-interface BarState {
-    subscribedSymbols: string[];
-    subscribersPerSymbol: Map<string, number>;
-    barMap: Record<string, IBar[]>;
-    connectionStatus: ConnectionStatus;
-    subscriptionStatusPerSymbol: Map<string, SubscriptionStatus>;
-    error: string | null;
-}
+type BarState = IBarPartition;
 
 const initialState: BarState = {
     subscribedSymbols: [],
-    subscribersPerSymbol: new Map(),
+    subscribersPerSymbol: {},
     barMap: {},
     connectionStatus: ConnectionStatus.Disconnected,
-    subscriptionStatusPerSymbol: new Map(),
+    subscriptionStatusPerSymbol: {},
     error: null
 };
 
@@ -61,13 +55,19 @@ export const bar = handleActions<BarState, string>(
             error: action.payload
         }),
         [subscribeBarSuccess.toString()]: (state: BarState, action: any) => {
-            const currentSubscribers = state.subscribersPerSymbol.get(action.payload.symbol) || 0;
+            const currentSubscribers = state.subscribersPerSymbol[action.payload.symbol] || 0;
             const subscribedSymbols = currentSubscribers > 0 ? state.subscribedSymbols : [...state.subscribedSymbols, action.payload.symbol];
             return {
                 ...state,
                 subscribedSymbols: subscribedSymbols,
-                subscribersPerSymbol: state.subscribersPerSymbol.set(action.payload.symbol, currentSubscribers + 1),
-                subscriptionStatusPerSymbol: state.subscriptionStatusPerSymbol.set(action.payload.symbol, SubscriptionStatus.Subscribed)
+                subscribersPerSymbol: {
+                    ...state.subscribersPerSymbol,
+                    [action.payload.symbol]: currentSubscribers + 1
+                },
+                subscriptionStatusPerSymbol: {
+                    ...state.subscriptionStatusPerSymbol,
+                    [action.payload.symbol]: SubscriptionStatus.Subscribed
+                }
             };
         },
         [subscribeBarError.toString()]: (state: BarState, action: any) => ({
@@ -75,13 +75,19 @@ export const bar = handleActions<BarState, string>(
             error: action.payload
         }),
         [unsubscribeBarSuccess.toString()]: (state: BarState, action: any) => {
-            const newSubscribers = (state.subscribersPerSymbol.get(action.payload.symbol) || 1) - 1;
+            const newSubscribers = (state.subscribersPerSymbol[action.payload.symbol] || 1) - 1;
             const subscribedSymbols = newSubscribers > 0 ? state.subscribedSymbols : state.subscribedSymbols.filter((symbol: string) => symbol !== action.payload.symbol);
             return {
                 ...state,
                 subscribedSymbols: subscribedSymbols,
-                subscribersPerSymbol: state.subscribersPerSymbol.set(action.payload.symbol, newSubscribers),
-                subscriptionStatusPerSymbol: state.subscriptionStatusPerSymbol.set(action.payload.symbol, SubscriptionStatus.Unsubscribed)
+                subscribersPerSymbol: {
+                    ...state.subscribersPerSymbol,
+                    [action.payload.symbol]: newSubscribers
+                },
+                subscriptionStatusPerSymbol: {
+                    ...state.subscriptionStatusPerSymbol,
+                    [action.payload.symbol]: SubscriptionStatus.Unsubscribed
+                }
             };
         },
         [unsubscribeBarError.toString()]: (state: BarState, action: any) => ({
@@ -206,7 +212,10 @@ export const bar = handleActions<BarState, string>(
             const { symbol, status } = action.payload;
             return {
                 ...state,
-                subscriptionStatusPerSymbol: state.subscriptionStatusPerSymbol.set(symbol, status)
+                subscriptionStatusPerSymbol: {
+                    ...state.subscriptionStatusPerSymbol,
+                    [symbol]: status
+                }
             };
         },
         [updateSubscriptionStatusError.toString()]: (state: BarState, action: any) => ({

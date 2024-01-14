@@ -7,11 +7,7 @@ import { Draggable, DraggableProvided } from "react-beautiful-dnd";
 import './EditWatchListItem.component.scss';
 import Button from "react-bootstrap/Button";
 
-type EditWatchListItemProps = EditWatchListItemDispatchProps & EditWatchListItemComponentProps & EditWatchListItemReduxProps;
-interface EditWatchListItemDispatchProps {
-}
-interface EditWatchListItemReduxProps {
-}
+type EditWatchListItemProps = EditWatchListItemComponentProps;
 interface EditWatchListItemComponentProps {
     watch: IWatch | null;
     asset: IAsset | null;

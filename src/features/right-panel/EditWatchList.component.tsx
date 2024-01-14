@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import SearchBarComponent from './SearchBar.component';
-import { connect } from 'react-redux';
-import { clearAssetSearch, findManyAssetsWithQuery } from '../../state';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { clearAssetSearch, findManyAssetsWithQuery, selectAssets, selectLatestQueryResult, selectWatches } from '../../state';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { IAsset, IWatch, StrictModeDroppable, Watch } from '../../common';
 import './EditWatchList.component.scss';
@@ -9,16 +9,7 @@ import EditWatchListItemComponent from './EditWatchListItem.component';
 import { DragDropContext, DropResult, DroppableProvided } from 'react-beautiful-dnd';
 import { AutoSizer, List, CellMeasurer, CellMeasurerCache, ListRowProps } from 'react-virtualized';
 
-type EditWatchListProps = EditWatchListDispatchProps & EditWatchListComponentProps & EditWatchListReduxProps;
-interface EditWatchListDispatchProps {
-    findManyWithFilter: (({ filter }: { filter: string }) => void);
-    clearSearch: (() => void);
-}
-interface EditWatchListReduxProps {
-    watchList: IWatch[];
-    searchResults: IAsset[];
-    assets: Map<string, IAsset>;
-}
+type EditWatchListProps = EditWatchListComponentProps;
 interface EditWatchListComponentProps {
     onRowsChanged: ((rows: IWatch[]) => void);
     onRowUpdate: ((rows: IWatch) => void);
@@ -26,7 +17,15 @@ interface EditWatchListComponentProps {
     onRowDelete: ((row: IWatch) => void);
 }
 
-export const EditWatchListComponent = ({ clearSearch, findManyWithFilter, watchList, assets, searchResults, onRowsChanged, onRowUpdate, onRowAdd, onRowDelete }: EditWatchListProps) => {
+export const EditWatchListComponent = ({ onRowsChanged, onRowUpdate, onRowAdd, onRowDelete }: EditWatchListProps) => {
+    const dispatch = useDispatch();
+    const findManyWithFilter = ({ filter }: { filter: string }) => dispatch(findManyAssetsWithQuery({ query: filter }));
+    const clearSearch = () => dispatch(clearAssetSearch());
+
+    const watchList = useSelector(selectWatches);
+    const assets = useSelector(selectAssets);
+    const searchResults = useSelector(selectLatestQueryResult);
+
     const [currentWatchList, setCurrentWatchList] = useState<IWatch[]>(watchList); // This is the current watch list that is being edited
     const [currentSearchTerm, setCurrentSearchTerm] = useState(''); // This is the current search term that is being used to find assets
     const [rows, setRows] = useState<IWatch[]>([]);
@@ -166,22 +165,4 @@ export const EditWatchListComponent = ({ clearSearch, findManyWithFilter, watchL
     );
 };
 
-const mapStateToProps = (state: any): EditWatchListReduxProps => {
-    return {
-        watchList: state.watch.watches,
-        searchResults: state.asset.latestQueryResult,
-        assets: state.asset.assets
-    };
-}
-
-const mapDispatchToProps = (dispatch: any): EditWatchListDispatchProps => {
-    return {
-        clearSearch: () => dispatch(clearAssetSearch()),
-        findManyWithFilter: ({ filter }: { filter: string }) => dispatch(findManyAssetsWithQuery({ query: filter }))
-    };
-}
-
-export default connect<EditWatchListReduxProps, EditWatchListDispatchProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)(memo(EditWatchListComponent));
+export default memo(EditWatchListComponent);

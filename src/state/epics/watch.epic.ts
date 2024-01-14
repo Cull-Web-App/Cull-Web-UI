@@ -58,7 +58,7 @@ export class WatchEpic extends BaseEpic {
         ofType(initializeWatchSuccess),
         withLatestFrom(
             state$.pipe(
-                map(state => state.asset.assets)
+                map(state => new Map<string, IAsset>(Object.entries(state.asset.assets)))
             )
         ),
         map(([{ payload: { watches } }, assets]: [{ payload: { watches: IWatch[] } }, Map<string, IAsset>]) => {

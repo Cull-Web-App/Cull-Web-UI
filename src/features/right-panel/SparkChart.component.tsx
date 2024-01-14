@@ -1,24 +1,20 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { connect } from 'react-redux';
-import { barConnect, barDisconnect, findManyBar, subscribeBar, unsubscribeBar } from '../../state';
-import { ConnectionStatus, IBar, SubscriptionStatus } from '../../common';
+import { useDispatch } from 'react-redux';
+import { findManyBar } from '../../state';
+import { IBar } from '../../common';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
-type SparkChartProps = SparkChartComponentProps & SparkChartReduxProps & SparkChartDispatchProps;
-interface SparkChartReduxProps {
-}
-interface SparkChartDispatchProps {
-    findMany: ({ symbol, from, to }: { symbol: string, from: Date, to: Date }) => void;
-}
-
+type SparkChartProps = SparkChartComponentProps;
 interface SparkChartComponentProps {
     symbol: string;
     bars: IBar[];
 }
 
-export const SparkChartComponent = ({ bars, symbol, findMany }: SparkChartProps) => {
+export const SparkChartComponent = ({ bars, symbol }: SparkChartProps) => {
     const chartRef = useRef<HighchartsReact.RefObject>(null);
+    const dispatch = useDispatch();
+
     const [options, setOptions] = useState<HighchartsReact.Props>({
         title: {
             text: ''
@@ -136,7 +132,7 @@ export const SparkChartComponent = ({ bars, symbol, findMany }: SparkChartProps)
             from.setDate(to.getDate() - 1);
         }
 
-        findMany({ symbol, from, to });
+        dispatch(findManyBar({ symbol, from, to }));
     }, [symbol]);
 
     return (
@@ -148,18 +144,4 @@ export const SparkChartComponent = ({ bars, symbol, findMany }: SparkChartProps)
     );
 };
 
-const mapStateToProps = (state: any): SparkChartReduxProps => {
-    return {
-    };
-};
-
-const mapDispatchToProps = (dispatch: any): SparkChartDispatchProps => {
-    return {
-        findMany: ({ symbol, from, to }: { symbol: string, from: Date, to: Date }) => dispatch(findManyBar({ symbol, from, to }))
-    };
-};
-
-export default connect<SparkChartReduxProps, SparkChartDispatchProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)(memo(SparkChartComponent));
+export default memo(SparkChartComponent);

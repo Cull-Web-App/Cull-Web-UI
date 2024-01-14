@@ -1,10 +1,8 @@
 import { handleActions } from 'redux-actions';
 import { initializePreferencesSuccess, initializePreferencesError } from '../actions';
+import { IPreferencePartition } from '../partitions';
 
-interface PreferenceState {
-    darkMode: boolean;
-    error: string | null;
-}
+type PreferenceState = IPreferencePartition
 
 const initialState: PreferenceState = {
     darkMode: false,

@@ -1,29 +1,24 @@
 import SearchBarComponent from './SearchBar.component';
-import StockCardComponent from 'features/stock-card/StockCard.component';
 import React, { useEffect } from 'react';
 import { Card } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import { initializeWatch } from '../../state';
+import { useDispatch, useSelector } from 'react-redux';
+import { initializeWatch, selectWatches } from '../../state';
 import EditWatchListButtonComponent from './EditWatchListButton.component';
-import { IWatch } from '../../common';
 import WatchListItemComponent from './WatchListItem.component';
 
-type RightPanelProps = RightPanelDispatchProps & RightPanelComponentProps & RightPanelReduxProps;
-interface RightPanelDispatchProps {
-    findAll: (() => void);
-}
-
-interface RightPanelReduxProps {
-    watchList: IWatch[];
-}
-
+type RightPanelProps = RightPanelComponentProps;
 interface RightPanelComponentProps {
 }
 
-export const RightPanelComponent = ({ watchList, findAll }: RightPanelProps) => {
+export const RightPanelComponent = ({ }: RightPanelProps) => {
+    const dispatch = useDispatch();
+    const findAll = () => dispatch(initializeWatch());
+
+    const watchList = useSelector(selectWatches);
+
     useEffect(() => {
         findAll();
-    }, [findAll]);
+    }, []);
 
     const handleSearch = ({ searchTerm }: { searchTerm: string }) => {
         console.log(searchTerm);
@@ -49,19 +44,4 @@ export const RightPanelComponent = ({ watchList, findAll }: RightPanelProps) => 
     );
 };
 
-const mapStateToProps = (state: any): RightPanelReduxProps => {
-    return {
-        watchList: state.watch.watches
-    };
-}
-
-const mapDispatchToProps = (dispatch: any): RightPanelDispatchProps => {
-    return {
-        findAll: () => dispatch(initializeWatch()),
-    };
-}
-
-export default connect<RightPanelReduxProps, RightPanelDispatchProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)(RightPanelComponent);
+export default RightPanelComponent;

@@ -2,28 +2,25 @@ import { useMsal } from '@azure/msal-react';
 import React, { useEffect } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Image from 'react-bootstrap/Image';
-import { connect } from 'react-redux';
-import { initializeUserAvatar } from '../../state';
+import { useDispatch, useSelector } from 'react-redux';
+import { initializeUserAvatar, selectAvatar } from '../../state';
 
-type UserDropdownProps = UserDropdownReduxProps & UserDropdownDispatchProps & UserDropdownComponentProps;
-interface UserDropdownReduxProps {
-    avatar: Blob;
-}
-
-interface UserDropdownDispatchProps {
-    initializeUserAvatar: () => void;
-}
-
+type UserDropdownProps = UserDropdownComponentProps;
 interface UserDropdownComponentProps {
 }
 
 
-export const UserDropdownComponent = ({ initializeUserAvatar, avatar }: UserDropdownProps) => {
+export const UserDropdownComponent = ({}: UserDropdownProps) => {
     const { instance } = useMsal();
 
+    const dispatch = useDispatch();
+    const initializeAvatar = () => dispatch(initializeUserAvatar());
+
+    const avatar = useSelector(selectAvatar);
+
     useEffect(() => {
-        initializeUserAvatar();
-    }, [initializeUserAvatar]);
+        initializeAvatar();
+    }, []);
 
     const handleLogout = () => {
         instance.logoutRedirect();
@@ -54,21 +51,4 @@ export const UserDropdownComponent = ({ initializeUserAvatar, avatar }: UserDrop
     );
 }
 
-const mapDispatchToProps = (dispatch: any): UserDropdownDispatchProps =>
-{
-    return {
-        initializeUserAvatar: () => dispatch(initializeUserAvatar())
-    };
-}
-
-const mapStateToProps = (state: any): UserDropdownReduxProps => {
-    const { avatar } = state.user;
-    return {
-        avatar
-    };
-}
-
-export default connect<UserDropdownReduxProps, UserDropdownDispatchProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)(UserDropdownComponent);
+export default UserDropdownComponent;

@@ -5,24 +5,22 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from 'react-bootstrap/Button';
 import { IWatch } from '../../common';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { clearAssetSearch, createManyWatch, deleteManyWatch, updateManyWatch } from '../../state';
 
 import './EditWatchListButton.component.scss';
 
-type EditWatchListButtonProps = EditWatchListButtonDispatchProps & EditWatchListButtonComponentProps & EditWatchListButtonReduxProps;
-interface EditWatchListButtonDispatchProps {
-    createMany: (({ rows }: { rows: IWatch[] }) => void);
-    updateMany: (({ rows }: { rows: IWatch[] }) => void);
-    deleteMany: (({ symbols }: { symbols: string[] }) => void);
-    clearSearch: (() => void);
-}
-interface EditWatchListButtonReduxProps {
-}
+type EditWatchListButtonProps = EditWatchListButtonComponentProps;
 interface EditWatchListButtonComponentProps {
 }
 
-export const EditWatchListButtonComponent = ({ createMany, deleteMany, updateMany, clearSearch }: EditWatchListButtonProps) => {
+export const EditWatchListButtonComponent = ({ }: EditWatchListButtonProps) => {
+    const dispatch = useDispatch();
+    const createMany = ({ rows }: { rows: IWatch[] }) => dispatch(createManyWatch({ watches: rows }));
+    const updateMany = ({ rows }: { rows: IWatch[] }) => dispatch(updateManyWatch({ watches: rows }));
+    const deleteMany = ({ symbols }: { symbols: string[] }) => dispatch(deleteManyWatch({ symbols }));
+    const clearSearch = () => dispatch(clearAssetSearch());
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentRows, setCurrentRows] = useState<IWatch[]>([]); // This is the current watch list that is being edited
     const [updatedRows, setUpdatedRows] = useState<Set<string>>(new Set<string>()); // These are the rows that have been updated
@@ -125,21 +123,4 @@ export const EditWatchListButtonComponent = ({ createMany, deleteMany, updateMan
     );
 };
 
-const mapDispatchToProps = (dispatch: any): EditWatchListButtonDispatchProps => {
-    return {
-        createMany: ({ rows }: { rows: IWatch[] }) => dispatch(createManyWatch({ watches: rows })),
-        updateMany: ({ rows }: { rows: IWatch[] }) => dispatch(updateManyWatch({ watches: rows })),
-        deleteMany: ({ symbols }: { symbols: string[] }) => dispatch(deleteManyWatch({ symbols })),
-        clearSearch: () => dispatch(clearAssetSearch())
-    };
-};
-
-const mapStateToProps = (state: any): EditWatchListButtonReduxProps => {
-    return {
-    };
-};
-
-export default connect<EditWatchListButtonReduxProps, EditWatchListButtonDispatchProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)(EditWatchListButtonComponent);
+export default EditWatchListButtonComponent;

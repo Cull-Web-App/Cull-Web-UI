@@ -1,11 +1,9 @@
 import { handleActions } from 'redux-actions';
 import { initializeWatchSuccess, initializeWatchError, createOneWatchSuccess, createOneWatchError, deleteOneWatchSuccess, deleteOneWatchError, updateManyWatchSuccess, updateManyWatchError, createManyWatchSuccess, createManyWatchError, deleteManyWatchSuccess, deleteManyWatchError } from '../actions';
 import { IWatch } from '../../common';
+import { IWatchPartition } from '../partitions';
 
-interface WatchState {
-    watches: IWatch[];
-    error: string | null;
-}
+type WatchState = IWatchPartition;
 
 const initialState: WatchState = {
     watches: [],

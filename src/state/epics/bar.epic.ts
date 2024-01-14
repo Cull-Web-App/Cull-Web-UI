@@ -147,14 +147,14 @@ export class BarEpic extends BaseEpic {
 
     public receiveBar$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(receiveBar),
-        switchMap(({ payload: { bar } }: { payload: { bar: IBar } }) => {
+        concatMap(({ payload: { bar } }: { payload: { bar: IBar } }) => {
             return of(receiveBarSuccess({ symbol: bar.symbol, bar }));
         })
     );
 
     public findMany$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(findManyBar),
-        switchMap(({ payload: { symbol, from, to } }: { payload: { symbol: string, from: Date, to: Date } }) => {
+        concatMap(({ payload: { symbol, from, to } }: { payload: { symbol: string, from: Date, to: Date } }) => {
             return this.barService.findMany(symbol, from, to).pipe(
                 map(bars => findManyBarSuccess({ symbol: symbol, bars })),
                 catchError(error => [

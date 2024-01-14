@@ -1,14 +1,15 @@
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { barConnect, barDisconnect, subscribeBar, unsubscribeBar } from '../../state';
-import { ConnectionStatus, SubscriptionStatus } from '../../common';
+import { ConnectionStatus, IBar, SubscriptionStatus } from '../../common';
 import Card from 'react-bootstrap/Card';
-import { Subject, takeUntil, timer } from 'rxjs';
+import SparkChartComponent from './SparkChart.component';
 
 type WatchListItemProps = WatchListItemComponentProps & WatchListItemReduxProps & WatchListItemDispatchProps;
 interface WatchListItemReduxProps {
     connectionStatus: ConnectionStatus;
     subscriptionStatusMap: Map<string, SubscriptionStatus>;
+    barMap: Map<string, IBar[]>;
 }
 interface WatchListItemDispatchProps {
     connect: (() => void);
@@ -20,8 +21,7 @@ interface WatchListItemComponentProps {
     symbol: string;
 }
 
-export const WatchListItemComponent = ({ symbol, connectionStatus, subscriptionStatusMap, connect, disconnect, subscribe, unsubscribe }: WatchListItemProps) => {
-
+export const WatchListItemComponent = ({ symbol, barMap, connectionStatus, subscriptionStatusMap, connect, disconnect, subscribe, unsubscribe }: WatchListItemProps) => {
     useEffect(() => {
         if (connectionStatus === ConnectionStatus.Disconnected) {
             connect();
@@ -38,12 +38,13 @@ export const WatchListItemComponent = ({ symbol, connectionStatus, subscriptionS
                 unsubscribe(symbol);
             }
         };
-    }, [symbol]);
+    }, [symbol, subscribe, unsubscribe]);
 
     return (
         <Card bg='dark' text='white' className='stock-card shadow' data-testid="stock-card">
             <Card.Body>
                 <Card.Title data-testid="stock-card-title">{symbol}</Card.Title>
+                <SparkChartComponent symbol={symbol} bars={barMap.get(symbol) ?? []}></SparkChartComponent>
             </Card.Body>
         </Card>
     );
@@ -52,7 +53,8 @@ export const WatchListItemComponent = ({ symbol, connectionStatus, subscriptionS
 const mapStateToProps = (state: any): WatchListItemReduxProps => {
     return {
         connectionStatus: state.bar.connectionStatus,
-        subscriptionStatusMap: state.bar.subscriptionStatusPerSymbol
+        subscriptionStatusMap: state.bar.subscriptionStatusPerSymbol,
+        barMap: new Map<string, IBar[]>(Object.entries(state.bar.barMap))
     };
 };
 
@@ -61,7 +63,7 @@ const mapDispatchToProps = (dispatch: any): WatchListItemDispatchProps => {
         connect: () => dispatch(barConnect()),
         disconnect: () => dispatch(barDisconnect()),
         subscribe: (symbol: string) => dispatch(subscribeBar({ symbol })),
-        unsubscribe: (symbol: string) => dispatch(unsubscribeBar({ symbol }))
+        unsubscribe: (symbol: string) => dispatch(unsubscribeBar({ symbol })),
     };
 };
 

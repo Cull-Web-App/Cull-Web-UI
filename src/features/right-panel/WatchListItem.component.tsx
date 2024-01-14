@@ -1,13 +1,14 @@
 import React, { memo, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { barConnect, barDisconnect, subscribeBar, unsubscribeBar } from '../../state';
-import { ConnectionStatus } from '../../common';
+import { ConnectionStatus, SubscriptionStatus } from '../../common';
 import Card from 'react-bootstrap/Card';
 import { Subject, takeUntil, timer } from 'rxjs';
 
 type WatchListItemProps = WatchListItemComponentProps & WatchListItemReduxProps & WatchListItemDispatchProps;
 interface WatchListItemReduxProps {
     connectionStatus: ConnectionStatus;
+    subscriptionStatusMap: Map<string, SubscriptionStatus>;
 }
 interface WatchListItemDispatchProps {
     connect: (() => void);
@@ -19,7 +20,7 @@ interface WatchListItemComponentProps {
     symbol: string;
 }
 
-export const WatchListItemComponent = ({ symbol, connectionStatus, connect, disconnect, subscribe, unsubscribe }: WatchListItemProps) => {
+export const WatchListItemComponent = ({ symbol, connectionStatus, subscriptionStatusMap, connect, disconnect, subscribe, unsubscribe }: WatchListItemProps) => {
 
     useEffect(() => {
         if (connectionStatus === ConnectionStatus.Disconnected) {
@@ -28,10 +29,14 @@ export const WatchListItemComponent = ({ symbol, connectionStatus, connect, disc
     }, [connectionStatus]);
 
     useEffect(() => {
-        subscribe(symbol);
+        if ((subscriptionStatusMap.get(symbol) ?? SubscriptionStatus.Unsubscribed) === SubscriptionStatus.Unsubscribed) {
+            subscribe(symbol);
+        }
 
         return () => {
-            unsubscribe(symbol);
+            if ((subscriptionStatusMap.get(symbol) ?? SubscriptionStatus.Unsubscribed) === SubscriptionStatus.Subscribed) {
+                unsubscribe(symbol);
+            }
         };
     }, [symbol]);
 
@@ -46,7 +51,8 @@ export const WatchListItemComponent = ({ symbol, connectionStatus, connect, disc
 
 const mapStateToProps = (state: any): WatchListItemReduxProps => {
     return {
-        connectionStatus: state.bar.connectionStatus
+        connectionStatus: state.bar.connectionStatus,
+        subscriptionStatusMap: state.bar.subscriptionStatusPerSymbol
     };
 };
 

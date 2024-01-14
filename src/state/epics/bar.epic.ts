@@ -101,22 +101,13 @@ export class BarEpic extends BaseEpic {
 
     public subscribeBar$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(subscribeBar),
-        concatMap(({ payload: { symbol } }: { payload: { symbol: string } }) => state$.pipe(
-            map(state => (state.bar.subscriptionStatusPerSymbol.get(symbol) ?? SubscriptionStatus.Unsubscribed)),
-            filter((subscriptionStatus: SubscriptionStatus) => subscriptionStatus !== SubscriptionStatus.Subscribing),
-            withLatestFrom(
-                state$.pipe(map(state => state.bar.subscribersPerSymbol)),
-            ),
-            map(([subscriptionStatus, subscribersPerSymbol]: [string, Map<string, number>]) => [
-                symbol,
-                (subscribersPerSymbol.get(symbol) ?? 0),
-                subscriptionStatus
-            ] as [string, number, SubscriptionStatus]),
-            take(1)
-        )),
-        concatMap(([symbol, subscribers, subscriptionStatus]: [string, number, SubscriptionStatus]) => {
-            if (subscribers > 0 && subscriptionStatus === SubscriptionStatus.Subscribed) {
-                return of(subscribeBarSuccess({ symbol }));
+        withLatestFrom(
+            state$.pipe(map(state => state.bar.subscriptionStatusPerSymbol))
+        ),
+        concatMap(([{ payload: { symbol } }, subscriptionStatus]: [{ payload: { symbol: string } }, Map<string, SubscriptionStatus>]) => {
+            const currentSubscriptionStatus = subscriptionStatus.get(symbol) ?? SubscriptionStatus.Unsubscribed;
+            if (currentSubscriptionStatus === SubscriptionStatus.Subscribed || currentSubscriptionStatus === SubscriptionStatus.Subscribing) {
+                return EMPTY;
             }
 
             // Need to update the subscription status here -- this is because the subscribe method can take time
@@ -133,22 +124,13 @@ export class BarEpic extends BaseEpic {
 
     public unsubscribeBar$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(unsubscribeBar),
-        concatMap(({ payload: { symbol } }: { payload: { symbol: string } }) => state$.pipe(
-            map(state => (state.bar.subscriptionStatusPerSymbol.get(symbol) ?? SubscriptionStatus.Unsubscribed)),
-            filter((subscriptionStatus: SubscriptionStatus) => subscriptionStatus !== SubscriptionStatus.Unsubscribing),
-            withLatestFrom(
-                state$.pipe(map(state => state.bar.subscribersPerSymbol)),
-            ),
-            map(([subscriptionStatus, subscribersPerSymbol]: [string, Map<string, number>]) => [
-                symbol,
-                (subscribersPerSymbol.get(symbol) ?? 0),
-                subscriptionStatus
-            ] as [string, number, SubscriptionStatus]),
-            take(1)
-        )),
-        concatMap(([symbol, subscribers, subscriptionStatus]: [string, number, SubscriptionStatus]) => {
-            if (subscribers === 0 && subscriptionStatus === SubscriptionStatus.Unsubscribed) {
-                return of(unsubscribeBarSuccess({ symbol }));
+        withLatestFrom(
+            state$.pipe(map(state => state.bar.subscriptionStatusPerSymbol))
+        ),
+        concatMap(([{ payload: { symbol } }, subscriptionStatus]: [{ payload: { symbol: string } }, Map<string, SubscriptionStatus>]) => {
+            const currentSubscriptionStatus = subscriptionStatus.get(symbol) ?? SubscriptionStatus.Unsubscribed;
+            if (currentSubscriptionStatus === SubscriptionStatus.Unsubscribed || currentSubscriptionStatus === SubscriptionStatus.Unsubscribing) {
+                return EMPTY;
             }
 
             // Need to update the subscription status here -- this is because the subscribe method can take time

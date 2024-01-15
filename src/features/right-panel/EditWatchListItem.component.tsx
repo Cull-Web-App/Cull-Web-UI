@@ -6,20 +6,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Draggable, DraggableProvided } from "react-beautiful-dnd";
 import './EditWatchListItem.component.scss';
 import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 type EditWatchListItemProps = EditWatchListItemComponentProps;
 interface EditWatchListItemComponentProps {
+    provided: DraggableProvided
     watch: IWatch | null;
     asset: IAsset | null;
     isAddMode: boolean;
     icon: IconDefinition;
-    index: number;
     style: CSSProperties;
     onClick: (() => void);
     onLoad: (() => void);
 }
 
-export const EditWatchListItemComponent = ({ watch, asset, isAddMode, icon, index, style, onClick, onLoad }: EditWatchListItemProps) => {
+export const EditWatchListItemComponent = ({ provided, watch, asset, isAddMode, icon, style, onClick, onLoad }: EditWatchListItemProps) => {
     const color = isAddMode ? 'green' : 'red';
     useEffect(() => {
         onLoad();
@@ -29,29 +32,44 @@ export const EditWatchListItemComponent = ({ watch, asset, isAddMode, icon, inde
         return null;
     }
 
+    const getStyle = (provided: DraggableProvided, style: CSSProperties) => {
+        if (!style) {
+            return provided.draggableProps.style;
+        }
+
+        return {
+            ...provided.draggableProps.style,
+            ...style
+        };
+    };
+
     return (
-        <Draggable draggableId={watch.symbol} index={index}>
-            {(provided: DraggableProvided) => (
-                <div className="edit-watch-list-item" key={watch.symbol}  style={style}>
-                    <div
-                        {...provided.draggableProps}
-                        ref={provided.innerRef}
-                        className="watch-list-row"
-                    >
-                        <Button onClick={onClick} className={`rounded-icon-${color}`}>
-                            <FontAwesomeIcon icon={icon}/>
-                        </Button>
-                        <div>
-                            <div className="asset-symbol-text">{watch.symbol}</div>
-                            <div className="asset-name-text">{asset.name}</div>
-                        </div>
-                        <div {...provided.dragHandleProps} className={`drag-handle ${isAddMode ? 'hidden' : ''}`}>
-                            <FontAwesomeIcon icon={faBars} />
-                        </div>
+        <Container
+            className="edit-watch-list-item"
+            key={watch.symbol}
+            {...provided.draggableProps}
+            style={getStyle(provided, style)}
+            ref={provided.innerRef}
+        >
+            <Row className="watch-list-row">
+                <Col xs={1}>
+                    <Button onClick={onClick} className={`rounded-icon-${color}`}>
+                        <FontAwesomeIcon icon={icon}/>
+                    </Button>
+                </Col>
+                <Col>
+                    <div>
+                        <div className="asset-symbol-text">{watch.symbol}</div>
+                        <div className="asset-name-text">{asset.name}</div>
                     </div>
-                </div>
-            )}
-        </Draggable>
+                </Col>
+                <Col xs={1}>
+                    <div {...provided.dragHandleProps} className={`drag-handle ${isAddMode ? 'hidden' : ''}`}>
+                        <FontAwesomeIcon icon={faBars} />
+                    </div>
+                </Col>
+            </Row>
+        </Container>
     );
 };
 

@@ -8,6 +8,7 @@ import './EditWatchList.component.scss';
 import EditWatchListItemComponent from './EditWatchListItem.component';
 import { DragDropContext, DropResult, DroppableProvided } from 'react-beautiful-dnd';
 import { AutoSizer, List, CellMeasurer, CellMeasurerCache, ListRowProps } from 'react-virtualized';
+import ReactDOM from 'react-dom';
 
 type EditWatchListProps = EditWatchListComponentProps;
 interface EditWatchListComponentProps {
@@ -31,7 +32,7 @@ export const EditWatchListComponent = ({ onRowsChanged, onRowUpdate, onRowAdd, o
     const [rows, setRows] = useState<IWatch[]>([]);
     const [isAddMode, setIsAddMode] = useState(false);
     const [clearSearchCounter, setClearSearchCounter] = useState(0);
-    
+
     // Create a cache that will store the height of each item
     const cache = new CellMeasurerCache({
         defaultHeight: 50, // Provide a default height for items
@@ -105,22 +106,21 @@ export const EditWatchListComponent = ({ onRowsChanged, onRowUpdate, onRowAdd, o
             <CellMeasurer
                 cache={cache}
                 columnIndex={0}
-                key={key}
                 parent={parent}
                 rowIndex={index}
             >
                 {({ measure }) => (
-                    <div style={style} onLoad={measure}>
-                        <EditWatchListItemComponent
-                            key={item.symbol}
-                            watch={item}
-                            asset={assets.get(item.symbol)!}
-                            isAddMode={isAddMode}
-                            icon={isAddMode ? faPlusCircle : faMinusCircle}
-                            index={index}
-                            onClick={() => isAddMode ? handleAdd(item, watchList.length) : handleRemove(item)}
-                        />
-                    </div>
+                    <EditWatchListItemComponent
+                        key={key}
+                        watch={item}
+                        asset={assets.get(item.symbol)!}
+                        isAddMode={isAddMode}
+                        icon={isAddMode ? faPlusCircle : faMinusCircle}
+                        index={index}
+                        onClick={() => isAddMode ? handleAdd(item, watchList.length) : handleRemove(item)}
+                        style={style}
+                        onLoad={measure}
+                    />
                 )}
             </CellMeasurer>
         );
@@ -132,18 +132,21 @@ export const EditWatchListComponent = ({ onRowsChanged, onRowUpdate, onRowAdd, o
                 <SearchBarComponent key={clearSearchCounter} expandEnabled={true} onSearchTermChange={handleSearchTermChanged} onSearch={() => { }} />
             </div>
             <DragDropContext onDragEnd={handleDragEnd}>
-                <StrictModeDroppable droppableId="watch-list">
+                <StrictModeDroppable
+                    droppableId="watch-list"
+                    mode="virtual"
+                >
                     {(provided: DroppableProvided) => (
-                        <div className='edit-modal-rows' {...provided.droppableProps} ref={provided.innerRef}>
+                        <div className='edit-modal-rows' {...provided.droppableProps}>
                             {rows.length === 0 && (
                                 <div className='edit-modal-empty'>
                                     <div className='edit-modal-empty-text'>
-                                        {isAddMode ?  `The Symbol ${currentSearchTerm} does not exist ` : 'Type in a symbol to add it to your watch list'}
+                                        {isAddMode ? `The Symbol ${currentSearchTerm} does not exist ` : 'Type in a symbol to add it to your watch list'}
                                     </div>
                                 </div>
                             )}
                             {rows.length > 0 && (
-                                <AutoSizer>
+                                <AutoSizer container={provided.innerRef}>
                                     {({ height, width }: { height: number, width: number }) => (
                                         <List
                                             height={height}
@@ -152,6 +155,18 @@ export const EditWatchListComponent = ({ onRowsChanged, onRowUpdate, onRowAdd, o
                                             rowCount={rows.length}
                                             rowRenderer={RenderRow}
                                             width={width}
+                                            overscanRowCount={20}
+                                            ref={(ref) => {
+                                                // react-virtualized has no way to get the list's ref that I can so
+                                                // So we use the `ReactDOM.findDOMNode(ref)` escape hatch to get the ref
+                                                if (ref) {
+                                                    // eslint-disable-next-line react/no-find-dom-node
+                                                    const whatHasMyLifeComeTo = ReactDOM.findDOMNode(ref);
+                                                    if (whatHasMyLifeComeTo instanceof HTMLElement) {
+                                                        provided.innerRef(whatHasMyLifeComeTo);
+                                                    }
+                                                }
+                                            }}
                                         />
                                     )}
                                 </AutoSizer>

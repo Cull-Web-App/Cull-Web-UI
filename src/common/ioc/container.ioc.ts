@@ -12,7 +12,9 @@ import {
     IWatchRepository,
     WatchRepository,
     UserAvatarRepository,
-    IUserAvatarRepository
+    IUserAvatarRepository,
+    ICalendarRepository,
+    CalendarRepository
 } from '../repositories';
 import {
     AssetService,
@@ -24,7 +26,9 @@ import {
     WatchService,
     IWatchService,
     IUserAvatarService,
-    UserAvatarService
+    UserAvatarService,
+    CalendarService,
+    ICalendarService
 } from '../services';
 import { IDENTIFIERS } from './identifiers.ioc';
 import getDecorators from 'inversify-inject-decorators';
@@ -44,6 +48,8 @@ container.bind<IWatchService>(IDENTIFIERS.IWATCH_SERVICE).to(WatchService);
 container.bind<IUserAvatarRepository>(IDENTIFIERS.IUSERAVATAR_REPOSITORY).to(UserAvatarRepository);
 container.bind<IUserAvatarService>(IDENTIFIERS.IUSERAVATAR_SERVICE).to(UserAvatarService);
 container.bind<IPublicClientApplication>(IDENTIFIERS.IMSAL_INSTANCE).toConstantValue(new PublicClientApplication(msalConfig));
+container.bind<ICalendarRepository>(IDENTIFIERS.ICALENDAR_REPOSITORY).to(CalendarRepository);
+container.bind<ICalendarService>(IDENTIFIERS.ICALENDAR_SERVICE).to(CalendarService);
 
 const { lazyInject } = getDecorators(container, false);
 

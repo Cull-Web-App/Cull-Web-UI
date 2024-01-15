@@ -10,3 +10,5 @@ export * from './iwatch.repository';
 export * from './watch.repository';
 export * from './user-avatar.repository';
 export * from './iuser-avatar.repository';
+export * from './calendar.repository';
+export * from './icalendar.repository';

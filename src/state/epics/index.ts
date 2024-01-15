@@ -5,3 +5,4 @@ export * from './ibase.epic';
 export * from './preference.epic';
 export * from './watch.epic';
 export * from './user.epic';
+export * from './calendar.epic';

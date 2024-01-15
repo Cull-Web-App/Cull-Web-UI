@@ -120,6 +120,10 @@ export const bar = handleActions<BarState, string>(
         [findManyBarSuccess.toString()]: (state: BarState, action: any) => {
             const { symbol, bars } = action.payload as { symbol: string, bars: IBar[] };
 
+            if (bars.length === 0) {
+                return state;
+            }
+
             // Create new array of bars for symbol if it doesn't exist
             if (!state.barMap[symbol]) {
                 return {

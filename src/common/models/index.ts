@@ -12,3 +12,6 @@ export * from './iwatch.model';
 export * from './watch.model';
 export * from './connection-status.model';
 export * from './subscription-status.model';
+export * from './icalendar-find-many-params.model';
+export * from './icalendar.model';
+export * from './calendar.model';

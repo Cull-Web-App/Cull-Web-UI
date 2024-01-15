@@ -8,3 +8,5 @@ export * from './iwatch.service';
 export * from './watch.service';
 export * from './user-avatar.service';
 export * from './iuser-avatar.service';
+export * from './calendar.service';
+export * from './icalendar.service';

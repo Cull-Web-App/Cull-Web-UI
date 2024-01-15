@@ -31,6 +31,7 @@ export const AppComponent = ({}: AppProps) => {
 
     useEffect(() => {
         initializeUserPreferences();
+
         const tabMap = new Map<string, [string, JSX.Element]>([
             ['overview', ['Overview', <OverviewComponent></OverviewComponent>]],
             ['stock', ['Stock', <StockViewComponent></StockViewComponent>]],

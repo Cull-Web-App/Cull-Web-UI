@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { findManyBar } from '../../state';
-import { IBar } from '../../common';
+import { useDispatch, useSelector } from 'react-redux';
+import { findManyBar, findManyCalendar, selectCalendars } from '../../state';
+import { IBar, ICalendar } from '../../common';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
@@ -13,7 +13,11 @@ interface SparkChartComponentProps {
 
 export const SparkChartComponent = ({ bars, symbol }: SparkChartProps) => {
     const chartRef = useRef<HighchartsReact.RefObject>(null);
+
     const dispatch = useDispatch();
+    const findManyBars = ({ symbol, from, to }: { symbol: string, from: Date, to: Date }) => dispatch(findManyBar({ symbol, from, to }));
+
+    const calendars = useSelector(selectCalendars);
 
     const [options, setOptions] = useState<HighchartsReact.Props>({
         title: {
@@ -108,32 +112,12 @@ export const SparkChartComponent = ({ bars, symbol }: SparkChartProps) => {
     }, [bars]);
 
     useEffect(() => {
-        // Ensure that the from and to are on the nearest market day -- from is yesterday, to is today
-        // Market days are Monday through Friday -- no weekends
-        let to = new Date();
-        let from = new Date();
-
-        // If today is Sunday (getDay() returns 0), set to and from to the previous Friday
-        if (to.getDay() === 0) {
-            to.setDate(to.getDate() - 2);
-            from.setDate(to.getDate() - 1);
-        } 
-        // If today is Saturday (getDay() returns 6), set to and from to the previous Friday
-        else if (to.getDay() === 6) {
-            to.setDate(to.getDate() - 1);
-            from.setDate(to.getDate() - 1);
-        } 
-        // If today is Monday (getDay() returns 1), set from to the previous Friday
-        else if (to.getDay() === 1) {
-            from.setDate(to.getDate() - 3);
-        } 
-        // Otherwise, set from to the previous day
-        else {
-            from.setDate(to.getDate() - 1);
+        if (calendars.length > 0) {
+            // Find the full set of bars for the last day in the calendar
+            const lastCalendar = calendars[calendars.length - 1];
+            findManyBars({ symbol, from: lastCalendar.sessionOpen, to: lastCalendar.sessionClose });
         }
-
-        dispatch(findManyBar({ symbol, from, to }));
-    }, [symbol]);
+    }, [symbol, calendars]);
 
     return (
         <HighchartsReact

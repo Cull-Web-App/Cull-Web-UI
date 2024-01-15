@@ -1,5 +1,6 @@
 import { IAssetPartition } from "./iasset.partition";
 import { IBarPartition } from "./ibar.partition";
+import { ICalendarPartition } from "./icalendar.partition";
 import { IPreferencePartition } from "./ipreference.partition";
 import { IUserPartition } from "./iuser.partition";
 import { IWatchPartition } from "./iwatch.partition";
@@ -10,5 +11,6 @@ export interface IRootPartition {
     preference: IPreferencePartition;
     watch: IWatchPartition;
     user: IUserPartition;
+    calendar: ICalendarPartition;
 }
     

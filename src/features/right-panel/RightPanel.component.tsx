@@ -2,7 +2,7 @@ import SearchBarComponent from './SearchBar.component';
 import React, { useEffect } from 'react';
 import { Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { initializeWatch, selectWatches } from '../../state';
+import { findManyCalendar, initializeWatch, selectCalendars, selectWatches } from '../../state';
 import EditWatchListButtonComponent from './EditWatchListButton.component';
 import WatchListItemComponent from './WatchListItem.component';
 
@@ -13,12 +13,21 @@ interface RightPanelComponentProps {
 export const RightPanelComponent = ({ }: RightPanelProps) => {
     const dispatch = useDispatch();
     const findAll = () => dispatch(initializeWatch());
+    const findManyCalendars = ({ from, to }: { from: Date, to: Date }) => dispatch(findManyCalendar({ from, to }));
 
+    const calendars = useSelector(selectCalendars);
     const watchList = useSelector(selectWatches);
 
     useEffect(() => {
         findAll();
     }, []);
+
+    useEffect(() => {
+        if (calendars.length === 0) {
+            // Find calendars for last 30 days
+            findManyCalendars({ from: new Date(new Date().setDate(new Date().getDate() - 30)), to: new Date() });
+        }
+    }, [calendars]);
 
     const handleSearch = ({ searchTerm }: { searchTerm: string }) => {
         console.log(searchTerm);

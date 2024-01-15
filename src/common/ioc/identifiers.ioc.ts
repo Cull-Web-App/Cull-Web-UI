@@ -11,4 +11,6 @@ export const IDENTIFIERS = {
     IUSERAVATAR_REPOSITORY: Symbol.for('IUserAvatarRepository'),
     IUSERAVATAR_SERVICE: Symbol.for('IUserAvatarService'),
     IMSAL_INSTANCE: Symbol.for('IMsalInstance'),
+    ICALENDAR_SERVICE: Symbol.for('ICalendarService'),
+    ICALENDAR_REPOSITORY: Symbol.for('ICalendarRepository'),
 };

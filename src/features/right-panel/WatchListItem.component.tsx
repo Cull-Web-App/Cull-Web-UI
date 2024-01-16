@@ -1,10 +1,10 @@
 import React, { memo, useEffect } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { barConnect, barDisconnect, selectBarsForSymbol, selectConnectionStatus, selectSubscriptionStatusForSymbol, subscribeBar, unsubscribeBar } from '../../state';
+import { useDispatch, useSelector } from 'react-redux';
+import { barConnect, selectBarsForSymbol, selectConnectionStatus, selectSubscriptionStatusForSymbol, subscribeBar, unsubscribeBar } from '../../state';
 import { ConnectionStatus, IBar, SubscriptionStatus } from '../../common';
 import Card from 'react-bootstrap/Card';
 import SparkChartComponent from './SparkChart.component';
-import { IRootPartition } from 'state/partitions';
+import { IRootPartition } from '../../state';
 
 type WatchListItemProps = WatchListItemComponentProps;
 interface WatchListItemComponentProps {

@@ -114,8 +114,11 @@ export const SparkChartComponent = ({ bars, symbol }: SparkChartProps) => {
     useEffect(() => {
         if (calendars.length > 0) {
             // Find the full set of bars for the last day in the calendar
+            // should this be a day or just an hour?
             const lastCalendar = calendars[calendars.length - 1];
-            findManyBars({ symbol, from: lastCalendar.sessionOpen, to: lastCalendar.sessionClose });
+            const todayMinusFifteenMinutes = new Date();
+            todayMinusFifteenMinutes.setMinutes(todayMinusFifteenMinutes.getMinutes() - 15);
+            findManyBars({ symbol, from: lastCalendar.sessionOpen, to: lastCalendar.sessionClose > todayMinusFifteenMinutes ? todayMinusFifteenMinutes : lastCalendar.sessionClose });
         }
     }, [symbol, calendars]);
 

@@ -1,27 +1,33 @@
 import SearchBarComponent from './SearchBar.component';
-import StockCardComponent from 'features/stock-card/StockCard.component';
 import React, { useEffect } from 'react';
 import { Card } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import { initializeWatch } from 'state';
+import { useDispatch, useSelector } from 'react-redux';
+import { findManyCalendar, initializeWatch, selectCalendars, selectWatches } from '../../state';
 import EditWatchListButtonComponent from './EditWatchListButton.component';
+import WatchListItemComponent from './WatchListItem.component';
 
-type RightPanelProps = RightPanelDispatchProps & RightPanelComponentProps & RightPanelReduxProps;
-interface RightPanelDispatchProps {
-    findAll: (() => void);
-}
-
-interface RightPanelReduxProps {
-    watchList: string[];
-}
-
+type RightPanelProps = RightPanelComponentProps;
 interface RightPanelComponentProps {
 }
 
-export const RightPanelComponent = ({ watchList, findAll }: RightPanelProps) => {
+export const RightPanelComponent = ({ }: RightPanelProps) => {
+    const dispatch = useDispatch();
+    const findAll = () => dispatch(initializeWatch());
+    const findManyCalendars = ({ from, to }: { from: Date, to: Date }) => dispatch(findManyCalendar({ from, to }));
+
+    const calendars = useSelector(selectCalendars);
+    const watchList = useSelector(selectWatches);
+
     useEffect(() => {
         findAll();
     }, []);
+
+    useEffect(() => {
+        if (calendars.length === 0) {
+            // Find calendars for last 30 days
+            findManyCalendars({ from: new Date(new Date().setDate(new Date().getDate() - 30)), to: new Date() });
+        }
+    }, [calendars]);
 
     const handleSearch = ({ searchTerm }: { searchTerm: string }) => {
         console.log(searchTerm);
@@ -39,7 +45,7 @@ export const RightPanelComponent = ({ watchList, findAll }: RightPanelProps) => 
                 </Card.Header>
                 <Card.Body>
                     {
-                        watchList.map((symbol) => <StockCardComponent key={symbol} symbol={symbol}></StockCardComponent>)
+                        watchList.map((watch) => <WatchListItemComponent key={watch.symbol} symbol={watch.symbol}></WatchListItemComponent>)
                     }
                 </Card.Body>
             </Card>
@@ -47,19 +53,4 @@ export const RightPanelComponent = ({ watchList, findAll }: RightPanelProps) => 
     );
 };
 
-const mapStateToProps = (state: any): RightPanelReduxProps => {
-    return {
-        watchList: state.watch.assets
-    };
-}
-
-const mapDispatchToProps = (dispatch: any): RightPanelDispatchProps => {
-    return {
-        findAll: () => dispatch(initializeWatch()),
-    };
-}
-
-export default connect<RightPanelReduxProps, RightPanelDispatchProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)(RightPanelComponent);
+export default RightPanelComponent;

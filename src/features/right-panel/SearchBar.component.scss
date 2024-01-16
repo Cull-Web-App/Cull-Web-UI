@@ -1,0 +1,13 @@
+@import "../../common/styles/icon_mixins";
+
+.search-container {
+    .search-icon {
+        @include button-icon;
+    }
+    
+    .search-box {
+        color: var(--bs-body-color);
+        margin-left: 10px;
+    }
+}
+

@@ -1,6 +1,6 @@
 import React from 'react';
 import { IBar } from '../../../common';
-import './CandlestickTooltip.component.css';
+import './CandlestickTooltip.component.scss';
 
 type CandlestickTooltipComponentProps = {
     bar: IBar,

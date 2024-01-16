@@ -7,6 +7,7 @@
     --bs-body-bg: #fff;
     --bs-body-color: #333;
     --scroll-bar-background-color: #fff;
+    --placeholder-color: #ccc;
 }
 
 /* Dark Mode */
@@ -17,6 +18,7 @@
     --bs-body-bg: #222;
     --bs-body-color: #fff;
     --scroll-bar-background-color: #333;
+    --placeholder-color: #555;
 }
 
 body {
@@ -32,4 +34,46 @@ body {
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
         monospace;
+}
+
+::placeholder {
+    color: var(--placeholder-color) !important;
+}
+
+:-ms-input-placeholder {
+    color: var(--placeholder-color) !important;
+}
+
+::-ms-input-placeholder {
+    color: var(--placeholder-color) !important;
+}
+
+/* Webkit-based browsers (Chrome, Safari) */
+/* Dark Mode Styling */
+::-webkit-scrollbar {
+    height: 6px;
+    /* Width of the scrollbar */
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: var(--scroll-bar-background-color);
+    /* Background color of the track */
+    border-radius: 8px;
+    /* Rounded corners */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #666;
+    /* Color of the scroll thumb */
+    border-radius: 8px;
+    /* Rounded corners */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #999;
+    /* Color of the scroll thumb on hover */
 }

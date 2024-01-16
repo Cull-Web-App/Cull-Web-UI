@@ -1,5 +1,5 @@
 import { ofType, Epic } from 'redux-observable';
-import { map, catchError, switchMap } from 'rxjs/operators';
+import { map, catchError, filter, switchMap, withLatestFrom, mergeMap, concatMap, take } from 'rxjs/operators';
 import {
     barConnect,
     barConnectSuccess,
@@ -17,11 +17,15 @@ import {
     unsubscribeBarError,
     findManyBar,
     findManyBarSuccess,
-    findManyBarError
+    findManyBarError,
+    updateConnectionStatus,
+    updateConnectionStatusSuccess,
+    updateSubscriptionStatusSuccess,
+    updateSubscriptionStatus
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
-import { Bar, IBar, IBarService, container } from '../../common';
-import { of } from 'rxjs';
+import { ConnectionStatus, IBar, IBarService, SubscriptionStatus, container } from '../../common';
+import { EMPTY, of } from 'rxjs';
 import { BaseEpic } from './base.epic';
 
 export class BarEpic extends BaseEpic {
@@ -30,12 +34,31 @@ export class BarEpic extends BaseEpic {
     public constructor() {
         super();
         this.barService = container.get<IBarService>(IDENTIFIERS.IBAR_SERVICE);
-        this.addEpics([this.connect$, this.disconnect$, this.subscribeBar$, this.receiveBar$, this.unsubscribeBar$, this.findMany$]);
+        this.addEpics([
+            this.connect$,
+            this.disconnect$,
+            this.subscribeBar$,
+            this.receiveBar$,
+            this.unsubscribeBar$,
+            this.findMany$,
+            this.updateConnectionStatus$,
+            this.updateSubscriptionStatus$
+        ]);
     }
 
     public connect$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(barConnect),
-        switchMap(() => {
+        withLatestFrom(
+            state$.pipe(map(state => state.bar.connectionStatus))
+        ),
+        concatMap(([_, connectionStatus]: [unknown, ConnectionStatus]) => {
+            if (connectionStatus === ConnectionStatus.Connecting) {
+                return EMPTY;
+            } else if (connectionStatus === ConnectionStatus.Connected) {
+                return of(barConnectSuccess());
+            }
+
+            store.dispatch(updateConnectionStatus({ status: ConnectionStatus.Connecting }));
             return this.barService.connect().pipe(
                 map(_ => {
                     this.barService.registerAll(new Map<string, (...args: any[]) => void>([
@@ -50,11 +73,25 @@ export class BarEpic extends BaseEpic {
         })
     );
 
-    public disconnect$: Epic<any> = (actions$, state$) => actions$.pipe(
+    public disconnect$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(barDisconnect),
-        switchMap(() => {
+        withLatestFrom(
+            state$.pipe(map(state => state.bar.connectionStatus))
+        ),
+        concatMap(([_, connectionStatus]: [unknown, ConnectionStatus]) => {
+            if (connectionStatus === ConnectionStatus.Disconnecting) {
+                return EMPTY;
+            } else if (connectionStatus === ConnectionStatus.Disconnected) {
+                return of(barDisconnectSuccess());
+            }
+
+            store.dispatch(updateConnectionStatus({ status: ConnectionStatus.Disconnecting }));
             return this.barService.disconnect().pipe(
-                map(_ => barDisconnectSuccess()),
+                map(_ => {
+                    this.barService.deregisterAll(new Map<string, (...args: any[]) => void>([
+                        ['ReceiveBar', () => EMPTY]
+                    ]));
+                }),
                 catchError(error => [
                     barDisconnectError(error)
                 ])
@@ -62,9 +99,22 @@ export class BarEpic extends BaseEpic {
         })
     );
 
-    public subscribeBar$: Epic<any> = (actions$, state$) => actions$.pipe(
+    public subscribeBar$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(subscribeBar),
-        switchMap(({ payload: { symbol }}: { payload: { symbol: string } }) => {
+        withLatestFrom(
+            state$.pipe(
+                map(state => new Map<string, SubscriptionStatus>(Object.entries(state.bar.subscriptionStatusPerSymbol)))
+            )
+        ),
+        concatMap(([{ payload: { symbol } }, subscriptionStatus]: [{ payload: { symbol: string } }, Map<string, SubscriptionStatus>]) => {
+            const currentSubscriptionStatus = subscriptionStatus.get(symbol) ?? SubscriptionStatus.Unsubscribed;
+            if (currentSubscriptionStatus === SubscriptionStatus.Subscribed || currentSubscriptionStatus === SubscriptionStatus.Subscribing) {
+                return EMPTY;
+            }
+
+            // Need to update the subscription status here -- this is because the subscribe method can take time
+            // and we don't want to send multiple subscribe requests when one is already in progress
+            store.dispatch(updateSubscriptionStatus({ symbol, status: SubscriptionStatus.Subscribing }));
             return this.barService.subscribe(symbol).pipe(
                 map(_ => subscribeBarSuccess({ symbol })),
                 catchError(error => [
@@ -74,9 +124,22 @@ export class BarEpic extends BaseEpic {
         })
     );
 
-    public unsubscribeBar$: Epic<any> = (actions$, state$) => actions$.pipe(
+    public unsubscribeBar$: Epic<any> = (actions$, state$, { store }) => actions$.pipe(
         ofType(unsubscribeBar),
-        switchMap(({ payload: { symbol }}: { payload: { symbol: string } }) => {
+        withLatestFrom(
+            state$.pipe(
+                map(state => new Map<string, SubscriptionStatus>(Object.entries(state.bar.subscriptionStatusPerSymbol)))
+            )
+        ),
+        concatMap(([{ payload: { symbol } }, subscriptionStatus]: [{ payload: { symbol: string } }, Map<string, SubscriptionStatus>]) => {
+            const currentSubscriptionStatus = subscriptionStatus.get(symbol) ?? SubscriptionStatus.Unsubscribed;
+            if (currentSubscriptionStatus === SubscriptionStatus.Unsubscribed || currentSubscriptionStatus === SubscriptionStatus.Unsubscribing) {
+                return EMPTY;
+            }
+
+            // Need to update the subscription status here -- this is because the subscribe method can take time
+            // and we don't want to send multiple subscribe requests when one is already in progress
+            store.dispatch(updateSubscriptionStatus({ symbol, status: SubscriptionStatus.Unsubscribing }));
             return this.barService.unsubscribe(symbol).pipe(
                 map(_ => unsubscribeBarSuccess({ symbol })),
                 catchError(error => [
@@ -88,20 +151,34 @@ export class BarEpic extends BaseEpic {
 
     public receiveBar$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(receiveBar),
-        switchMap(({ payload: { bar } }: { payload: { bar: any } }) => {
-            return of(receiveBarSuccess({ symbol: bar.symbol, bar: new Bar(bar) }));
+        concatMap(({ payload: { bar } }: { payload: { bar: IBar } }) => {
+            return of(receiveBarSuccess({ symbol: bar.symbol, bar }));
         })
     );
 
     public findMany$: Epic<any> = (actions$, state$) => actions$.pipe(
         ofType(findManyBar),
-        switchMap(({ payload: { symbol, from, to } }: { payload: { symbol: string, from: Date, to: Date } }) => {
+        concatMap(({ payload: { symbol, from, to } }: { payload: { symbol: string, from: Date, to: Date } }) => {
             return this.barService.findMany(symbol, from, to).pipe(
                 map(bars => findManyBarSuccess({ symbol: symbol, bars })),
                 catchError(error => [
                     findManyBarError(error)
                 ])
             );
+        })
+    );
+
+    public updateConnectionStatus$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(updateConnectionStatus),
+        switchMap(({ payload: { status } }: { payload: { status: ConnectionStatus } }) => {
+            return of(updateConnectionStatusSuccess({ status }));
+        })
+    );
+
+    public updateSubscriptionStatus$: Epic<any> = (actions$, state$) => actions$.pipe(
+        ofType(updateSubscriptionStatus),
+        switchMap(({ payload: { symbol, status } }: { payload: { symbol: string, status: SubscriptionStatus } }) => {
+            return of(updateSubscriptionStatusSuccess({ symbol, status }));
         })
     );
 }

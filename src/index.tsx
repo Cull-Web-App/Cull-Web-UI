@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
-import './index.css';
 import AuthenticatedAppComponent from './AuthenticatedApp.component';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
@@ -10,9 +9,9 @@ import { createEpicMiddleware, combineEpics } from 'redux-observable';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { InversifyProvider } from './common';
 import { container } from './common/ioc/container.ioc';
-import { bar, SymbolEpic, symbols, preference, BarEpic, IBaseEpic, PreferenceEpic, WatchEpic, watch, UserEpic, user } from './state';
+import { bar, AssetEpic, asset, preference, BarEpic, IBaseEpic, PreferenceEpic, WatchEpic, watch, UserEpic, user, calendar, CalendarEpic } from './state';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './index.css';
+import './index.scss';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -21,7 +20,7 @@ const root = ReactDOM.createRoot(
 const epicMiddleWare = createEpicMiddleware({
     dependencies: {
         get store() {
-                return store
+            return store
         }
     }
 });
@@ -30,11 +29,12 @@ const epicMiddleWare = createEpicMiddleware({
 const store = configureStore(
     {
         reducer: combineReducers({
-            symbols,
+            asset,
             bar,
             preference,
             watch,
-            user
+            user,
+            calendar
         }),
         middleware: [epicMiddleWare]
     }
@@ -42,11 +42,12 @@ const store = configureStore(
 
 // Construct the epics
 const epics: IBaseEpic[] = [
-    new SymbolEpic(),
+    new AssetEpic(),
     new BarEpic(),
     new PreferenceEpic(),
     new WatchEpic(),
-    new UserEpic()
+    new UserEpic(),
+    new CalendarEpic()
 ];
 
 epicMiddleWare.run(

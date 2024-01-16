@@ -26,18 +26,27 @@ export class HttpRepository implements IHttpRepository {
 
     public put<T>(url: string, body: unknown): Observable<HTTPResponse<T>> {
         return from(
-            axios.post(url, body, {
-                method: 'POST'
+            axios.put(url, body, {
+                method: 'PUT'
             } as AxiosRequestConfig) as Promise<HTTPResponse<T>>
         )
     }
 
-    public delete<T>(url: string, params?: unknown): Observable<HTTPResponse<T>> {
-        return from(
-            axios.delete(url, {
-                method: 'DELETE',
-                params
-            } as AxiosRequestConfig) as Promise<HTTPResponse<T>>
-        )
+    public delete<T>(url: string, params?: unknown, useBody: boolean = false): Observable<HTTPResponse<T>> {
+        if (useBody) {
+            return from(
+                axios.delete(url, {
+                    method: 'DELETE',
+                    data: params
+                } as AxiosRequestConfig) as Promise<HTTPResponse<T>>
+            );
+        } else {
+            return from(
+                axios.delete(url, {
+                    method: 'DELETE',
+                    params
+                } as AxiosRequestConfig) as Promise<HTTPResponse<T>>
+            )
+        }
     }
 }

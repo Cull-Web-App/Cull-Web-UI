@@ -3,7 +3,7 @@ import { Observable } from "rxjs";
 import { IDENTIFIERS } from "../ioc/identifiers.ioc";
 import { IBarRepository } from "../repositories";
 import { IBarService } from "./ibar.service";
-import { IBar, IBarFindManyParams } from "../models";
+import { Bar, IBar, IBarFindManyParams } from "../models";
 
 @injectable()
 export class BarService implements IBarService {
@@ -19,7 +19,13 @@ export class BarService implements IBarService {
 
     public registerAll(registrationMap: Map<string, (...args: any[]) => void>): void {
         this.barRepository.registerAll(new Map<string, (...args: any[]) => void>([
-            ['ReceiveBar', (bar) => registrationMap.get('ReceiveBar')!(bar)]
+            ['ReceiveBar', (bar: Record<string, string | number | Date | undefined>) => registrationMap.get('ReceiveBar')!(new Bar(bar))]
+        ]));
+    }
+
+    public deregisterAll(registrationMap: Map<string, (...args: any[]) => void>): void {
+        this.barRepository.deregisterAll(new Map<string, (...args: any[]) => void>([
+            ['ReceiveBar', () => registrationMap.get('ReceiveBar')!()]
         ]));
     }
 

@@ -33,7 +33,7 @@ export const StockViewComponent = ({ barMap, findMany }: StockViewProps) => {
 const mapStateToProps = (state: any): StockViewReduxProps => {
     const { barMap } = state.bar;
     return {
-        barMap: new Map<string, IBar[]>([...Object.entries(barMap as Record<string, IBar[]>)]),
+        barMap: barMap
     };
 }
 

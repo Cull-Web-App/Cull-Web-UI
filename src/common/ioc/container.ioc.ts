@@ -3,8 +3,8 @@ import { Container } from 'inversify';
 import {
     IHttpRepository,
     HttpRepository,
-    ISymbolRepository,
-    SymbolRepository,
+    IAssetRepository,
+    AssetRepository,
     ISignalRRepository,
     SignalRRepository,
     IBarRepository,
@@ -12,11 +12,13 @@ import {
     IWatchRepository,
     WatchRepository,
     UserAvatarRepository,
-    IUserAvatarRepository
+    IUserAvatarRepository,
+    ICalendarRepository,
+    CalendarRepository
 } from '../repositories';
 import {
-    SymbolService,
-    ISymbolService,
+    AssetService,
+    IAssetService,
     IBarService,
     BarService,
     PreferenceService,
@@ -24,7 +26,9 @@ import {
     WatchService,
     IWatchService,
     IUserAvatarService,
-    UserAvatarService
+    UserAvatarService,
+    CalendarService,
+    ICalendarService
 } from '../services';
 import { IDENTIFIERS } from './identifiers.ioc';
 import getDecorators from 'inversify-inject-decorators';
@@ -33,8 +37,8 @@ import { IPublicClientApplication, PublicClientApplication } from '@azure/msal-b
 
 const container: Container = new Container();
 container.bind<IHttpRepository>(IDENTIFIERS.IHTTP_REPOSITORY).to(HttpRepository);
-container.bind<ISymbolRepository>(IDENTIFIERS.ISYMBOL_REPOSITORY).to(SymbolRepository);
-container.bind<ISymbolService>(IDENTIFIERS.ISYMBOL_SERVICE).to(SymbolService);
+container.bind<IAssetRepository>(IDENTIFIERS.IASSET_REPOSITORY).to(AssetRepository);
+container.bind<IAssetService>(IDENTIFIERS.IASSET_SERVICE).to(AssetService);
 container.bind<ISignalRRepository>(IDENTIFIERS.ISIGNALR_REPOSITORY).to(SignalRRepository);
 container.bind<IBarRepository>(IDENTIFIERS.IBAR_REPOSITORY).to(BarRepository);
 container.bind<IBarService>(IDENTIFIERS.IBAR_SERVICE).to(BarService);
@@ -44,6 +48,8 @@ container.bind<IWatchService>(IDENTIFIERS.IWATCH_SERVICE).to(WatchService);
 container.bind<IUserAvatarRepository>(IDENTIFIERS.IUSERAVATAR_REPOSITORY).to(UserAvatarRepository);
 container.bind<IUserAvatarService>(IDENTIFIERS.IUSERAVATAR_SERVICE).to(UserAvatarService);
 container.bind<IPublicClientApplication>(IDENTIFIERS.IMSAL_INSTANCE).toConstantValue(new PublicClientApplication(msalConfig));
+container.bind<ICalendarRepository>(IDENTIFIERS.ICALENDAR_REPOSITORY).to(CalendarRepository);
+container.bind<ICalendarService>(IDENTIFIERS.ICALENDAR_SERVICE).to(CalendarService);
 
 const { lazyInject } = getDecorators(container, false);
 

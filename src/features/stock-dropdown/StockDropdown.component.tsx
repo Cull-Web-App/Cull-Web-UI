@@ -2,21 +2,19 @@ import React, { useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
-import { connect } from 'react-redux';
-import { subscribeBar } from '../../state';
-import { IAsset } from '../../common';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectAssets, selectSubscribedSymbols, subscribeBar } from '../../state';
 
 // Define the Props for this component
-type StockDropdownProps = StockDropdownDispatchProps & StockDropdownReduxProps;
-interface StockDropdownDispatchProps {
-    subscribe: ((symbol: string) => void);
-}
-interface StockDropdownReduxProps {
-    subscribedSymbols: Set<string>;
-    symbols: string[];
-}
+type StockDropdownProps = {};
 
-const StockDropdownComponent = ({ symbols, subscribedSymbols, subscribe }: StockDropdownProps) => {
+const StockDropdownComponent = ({}: StockDropdownProps) => {
+    const dispatch = useDispatch();
+    const subscribe = (symbol: string) => dispatch(subscribeBar({ symbol }));
+
+    const symbols = Object.keys(useSelector(selectAssets));
+    const subscribedSymbols = new Set(...useSelector(selectSubscribedSymbols));
+
     const [searchTerm, setSearchTerm] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
     const filteredSymbols = symbols.filter(symbol => !subscribedSymbols.has(symbol) && symbol.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -87,22 +85,4 @@ const StockDropdownComponent = ({ symbols, subscribedSymbols, subscribe }: Stock
     );
 };
 
-const mapDispatchToProps = (dispatch: any): StockDropdownDispatchProps => {
-    return {
-        subscribe: (symbol: string) => dispatch(subscribeBar({ symbol })),
-    };
-}
-
-const mapStateToProps = (state: any): StockDropdownReduxProps => {
-    const { symbols } = state.symbols;
-    const { subscribedSymbols } = state.bar;
-    return {
-        subscribedSymbols: new Set([...subscribedSymbols]),
-        symbols: symbols.map((asset: IAsset) => asset.symbol)
-    };
-}
-
-export default connect<StockDropdownReduxProps, StockDropdownDispatchProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)(StockDropdownComponent);
+export default StockDropdownComponent;

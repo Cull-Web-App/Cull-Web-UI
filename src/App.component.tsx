@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { initializePreferences } from "./state";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { initializePreferences, selectDarkMode } from "./state";
 import MenuComponent from "features/menu/Menu.component";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -19,22 +19,19 @@ import MetricsComponent from "features/metrics/Metrics.component";
 import RequestAuthenticationInterceptorComponent from "features/authentication/RequestAuthenticationInterceptor.component";
 import { AuthenticatedTemplate } from "@azure/msal-react";
 
-type AppProps = AppReduxProps & AppDispatchProps;
-interface AppDispatchProps
-{
-    initializePreferences: (() => void);
-}
+type AppProps = {};
 
-interface AppReduxProps
-{
-    darkMode: boolean;
-}
+export const AppComponent = ({}: AppProps) => {
+    const dispatch = useDispatch();
+    const initializeUserPreferences = () => dispatch(initializePreferences());
 
-export const AppComponent = ({ darkMode, initializePreferences }: AppProps) => {
+    const darkMode = useSelector(selectDarkMode);
+
     const [tabMap, setTabMap] = useState<Map<string, [string, JSX.Element]>>(new Map<string, [string, JSX.Element]>());
 
     useEffect(() => {
-        initializePreferences();
+        initializeUserPreferences();
+
         const tabMap = new Map<string, [string, JSX.Element]>([
             ['overview', ['Overview', <OverviewComponent></OverviewComponent>]],
             ['stock', ['Stock', <StockViewComponent></StockViewComponent>]],
@@ -76,21 +73,4 @@ export const AppComponent = ({ darkMode, initializePreferences }: AppProps) => {
     );
 }
 
-const mapDispatchToProps = (dispatch: any): AppDispatchProps =>
-{
-    return {
-        initializePreferences: () => dispatch(initializePreferences())
-    };
-}
-
-const mapStateToProps = (state: any): AppReduxProps => {
-    const { darkMode } = state.preference;
-    return {
-        darkMode
-    };
-}
-
-export default connect<AppReduxProps, AppDispatchProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)(AppComponent);
+export default AppComponent;

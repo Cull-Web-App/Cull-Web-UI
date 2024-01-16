@@ -1,6 +1,6 @@
 export const IDENTIFIERS = {
-    ISYMBOL_SERVICE: Symbol.for('ISymbolService'),
-    ISYMBOL_REPOSITORY: Symbol.for('ISymbolRepository'),
+    IASSET_SERVICE: Symbol.for('IAssetService'),
+    IASSET_REPOSITORY: Symbol.for('IAssetRepository'),
     IHTTP_REPOSITORY: Symbol.for('IHttpRepository'),
     ISIGNALR_REPOSITORY: Symbol.for('ISignalRRepository'),
     IBAR_REPOSITORY: Symbol.for('IBarRepository'),
@@ -11,4 +11,6 @@ export const IDENTIFIERS = {
     IUSERAVATAR_REPOSITORY: Symbol.for('IUserAvatarRepository'),
     IUSERAVATAR_SERVICE: Symbol.for('IUserAvatarService'),
     IMSAL_INSTANCE: Symbol.for('IMsalInstance'),
+    ICALENDAR_SERVICE: Symbol.for('ICalendarService'),
+    ICALENDAR_REPOSITORY: Symbol.for('ICalendarRepository'),
 };

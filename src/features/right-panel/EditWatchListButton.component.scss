@@ -1,0 +1,7 @@
+@import "../../common/styles/icon_mixins";
+
+.edit-button-container {
+    .edit-button-icon {
+        @include button-icon;
+    }
+};

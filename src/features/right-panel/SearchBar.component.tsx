@@ -1,9 +1,8 @@
-import React, { FormEvent, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import './SearchBar.component.css';
+import './SearchBar.component.scss';
 
 type SearchBarProps = SearchBarComponentProps;
 interface SearchBarComponentProps {
@@ -15,6 +14,12 @@ interface SearchBarComponentProps {
 export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange }: SearchBarProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isExpanded, setIsExpanded] = useState(false);
+
+    useEffect(() => {
+        if (!isExpanded) {
+            setSearchTerm('');
+        }
+    }, [isExpanded]);
 
     const handleSearch = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -58,7 +63,7 @@ export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange
     };
 
     return (
-        <Form.Group controlId="searchForm" className='d-flex align-items-center' onSubmit={handleSearch}>
+        <Form.Group controlId="searchForm" className='d-flex align-items-center search-container' onSubmit={handleSearch}>
             <div className={`search-icon ${(isExpanded || expandEnabled) ? 'expanded': ''}`} onClick={handleExpand}>
                 <FontAwesomeIcon icon={faSearch}></FontAwesomeIcon>
             </div>
@@ -71,7 +76,7 @@ export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange
                     onChange={handleSearchTermChange}
                     onKeyDown={handleKeyDown}
                     onBlur={handleBlur}
-                    autoFocus
+                    autoFocus={!expandEnabled}
                 />
             )}
         </Form.Group>

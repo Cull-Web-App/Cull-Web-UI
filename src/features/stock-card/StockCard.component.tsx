@@ -1,23 +1,15 @@
 import React, { MouseEventHandler } from 'react';
 import Card from 'react-bootstrap/Card';
-import { connect } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import PriceComponent from './Price.component';
 import './StockCard.component.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
-import { barDisconnect, unsubscribeBar } from 'state';
+import { selectBarMap, unsubscribeBar } from '../../state';
 import { IBar } from '../../common';
 
 // Define the Props for this component
-type StockCardProps = StockCardReduxProps & StockCardComponentProps & StockCardDispatchProps;
-interface StockCardReduxProps {
-    barMap: Map<string, IBar[]>;
-}
-
-interface StockCardDispatchProps {
-    unsubscribe: ((symbol: string) => void);
-}
-
+type StockCardProps = StockCardComponentProps;
 interface StockCardComponentProps {
     symbol: string;
 }
@@ -30,7 +22,12 @@ const StockCardCloseButton = ({ onClick }: { onClick: MouseEventHandler<HTMLDivE
     );
 }
 
-const StockCardComponent = ({ symbol, barMap, unsubscribe }: StockCardProps) => {
+const StockCardComponent = ({ symbol }: StockCardProps) => {
+    const dispatch = useDispatch();
+    const unsubscribe = (symbol: string) => dispatch(unsubscribeBar({ symbol }));
+
+    const barMap = useSelector(selectBarMap);
+
     return (
         <Card bg='dark' text='white' className='stock-card shadow' data-testid="stock-card">
             <StockCardCloseButton onClick={() => unsubscribe(symbol)}></StockCardCloseButton>
@@ -40,22 +37,6 @@ const StockCardComponent = ({ symbol, barMap, unsubscribe }: StockCardProps) => 
             </Card.Body>
         </Card>
     );
-}
+};
 
-const mapDispatchToProps = (dispatch: any): StockCardDispatchProps => {
-    return {
-        unsubscribe: (symbol: string) => dispatch(unsubscribeBar({ symbol }))
-    };
-}
-
-const mapStateToProps = (state: any): StockCardReduxProps => {
-    const { barMap } = state.bar;
-    return {
-        barMap: new Map(Object.entries(barMap))
-    };
-}
-
-export default connect<StockCardReduxProps, StockCardDispatchProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)(StockCardComponent);
+export default StockCardComponent;

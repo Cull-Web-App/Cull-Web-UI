@@ -13,8 +13,7 @@ import {
 } from 'd3';
 import CandlestickComponent from './Candlestick.component';
 import CursorComponent from './Cursor.component';
-import CandlestickTooltipComponent from './CandlestickTooltip.component';
-import './CandlestickChart.component.css';
+import './CandlestickChart.component.scss';
 
 import { IBar, IScaledBar, ScaledBar } from '../../../common';
 import { findManyBar } from '../../../state';
@@ -43,6 +42,7 @@ const CandlestickChartComponent = ({ bars, variant, maxHeight, maxWidth, findMan
     const containerRef = useRef<SVGSVGElement>(null);
     const xAxisRef = useRef<SVGGElement>(null);
     const yAxisRef = useRef<SVGGElement>(null);
+
     const [scaledBars, setScaledBars] = useState<IScaledBar[]>([]);
     const [cursorX, setCursorX] = useState<number | null>(null);
     const [cursorY, setCursorY] = useState<number | null>(null);

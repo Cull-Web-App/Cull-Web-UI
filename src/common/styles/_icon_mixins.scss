@@ -1,0 +1,10 @@
+@mixin button-icon {
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 10px;
+    font-size: 20px;
+
+    &:hover {
+        color: var(--primary-color);
+    }
+};

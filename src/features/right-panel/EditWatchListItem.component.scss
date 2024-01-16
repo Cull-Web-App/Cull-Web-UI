@@ -1,0 +1,58 @@
+.edit-watch-list-item {
+    .watch-list-row {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid hsl(0, 0%, 30%);
+    }
+
+    .rounded-icon-red, .rounded-icon-green {
+        background-color: transparent;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: auto;
+        height: auto;
+        line-height: 1;
+        margin-right: 10px;
+    }
+    
+    .rounded-icon-red {
+        color: hsl(0, 80%, 50%);
+    }
+
+    .rounded-icon-red:hover {
+        color: hsl(0, 80%, 60%);
+    }
+
+    .rounded-icon-green {
+        color: hsl(120, 80%, 40%);
+    }
+
+    .rounded-icon-green:hover {
+        color: hsl(120, 80%, 30%);
+    }
+    
+    .drag-handle {
+        cursor: grab;
+        margin-left: auto;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .asset-symbol-text {
+        font-size: 16px; /* Adjust as needed */
+        font-weight: bold;
+    }
+    
+    .asset-name-text {
+        font-size: 10px; /* Adjust as needed */
+        color: #888; /* Adjust as needed */
+    }
+}

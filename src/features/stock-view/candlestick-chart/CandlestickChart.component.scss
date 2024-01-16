@@ -1,0 +1,21 @@
+
+.x-axis text {
+    fill: var(--text-color);
+}
+
+.x-axis path {
+    stroke: var(--text-color);
+}
+
+.y-axis text {
+    fill: var(--text-color);
+}
+
+.y-axis path {
+    stroke: var(--text-color);
+}
+
+.chart-container {
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+}

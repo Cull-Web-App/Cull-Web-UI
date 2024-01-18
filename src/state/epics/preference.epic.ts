@@ -8,7 +8,7 @@ import {
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { container } from '../../common/ioc/container.ioc';
 import { BaseEpic } from './base.epic';
-import { IPreference } from '../../common/models';
+import { IPreference } from '../../common';
 
 export class PreferenceEpic extends BaseEpic {
     private readonly preferenceService!: any;

@@ -5,6 +5,9 @@ import { ConnectionStatus, IBar, SubscriptionStatus } from '../../common';
 import Card from 'react-bootstrap/Card';
 import SparkChartComponent from './SparkChart.component';
 import { IRootPartition } from '../../state';
+import PriceComponent from 'features/stock-card/Price.component';
+import PriceDifferentialComponent from './PriceDifferential.component';
+import { Col, Container, Row } from 'react-bootstrap';
 
 type WatchListItemProps = WatchListItemComponentProps;
 interface WatchListItemComponentProps {
@@ -40,12 +43,24 @@ export const WatchListItemComponent = ({ symbol }: WatchListItemProps) => {
     }, [symbol]);
 
     return (
-        <Card bg='dark' text='white' className='stock-card shadow' data-testid="stock-card">
-            <Card.Body>
-                <Card.Title data-testid="stock-card-title">{symbol}</Card.Title>
-                <SparkChartComponent symbol={symbol} bars={bars}></SparkChartComponent>
-            </Card.Body>
-        </Card>
+        <Container fluid className='stock-card-container'>
+            <Card bg='dark' text='white' className='stock-card shadow' data-testid="stock-card">
+                <Card.Body>
+                    <Card.Title>
+                        {symbol}
+                    </Card.Title>
+                    <Row>
+                        <Col xs={10}>
+                            <SparkChartComponent symbol={symbol} bars={bars}></SparkChartComponent>
+                        </Col>
+                        <Col xs={2}>
+                            <PriceComponent symbol={symbol}></PriceComponent>
+                            <PriceDifferentialComponent symbol={symbol}></PriceDifferentialComponent>
+                        </Col>
+                    </Row>
+                </Card.Body>
+            </Card>
+        </Container>
     );
 };
 

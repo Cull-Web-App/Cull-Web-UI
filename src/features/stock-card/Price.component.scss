@@ -1,0 +1,9 @@
+@import '../../common/styles/text_mixins';
+
+.price-container {
+    @include price-container;
+
+    .price {
+        @include price-text($color: #fff);
+    }
+}

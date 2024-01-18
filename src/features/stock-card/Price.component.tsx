@@ -1,16 +1,29 @@
-import { IBar } from "../../common";
-import React from "react";
+import { useSelector } from "react-redux";
+import React, { memo } from "react";
+import { IRootPartition, selectBarsForSymbol } from "../../state";
+import './Price.component.scss';
 
-const PriceComponent = ({ barMap, symbol }: { barMap: Map<string, IBar[]>, symbol: string }) => {
-    const bars = barMap.get(symbol);
+type PriceProps = PriceComponentProps;
+interface PriceComponentProps {
+    symbol: string;
+}
+
+const PriceComponent = ({ symbol }: PriceProps) => {
+    const bars = useSelector((state: IRootPartition) => selectBarsForSymbol(state, symbol));
     if (!bars || bars.length === 0) {
-        return (<div className="price" data-testid="price">$--</div>);
+        return (
+            <div className="price-container">
+                <div className="price" data-testid="price">$--</div>
+            </div>
+        );
     }
     return (
-        <div className="price" data-testid="price">
-            ${bars[bars.length - 1].close.toFixed(2)}
+        <div className="price-container">
+            <div className="price" data-testid="price">
+                ${bars[bars.length - 1].close.toFixed(2)}
+            </div>
         </div>
-    )
+    );
 };
 
-export default PriceComponent;
+export default memo(PriceComponent);

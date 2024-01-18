@@ -1,0 +1,17 @@
+@import "../../common/styles/text_mixins.scss";
+
+.price-differential-container {
+    @include price-container;
+
+    .price-differential {
+        @include price-text($color: #fff);
+    }
+
+    .price-differential-positive {
+        @include price-text($color: #4caf50);
+    }
+
+    .price-differential-negative {
+        @include price-text($color: #f44336);
+    }
+}

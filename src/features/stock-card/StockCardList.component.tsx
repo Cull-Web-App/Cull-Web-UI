@@ -1,13 +1,13 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import StockCardComponent from './StockCard.component';
-import { selectSubscribedSymbols } from 'state';
+import { selectSubscribedSymbolsBar } from 'state';
 
 // Define the Props for this component
 type StockCardListProps = {};
 
 const StockCardListComponent = ({}: StockCardListProps) => {
-    const symbols = useSelector(selectSubscribedSymbols);
+    const symbols = useSelector(selectSubscribedSymbolsBar);
     return (
         <div className='d-flex flex-wrap gap-2 py-2'>
             {symbols.map((symbol: string) => <StockCardComponent key={symbol} symbol={symbol}></StockCardComponent>)}

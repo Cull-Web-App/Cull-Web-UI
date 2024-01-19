@@ -57,7 +57,7 @@ export const AppComponent = ({}: AppProps) => {
     return (
         <AuthenticatedTemplate>
             <RequestAuthenticationInterceptorComponent>
-                <Container fluid className="p-0">
+                <Container fluid>
                     <Row>
                         <MenuComponent tabMap={tabMap}></MenuComponent>
                         <Col xs={9}>

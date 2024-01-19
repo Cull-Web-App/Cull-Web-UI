@@ -18,10 +18,10 @@ import {
     findManyBar,
     findManyBarSuccess,
     findManyBarError,
-    updateConnectionStatus,
-    updateConnectionStatusSuccess,
-    updateSubscriptionStatusSuccess,
-    updateSubscriptionStatus
+    updateConnectionStatusBar,
+    updateConnectionStatusBarSuccess,
+    updateSubscriptionStatusBarSuccess,
+    updateSubscriptionStatusBar
 } from '../actions';
 import { IDENTIFIERS } from '../../common/ioc/identifiers.ioc';
 import { ConnectionStatus, IBar, IBarService, SubscriptionStatus, container } from '../../common';
@@ -58,7 +58,7 @@ export class BarEpic extends BaseEpic {
                 return of(barConnectSuccess());
             }
 
-            store.dispatch(updateConnectionStatus({ status: ConnectionStatus.Connecting }));
+            store.dispatch(updateConnectionStatusBar({ status: ConnectionStatus.Connecting }));
             return this.barService.connect().pipe(
                 map(_ => {
                     this.barService.registerAll(new Map<string, (...args: any[]) => void>([
@@ -85,7 +85,7 @@ export class BarEpic extends BaseEpic {
                 return of(barDisconnectSuccess());
             }
 
-            store.dispatch(updateConnectionStatus({ status: ConnectionStatus.Disconnecting }));
+            store.dispatch(updateConnectionStatusBar({ status: ConnectionStatus.Disconnecting }));
             return this.barService.disconnect().pipe(
                 map(_ => {
                     this.barService.deregisterAll(new Map<string, (...args: any[]) => void>([
@@ -114,7 +114,7 @@ export class BarEpic extends BaseEpic {
 
             // Need to update the subscription status here -- this is because the subscribe method can take time
             // and we don't want to send multiple subscribe requests when one is already in progress
-            store.dispatch(updateSubscriptionStatus({ symbol, status: SubscriptionStatus.Subscribing }));
+            store.dispatch(updateSubscriptionStatusBar({ symbol, status: SubscriptionStatus.Subscribing }));
             return this.barService.subscribe(symbol).pipe(
                 map(_ => subscribeBarSuccess({ symbol })),
                 catchError(error => [
@@ -139,7 +139,7 @@ export class BarEpic extends BaseEpic {
 
             // Need to update the subscription status here -- this is because the subscribe method can take time
             // and we don't want to send multiple subscribe requests when one is already in progress
-            store.dispatch(updateSubscriptionStatus({ symbol, status: SubscriptionStatus.Unsubscribing }));
+            store.dispatch(updateSubscriptionStatusBar({ symbol, status: SubscriptionStatus.Unsubscribing }));
             return this.barService.unsubscribe(symbol).pipe(
                 map(_ => unsubscribeBarSuccess({ symbol })),
                 catchError(error => [
@@ -169,16 +169,16 @@ export class BarEpic extends BaseEpic {
     );
 
     public updateConnectionStatus$: Epic<any> = (actions$, state$) => actions$.pipe(
-        ofType(updateConnectionStatus),
+        ofType(updateConnectionStatusBar),
         switchMap(({ payload: { status } }: { payload: { status: ConnectionStatus } }) => {
-            return of(updateConnectionStatusSuccess({ status }));
+            return of(updateConnectionStatusBarSuccess({ status }));
         })
     );
 
     public updateSubscriptionStatus$: Epic<any> = (actions$, state$) => actions$.pipe(
-        ofType(updateSubscriptionStatus),
+        ofType(updateSubscriptionStatusBar),
         switchMap(({ payload: { symbol, status } }: { payload: { symbol: string, status: SubscriptionStatus } }) => {
-            return of(updateSubscriptionStatusSuccess({ symbol, status }));
+            return of(updateSubscriptionStatusBarSuccess({ symbol, status }));
         })
     );
 }

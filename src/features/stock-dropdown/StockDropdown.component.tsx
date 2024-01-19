@@ -3,7 +3,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAssets, selectSubscribedSymbols, subscribeBar } from '../../state';
+import { selectAssets, selectSubscribedSymbolsBar, subscribeBar } from '../../state';
 
 // Define the Props for this component
 type StockDropdownProps = {};
@@ -13,7 +13,7 @@ const StockDropdownComponent = ({}: StockDropdownProps) => {
     const subscribe = (symbol: string) => dispatch(subscribeBar({ symbol }));
 
     const symbols = Object.keys(useSelector(selectAssets));
-    const subscribedSymbols = new Set(...useSelector(selectSubscribedSymbols));
+    const subscribedSymbols = new Set(...useSelector(selectSubscribedSymbolsBar));
 
     const [searchTerm, setSearchTerm] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);

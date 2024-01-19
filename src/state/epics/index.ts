@@ -6,3 +6,4 @@ export * from './preference.epic';
 export * from './watch.epic';
 export * from './user.epic';
 export * from './calendar.epic';
+export * from './market-maker-move.epic';

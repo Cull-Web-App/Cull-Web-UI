@@ -19,12 +19,12 @@ export const {
     findManyBar,
     findManyBarSuccess,
     findManyBarError,
-    updateConnectionStatus,
-    updateConnectionStatusSuccess,
-    updateConnectionStatusError,
-    updateSubscriptionStatus,
-    updateSubscriptionStatusSuccess,
-    updateSubscriptionStatusError
+    updateConnectionStatusBar,
+    updateConnectionStatusBarSuccess,
+    updateConnectionStatusBarError,
+    updateSubscriptionStatusBar,
+    updateSubscriptionStatusBarSuccess,
+    updateSubscriptionStatusBarError
 } = createActions({
     BAR_CONNECT: undefined,
     BAR_CONNECT_SUCCESS: undefined,
@@ -43,10 +43,10 @@ export const {
     FIND_MANY_BAR: ({ symbol, from, to }: { symbol: string, from: Date, to: Date }) => ({ symbol, from, to }),
     FIND_MANY_BAR_SUCCESS: ({ symbol, bars }: { symbol: string, bars: IBar[] }) => ({ symbol, bars }),
     FIND_MANY_BAR_ERROR: (error: string) => error,
-    UPDATE_CONNECTION_STATUS: ({ status }: { status: ConnectionStatus }) => ({ status }),
-    UPDATE_CONNECTION_STATUS_SUCCESS: ({ status }: { status: ConnectionStatus }) => ({ status }),
-    UPDATE_CONNECTION_STATUS_ERROR: (error: string) => error,
-    UPDATE_SUBSCRIPTION_STATUS: ({ symbol, status }: { symbol: string, status: SubscriptionStatus }) => ({ symbol, status }),
-    UPDATE_SUBSCRIPTION_STATUS_SUCCESS: ({ symbol, status }: { symbol: string, status: SubscriptionStatus }) => ({ symbol, status }),
-    UPDATE_SUBSCRIPTION_STATUS_ERROR: (error: string) => error
+    UPDATE_CONNECTION_STATUS_BAR: ({ status }: { status: ConnectionStatus }) => ({ status }),
+    UPDATE_CONNECTION_STATUS__BAR_SUCCESS: ({ status }: { status: ConnectionStatus }) => ({ status }),
+    UPDATE_CONNECTION_STATUS__BAR_ERROR: (error: string) => error,
+    UPDATE_SUBSCRIPTION_STATUS_BAR: ({ symbol, status }: { symbol: string, status: SubscriptionStatus }) => ({ symbol, status }),
+    UPDATE_SUBSCRIPTION_STATUS__BAR_SUCCESS: ({ symbol, status }: { symbol: string, status: SubscriptionStatus }) => ({ symbol, status }),
+    UPDATE_SUBSCRIPTION_STATUS__BAR_ERROR: (error: string) => error
  });

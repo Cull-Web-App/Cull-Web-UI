@@ -20,34 +20,34 @@ export const selectBarsForSymbol = createSelector(
     (barMap, symbol) => barMap.get(symbol) ?? []
 );
 
-export const selectSubscribedSymbols = createSelector(
+export const selectSubscribedSymbolsBar = createSelector(
     selectBar,
     (bar) => bar.subscribedSymbols
 );
 
-export const selectSubscribersPerSymbol = createSelector(
+export const selectSubscribersPerSymbolBar = createSelector(
     selectBar,
     (bar) => new Map<string, number>(Object.entries(bar.subscribersPerSymbol))
 );
 
-export const selectSubscribersForSymbol = createSelector(
-    selectSubscribersPerSymbol,
+export const selectSubscribersForSymbolBar = createSelector(
+    selectSubscribersPerSymbolBar,
     (_: IRootPartition, symbol: string) => symbol,
     (subscribersPerSymbol, symbol) => subscribersPerSymbol.get(symbol) ?? 0
 );
 
-export const selectSubscriptionStatusPerSymbol = createSelector(
+export const selectSubscriptionStatusPerSymbolBar = createSelector(
     selectBar,
     (bar) => new Map<string, SubscriptionStatus>(Object.entries(bar.subscriptionStatusPerSymbol))
 );
 
-export const selectSubscriptionStatusForSymbol = createSelector(
-    selectSubscriptionStatusPerSymbol,
+export const selectSubscriptionStatusForSymbolBar = createSelector(
+    selectSubscriptionStatusPerSymbolBar,
     (_: IRootPartition, symbol: string) => symbol,
     (subscriptionStatusPerSymbol, symbol) => subscriptionStatusPerSymbol.get(symbol) ?? SubscriptionStatus.Unsubscribed
 );
 
-export const selectConnectionStatus = createSelector(
+export const selectConnectionStatusBar = createSelector(
     selectBar,
     (bar) => bar.connectionStatus
 );

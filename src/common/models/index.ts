@@ -15,3 +15,5 @@ export * from './subscription-status.model';
 export * from './icalendar-find-many-params.model';
 export * from './icalendar.model';
 export * from './calendar.model';
+export * from './imarket-maker-move.model';
+export * from './market-maker-move.model';

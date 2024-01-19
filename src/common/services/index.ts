@@ -10,3 +10,5 @@ export * from './user-avatar.service';
 export * from './iuser-avatar.service';
 export * from './calendar.service';
 export * from './icalendar.service';
+export * from './market-maker-move.service';
+export * from './imarket-maker-move.service';

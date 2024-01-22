@@ -19,8 +19,11 @@ import SparkChartComponent from './SparkChart.component';
 import { IRootPartition } from '../../state';
 import PriceComponent from 'features/stock-card/Price.component';
 import PriceDifferentialComponent from './PriceDifferential.component';
-import { Col, Container, Row } from 'react-bootstrap';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 import MarketMakerMovesComponent from './MarketMakerMoves.component';
+import './WatchListItem.component.scss';
+import { useNavigate } from 'react-router-dom';
 
 type WatchListItemProps = WatchListItemComponentProps;
 interface WatchListItemComponentProps {
@@ -41,6 +44,8 @@ export const WatchListItemComponent = ({ symbol }: WatchListItemProps) => {
     const mmm = useSelector((state: IRootPartition) => selectMarketMakerMovesForSymbol(state, symbol));
     const subscriptionStatusBar = useSelector((state: IRootPartition) => selectSubscriptionStatusForSymbolBar(state, symbol));
     const subscriptionStatusMMM = useSelector((state: IRootPartition) => selectSubscriptionStatusForSymbolMMM(state, symbol));
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (connectionStatus === ConnectionStatus.Disconnected) {
@@ -72,9 +77,15 @@ export const WatchListItemComponent = ({ symbol }: WatchListItemProps) => {
         };
     }, [symbol]);
 
+    const handleClick = () => {
+        console.log(`Clicked ${symbol}`);
+
+        navigate(`/stock?symbol=${symbol}`);
+    };
+
     return (
-        <div className='stock-card-container'>
-            <Card bg='dark' text='white' className='stock-card shadow' data-testid="stock-card">
+        <Row className='watch-list-item-container'>
+            <Card bg='dark' text='white' className='watch-list-card shadow' data-testid="watch-list-item-card" onClick={handleClick}>
                 <Card.Body>
                     <Card.Title>
                         {symbol}
@@ -97,7 +108,7 @@ export const WatchListItemComponent = ({ symbol }: WatchListItemProps) => {
                     </Row>
                 </Card.Body>
             </Card>
-        </div>
+        </Row>
     );
 };
 

@@ -58,12 +58,12 @@ export const AppComponent = ({}: AppProps) => {
         <AuthenticatedTemplate>
             <RequestAuthenticationInterceptorComponent>
                 <Container fluid>
-                    <Row>
-                        <MenuComponent tabMap={tabMap}></MenuComponent>
-                        <Col xs={9}>
+                    <MenuComponent tabMap={tabMap}></MenuComponent>
+                    <Row className="page-content">
+                        <Col xs={10}>
                             <ContentComponent tabMap={tabMap}></ContentComponent>
                         </Col>
-                        <Col xs={3}>
+                        <Col xs={2}>
                             <RightPanelComponent></RightPanelComponent>
                         </Col>
                     </Row>

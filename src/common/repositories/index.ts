@@ -12,3 +12,5 @@ export * from './user-avatar.repository';
 export * from './iuser-avatar.repository';
 export * from './calendar.repository';
 export * from './icalendar.repository';
+export * from './market-maker-move.repository';
+export * from './imarket-maker-move.repository';

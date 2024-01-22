@@ -128,5 +128,4 @@ export class WatchEpic extends BaseEpic {
             );
         })
     );
-
 }

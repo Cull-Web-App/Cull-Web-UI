@@ -14,7 +14,9 @@ import {
     UserAvatarRepository,
     IUserAvatarRepository,
     ICalendarRepository,
-    CalendarRepository
+    CalendarRepository,
+    IMarketMakerMoveRepository,
+    MarketMakerMoveRepository
 } from '../repositories';
 import {
     AssetService,
@@ -28,7 +30,9 @@ import {
     IUserAvatarService,
     UserAvatarService,
     CalendarService,
-    ICalendarService
+    ICalendarService,
+    IMarketMakerMoveService,
+    MarketMakerMoveService
 } from '../services';
 import { IDENTIFIERS } from './identifiers.ioc';
 import getDecorators from 'inversify-inject-decorators';
@@ -50,6 +54,9 @@ container.bind<IUserAvatarService>(IDENTIFIERS.IUSERAVATAR_SERVICE).to(UserAvata
 container.bind<IPublicClientApplication>(IDENTIFIERS.IMSAL_INSTANCE).toConstantValue(new PublicClientApplication(msalConfig));
 container.bind<ICalendarRepository>(IDENTIFIERS.ICALENDAR_REPOSITORY).to(CalendarRepository);
 container.bind<ICalendarService>(IDENTIFIERS.ICALENDAR_SERVICE).to(CalendarService);
+container.bind<IMarketMakerMoveRepository>(IDENTIFIERS.IMARKET_MAKER_MOVE_REPOSITORY).to(MarketMakerMoveRepository);
+container.bind<IMarketMakerMoveService>(IDENTIFIERS.IMARKET_MAKER_MOVE_SERVICE).to(MarketMakerMoveService);
+
 
 const { lazyInject } = getDecorators(container, false);
 

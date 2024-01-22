@@ -13,4 +13,6 @@ export const IDENTIFIERS = {
     IMSAL_INSTANCE: Symbol.for('IMsalInstance'),
     ICALENDAR_SERVICE: Symbol.for('ICalendarService'),
     ICALENDAR_REPOSITORY: Symbol.for('ICalendarRepository'),
+    IMARKET_MAKER_MOVE_SERVICE: Symbol.for('IMarketMakerMoveService'),
+    IMARKET_MAKER_MOVE_REPOSITORY: Symbol.for('IMarketMakerMoveRepository'),
 };

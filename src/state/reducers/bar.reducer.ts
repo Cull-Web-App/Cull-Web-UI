@@ -1,23 +1,20 @@
 import { handleActions } from 'redux-actions';
 import {
-    barConnect,
     barConnectError,
     barConnectSuccess,
-    barDisconnect,
     barDisconnectError,
     barDisconnectSuccess,
     findManyBarError,
     findManyBarSuccess,
     receiveBarSuccess,
-    subscribeBar,
     subscribeBarError,
     subscribeBarSuccess,
     unsubscribeBarError,
     unsubscribeBarSuccess,
-    updateConnectionStatusError,
-    updateConnectionStatusSuccess,
-    updateSubscriptionStatusError,
-    updateSubscriptionStatusSuccess
+    updateConnectionStatusBarError,
+    updateConnectionStatusBarSuccess,
+    updateSubscriptionStatusBarError,
+    updateSubscriptionStatusBarSuccess,
 } from '../actions';
 import { IBar, ConnectionStatus, SubscriptionStatus } from '../../common';
 import { IBarPartition } from '../partitions';
@@ -204,15 +201,15 @@ export const bar = handleActions<BarState, string>(
             ...state,
             error: action.payload
         }),
-        [updateConnectionStatusSuccess.toString()]: (state: BarState, action: any) => ({
+        [updateConnectionStatusBarSuccess.toString()]: (state: BarState, action: any) => ({
             ...state,
             connectionStatus: action.payload.status
         }),
-        [updateConnectionStatusError.toString()]: (state: BarState, action: any) => ({
+        [updateConnectionStatusBarError.toString()]: (state: BarState, action: any) => ({
             ...state,
             error: action.payload
         }),
-        [updateSubscriptionStatusSuccess.toString()]: (state: BarState, action: any) => {
+        [updateSubscriptionStatusBarSuccess.toString()]: (state: BarState, action: any) => {
             const { symbol, status } = action.payload;
             return {
                 ...state,
@@ -222,7 +219,7 @@ export const bar = handleActions<BarState, string>(
                 }
             };
         },
-        [updateSubscriptionStatusError.toString()]: (state: BarState, action: any) => ({
+        [updateSubscriptionStatusBarError.toString()]: (state: BarState, action: any) => ({
             ...state,
             error: action.payload
         })

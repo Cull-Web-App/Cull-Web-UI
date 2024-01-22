@@ -1,0 +1,16 @@
+.mmm-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    .mmm-icon {
+        align-items: baseline;
+        margin-top: -10px;
+    }
+
+    .mmm-text {
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.5;
+    }
+}

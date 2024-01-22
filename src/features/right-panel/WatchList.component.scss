@@ -1,0 +1,15 @@
+.watch-list-content {
+    height: 90%;
+    .watch-list-items {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 0 1rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+        max-height: calc(100vh - 180px);
+        padding-bottom: 5rem;
+    }
+}

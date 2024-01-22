@@ -63,7 +63,7 @@ export const SearchBarComponent = ({ expandEnabled, onSearch, onSearchTermChange
     };
 
     return (
-        <Form.Group controlId="searchForm" className='d-flex align-items-center search-container' onSubmit={handleSearch}>
+        <Form.Group controlId="searchForm" className='search-container' onSubmit={handleSearch}>
             <div className={`search-icon ${(isExpanded || expandEnabled) ? 'expanded': ''}`} onClick={handleExpand}>
                 <FontAwesomeIcon icon={faSearch}></FontAwesomeIcon>
             </div>

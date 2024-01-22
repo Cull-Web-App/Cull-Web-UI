@@ -44,7 +44,7 @@ export const EditWatchListItemComponent = ({ provided, watch, asset, isAddMode, 
     };
 
     return (
-        <Container
+        <div
             className="edit-watch-list-item"
             key={watch.symbol}
             {...provided.draggableProps}
@@ -69,7 +69,7 @@ export const EditWatchListItemComponent = ({ provided, watch, asset, isAddMode, 
                     </div>
                 </Col>
             </Row>
-        </Container>
+        </div>
     );
 };
 

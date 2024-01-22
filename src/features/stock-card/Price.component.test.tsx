@@ -10,7 +10,7 @@ test('renders the price if it exists in the map', () => {
     barMap.set(symbol, [{ close: 100 } as IBar]);
     barMap.set('GOOG', [{ close: 200 } as IBar]);
     render(
-        <PriceComponent barMap={barMap} symbol={symbol}></PriceComponent>
+        <PriceComponent symbol={symbol}></PriceComponent>
     )
 
     const price = screen.queryByText('$100.00');
@@ -22,7 +22,7 @@ test('renders $-- if the price does not exist in the map', () => {
     const barMap = new Map<string, IBar[]>();
     barMap.set('GOOG', [{ close: 200 } as IBar]);
     render(
-        <PriceComponent barMap={barMap} symbol={symbol}></PriceComponent>
+        <PriceComponent symbol={symbol}></PriceComponent>
     )
     const price = screen.queryByText('$0.00');
     expect(price).toBeInTheDocument();

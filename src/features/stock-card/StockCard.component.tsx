@@ -26,14 +26,12 @@ const StockCardComponent = ({ symbol }: StockCardProps) => {
     const dispatch = useDispatch();
     const unsubscribe = (symbol: string) => dispatch(unsubscribeBar({ symbol }));
 
-    const barMap = useSelector(selectBarMap);
-
     return (
         <Card bg='dark' text='white' className='stock-card shadow' data-testid="stock-card">
             <StockCardCloseButton onClick={() => unsubscribe(symbol)}></StockCardCloseButton>
             <Card.Body>
                 <Card.Title data-testid="stock-card-title">{symbol}</Card.Title>
-                <PriceComponent barMap={barMap} symbol={symbol}></PriceComponent>
+                <PriceComponent symbol={symbol}></PriceComponent>
             </Card.Body>
         </Card>
     );

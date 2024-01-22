@@ -1,0 +1,18 @@
+@use "sass:color";
+
+$card-background-color: rgba(6, 3, 54, 0.048); // Fallback color
+$more-saturated-color: color.adjust($card-background-color, $saturation: 10%);
+
+.watch-list-item-container {
+    padding: 0.25rem 0;
+
+    .watch-list-card {
+        width: 30rem;
+
+        cursor: pointer;
+
+        &:hover {
+            background-color: $more-saturated-color !important;
+        }
+    }
+}

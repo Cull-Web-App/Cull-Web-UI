@@ -6,19 +6,24 @@
     "jsx": "react",
     "sourceMap": true,
     "outDir": "./distlib",
-    "rootDir": "./", 
+    "rootDir": "./",
     "strict": true,
     "noImplicitAny": true,
-    "types": ["node", "jest", "reflect-metadata"],
-    "experimentalDecorators": true, 
+    "types": [
+      "node",
+      "jest",
+      "reflect-metadata"
+    ],
+    "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "moduleResolution": "node"
   },
   "include": [
     "./src/**/*",
-    "./e2e/src/**/*"
-, "jest.config.js"  ],
+    "./e2e/src/**/*",
+    "jest.config.js"
+  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"

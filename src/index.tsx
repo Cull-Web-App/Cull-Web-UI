@@ -9,7 +9,7 @@ import { createEpicMiddleware, combineEpics } from 'redux-observable';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { InversifyProvider } from './common';
 import { container } from './common/ioc/container.ioc';
-import { bar, AssetEpic, asset, preference, BarEpic, IBaseEpic, PreferenceEpic, WatchEpic, watch, UserEpic, user, calendar, CalendarEpic } from './state';
+import { bar, AssetEpic, asset, preference, BarEpic, IBaseEpic, PreferenceEpic, WatchEpic, watch, UserEpic, user, calendar, CalendarEpic, marketMakerMove, MarketMakerMoveEpic } from './state';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.scss';
 
@@ -34,7 +34,8 @@ const store = configureStore(
             preference,
             watch,
             user,
-            calendar
+            calendar,
+            marketMakerMove
         }),
         middleware: [epicMiddleWare]
     }
@@ -47,7 +48,8 @@ const epics: IBaseEpic[] = [
     new PreferenceEpic(),
     new WatchEpic(),
     new UserEpic(),
-    new CalendarEpic()
+    new CalendarEpic(),
+    new MarketMakerMoveEpic()
 ];
 
 epicMiddleWare.run(

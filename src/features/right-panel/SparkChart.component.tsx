@@ -31,7 +31,7 @@ export const SparkChartComponent = ({ bars, symbol }: SparkChartProps) => {
             type: 'area',
             margin: [2, 0, 2, 0],
             width: 160, // Increase width
-            height: 50, // Increase height
+            height: 80, // Increase height
             style: {
                 overflow: 'visible'
             },

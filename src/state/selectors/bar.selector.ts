@@ -20,6 +20,11 @@ export const selectBarsForSymbol = createSelector(
     (barMap, symbol) => barMap.get(symbol) ?? []
 );
 
+export const selectBarsForSymbolSorted = createSelector(
+    selectBarsForSymbol,
+    (bars) => [...bars].sort((a, b) => new Date(a.timeUtc).getTime() - new Date(b.timeUtc).getTime())
+);
+
 export const selectSubscribedSymbolsBar = createSelector(
     selectBar,
     (bar) => bar.subscribedSymbols

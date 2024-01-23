@@ -1,16 +1,16 @@
-import { IMarketMakerMove } from 'common';
 import React, { memo } from 'react';
 import './MarketMakerMoves.component.scss';
-import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
+import { useSelector } from 'react-redux';
+import { IRootPartition, selectMarketMakerMovesForSymbol } from '../../state';
 
 type MarketMakerMovesProps = MarketMakerMovesComponentProps;
 interface MarketMakerMovesComponentProps {
     symbol: string;
-    mmm: IMarketMakerMove[];
 }
 
-export const MarketMakerMovesComponent = ({ symbol, mmm }: MarketMakerMovesProps) => {
+export const MarketMakerMovesComponent = ({ symbol }: MarketMakerMovesProps) => {
+    const mmm = useSelector((state: IRootPartition) => selectMarketMakerMovesForSymbol(state, symbol));
     if (!mmm || mmm.length === 0) {
         return null;
     }

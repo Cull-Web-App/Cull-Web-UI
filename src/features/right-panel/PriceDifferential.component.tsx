@@ -1,14 +1,16 @@
 import React, { memo } from "react";
 import { useSelector } from "react-redux";
-import { IRootPartition, selectBarsForSymbol } from "state";
+import { IRootPartition, selectBarsForSymbol } from "../../state";
 import './PriceDifferential.component.scss';
 
 type PriceDifferentialProps = PriceDifferentialComponentProps;
 interface PriceDifferentialComponentProps {
     symbol: string;
+    displayPercent: boolean;
+    displayAmount: boolean;
 }
 
-export const PriceDifferentialComponent = ({ symbol }: PriceDifferentialProps) => {
+export const PriceDifferentialComponent = ({ symbol, displayPercent, displayAmount }: PriceDifferentialProps) => {
     const bars = useSelector((state: IRootPartition) => selectBarsForSymbol(state, symbol));
 
     if (!bars || bars.length === 0) {
@@ -23,6 +25,8 @@ export const PriceDifferentialComponent = ({ symbol }: PriceDifferentialProps) =
     const closePrice = bars[bars.length - 1].close;
 
     const priceDifferential = (closePrice - openPrice);
+    const plusMinus = priceDifferential > 0 ? '+' : '-';
+    const absPriceDifferential = Math.abs(priceDifferential);
 
     const getClassName = () => {
         if (priceDifferential < 0) {
@@ -37,7 +41,7 @@ export const PriceDifferentialComponent = ({ symbol }: PriceDifferentialProps) =
     return (
         <div className="price-differential-container">
             <div className={getClassName()} data-testid="price">
-                {priceDifferential > 0 ? '+' : '-'}{Math.abs(priceDifferential).toFixed(2)}
+                {displayAmount ? `${plusMinus}${absPriceDifferential.toFixed(2)}` : ''} {displayPercent ? `(${plusMinus}${(absPriceDifferential / openPrice * 100).toFixed(2)}%)` : ''}
             </div>
         </div>
     )

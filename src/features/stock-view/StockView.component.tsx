@@ -6,8 +6,8 @@ import { Col, Row, Tab, Tabs } from 'react-bootstrap';
 import PriceComponent from 'features/stock-card/Price.component';
 import PriceDifferentialComponent from 'features/right-panel/PriceDifferential.component';
 import MarketMakerMovesComponent from 'features/right-panel/MarketMakerMoves.component';
-import AssetChartComponent from './asset-chart/AssetChart.component';
 import './StockView.component.scss';
+import AssetChartContainerComponent from './asset-chart/AssetChartContainer.component';
 
 type StockViewProps = StockViewComponentProps;
 interface StockViewComponentProps {
@@ -50,7 +50,7 @@ export const StockViewComponent = ({ }: StockViewProps) => {
             <Row>
                 <Tabs defaultActiveKey="chart" id="stock-view-tabs" className="stock-view-tabs">
                     <Tab eventKey="chart" title="Chart">
-                        <AssetChartComponent symbol={asset.symbol}></AssetChartComponent>
+                        <AssetChartContainerComponent symbol={asset.symbol}></AssetChartContainerComponent>
                     </Tab>
                     <Tab eventKey="news" title="News">
                         <div className="panel-content" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 100px)' }}>

@@ -1,51 +1,39 @@
-import React, { memo } from 'react';
-import { useSelector } from 'react-redux';
-import { IRootPartition, selectBarsForSymbolSorted } from '../../../state';
+import React, { memo, useEffect } from 'react';
 import './AssetChart.component.scss';
 import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts/highstock';
+import { IBar } from '../../../common';
 
 type AssetChartProps = AssetChartComponentProps;
 interface AssetChartComponentProps {
     symbol: string;
+    bars: IBar[];
 }
 
-export const AssetChartComponent = ({ symbol }: AssetChartProps) => {
-    const bars = useSelector((state: IRootPartition) => selectBarsForSymbolSorted(state, symbol));
-    if (!bars || bars.length === 0) {
-        return (
-            <div className="asset-chart-container">
-                <div className="asset-chart" data-testid="asset-chart">--</div>
-            </div>
-        );
-    }
-
-    const data = bars.map(bar => ([
-        new Date(bar.timeUtc).getTime(), // the date
-        bar.open, // open
-        bar.high, // high
-        bar.low, // low
-        bar.close, // close
-        bar.volume
-    ]));
-
-    const dataVolume = bars.map(bar => ([
-        new Date(bar.timeUtc).getTime(), // the date
-        bar.volume // volume
-    ]));
-    
-    const options: Highcharts.Options = {
+export const AssetChartComponent = ({ symbol, bars }: AssetChartProps) => {
+    const [options, setOptions] = React.useState<Highcharts.Options>({
         credits: {
             enabled: false
         },
         chart: {
             backgroundColor: 'rgba(0, 0, 0, 0.1)', // dark mode: dark gray, light mode: white
-            height: 600,
+            height: 600
         },
         rangeSelector: {
-            selected: 1
+            enabled: false
+        },
+        navigator: {
+            series: {
+                color: '#7cb5ec',
+                lineColor: '#7cb5ec'
+            }
         },
         xAxis: {
+            labels: {
+                style: {
+                    color: 'rgba(128, 128, 128, 1)' // light gray
+                }
+            },
             crosshair: {
                 color: '#FFA500', // orange color
                 width: 1, // width of the line
@@ -81,17 +69,25 @@ export const AssetChartComponent = ({ symbol }: AssetChartProps) => {
             },
             labels: {
                 align: 'right',
-                x: -3
+                x: -3,
+                style: {
+                    color: 'rgba(128, 128, 128, 1)'
+                }
             },
             height: '100%',
             lineWidth: 2,
             resize: {
                 enabled: true
-            }
+            },
+            gridLineColor: 'rgba(128, 128, 128, 0.3)',
+            color: 'rgba(128, 128, 128, 5)'
         }, {
             labels: {
                 align: 'right',
-                x: -3
+                x: -3,
+                style: {
+                    color: 'rgba(192, 192, 192, 1)'
+                }
             },
             title: {
                 text: 'Volume'
@@ -113,20 +109,14 @@ export const AssetChartComponent = ({ symbol }: AssetChartProps) => {
         series: [{
             type: 'candlestick',
             name: `${symbol} Stock Price`,
-            data: data,
-            dataGrouping: {
-                units: [
-                    ['week', [1]],
-                    ['month', [1, 2, 3, 4, 6]]
-                ]
-            },
+            data: [],
             tooltip: {
                 valueDecimals: 2
             }
         }, {
             type: 'column',
             name: 'Volume',
-            data: dataVolume,
+            data: [],
             yAxis: 1,
             color: 'rgba(211, 211, 211, 0.1)', // light gray
         }],
@@ -136,17 +126,18 @@ export const AssetChartComponent = ({ symbol }: AssetChartProps) => {
             followPointer: true,
             formatter: function () {
                 if (!this.points) return;
-                const point = this.points.find(p => p.series.type === 'candlestick')!;
-                const volumePoint = this.points.find(p => p.series.name === 'Volume')!;
+                const point = this.points.find(p => p.series.userOptions.type === 'candlestick')!;
+                const volumePoint = this.points.find(p  => p.series.name === 'Volume')!;
 
                 if (!point || !point.point || !volumePoint) return;
                 const volumeFormatted = new Intl.NumberFormat('en-US', { style: 'decimal' }).format(volumePoint.y as number);
 
+                const values = point.point as unknown as { open: number, high: number, low: number, close: number };
                 return `
-                    <span style="color:${'#ffffff'}">Open: ${point.point.options.open}</span><br/>
-                    <span style="color:${'#ffffff'}">High: ${point.point.options.high}</span><br/>
-                    <span style="color:${'#ffffff'}">Low: ${point.point.options.low}</span><br/>
-                    <span style="color:${'#ffffff'}">Close: ${point.point.options.close}</span><br/>
+                    <span style="color:${'#ffffff'}">Open: ${values.open}</span><br/>
+                    <span style="color:${'#ffffff'}">High: ${values.high}</span><br/>
+                    <span style="color:${'#ffffff'}">Low: ${values.low}</span><br/>
+                    <span style="color:${'#ffffff'}">Close: ${values.close}</span><br/>
                     <span style="color:${'#ffffff'}">Volume: ${volumeFormatted}</span><br/>
                 `;
             }
@@ -156,7 +147,37 @@ export const AssetChartComponent = ({ symbol }: AssetChartProps) => {
                 enabled: false
             }
         }
-    };
+    });
+
+    useEffect(() => {
+        const data = bars.map(bar => ([
+            new Date(bar.timeUtc).getTime(), // the date
+            bar.open, // open
+            bar.high, // high
+            bar.low, // low
+            bar.close, // close
+            bar.volume
+        ]));
+
+        const dataVolume = bars.map(bar => ([
+            new Date(bar.timeUtc).getTime(), // the date
+            bar.volume // volume
+        ]));
+
+        setOptions((prevOptions: Highcharts.Options) => {
+            console.log('here');
+            return {
+                ...prevOptions,
+                series: [{
+                    ...prevOptions.series![0],
+                    data: [...data]
+                }, {
+                    ...prevOptions.series![1],
+                    data: [...dataVolume]
+                }]
+            } as Highcharts.Options;
+        });
+    }, [bars]);
 
     return (
         <div className="asset-chart-container">

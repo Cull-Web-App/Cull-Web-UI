@@ -7,11 +7,10 @@ type AssetChartWrapperProps = AssetChartWrapperComponentProps;
 interface AssetChartWrapperComponentProps {
     symbol: string;
     start: Date;
-    end: Date;
     granularity: string;
 }
 
-export const AssetChartWrapperComponent = ({ symbol, start, end, granularity }: AssetChartWrapperProps) => {
+export const AssetChartWrapperComponent = ({ symbol, start, granularity }: AssetChartWrapperProps) => {
     const bars = useSelector((state: IRootPartition) => selectBarsForSymbolFromTime(state, symbol, start.toISOString()));
     return (
         <AssetChartComponent symbol={symbol} bars={bars} />

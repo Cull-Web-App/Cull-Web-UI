@@ -12,7 +12,6 @@ export const AssetChartContainerComponent = ({ symbol }: AssetChartContainerProp
     const [timeSetting, setTimeSetting] = useState<TimeSetting>(TimeSetting.OneDayByOneMinute);
     const [granularity, setGranularity] = useState<string>('min'); // 1 minute
     const [startDate, setStartDate] = useState<Date>(new Date());
-    const [endDate, setEndDate] = useState<Date>(new Date());
 
     useEffect(() => {
         // convert the time setting to start and end
@@ -29,7 +28,6 @@ export const AssetChartContainerComponent = ({ symbol }: AssetChartContainerProp
 
         // set the start and end dates based on the range
         const newStartDate = new Date();
-        const newEndDate = new Date();
         switch (rangeType.toLowerCase()) {
             case 'day':
                 newStartDate.setDate(newStartDate.getDate() - range);
@@ -46,7 +44,6 @@ export const AssetChartContainerComponent = ({ symbol }: AssetChartContainerProp
         }
 
         setStartDate(newStartDate);
-        setEndDate(newEndDate);
         setGranularity(gran);
     }, [timeSetting]);
 
@@ -88,7 +85,7 @@ export const AssetChartContainerComponent = ({ symbol }: AssetChartContainerProp
                 </Dropdown>
             </Row>
             <Row>
-                <AssetChartWrapperComponent symbol={symbol} start={startDate} end={endDate} granularity={granularity}></AssetChartWrapperComponent>
+                <AssetChartWrapperComponent symbol={symbol} start={startDate} granularity={granularity}></AssetChartWrapperComponent>
             </Row>
         </div>
     );

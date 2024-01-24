@@ -146,6 +146,9 @@ export const AssetChartComponent = ({ symbol, bars }: AssetChartProps) => {
             gui: {
                 enabled: false
             }
+        },
+        time: {
+            useUTC: false
         }
     });
 
@@ -180,7 +183,7 @@ export const AssetChartComponent = ({ symbol, bars }: AssetChartProps) => {
     }, [bars]);
 
     return (
-        <div className="asset-chart-container">
+        <div className="asset-chart-element-container">
             <div className="asset-chart" data-testid="asset-chart">
                 <HighchartsReact
                     highcharts={Highcharts}

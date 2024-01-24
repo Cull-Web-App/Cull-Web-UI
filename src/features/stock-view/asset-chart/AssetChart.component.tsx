@@ -167,19 +167,16 @@ export const AssetChartComponent = ({ symbol, bars }: AssetChartProps) => {
             bar.volume // volume
         ]));
 
-        setOptions((prevOptions: Highcharts.Options) => {
-            console.log('here');
-            return {
-                ...prevOptions,
-                series: [{
-                    ...prevOptions.series![0],
-                    data: [...data]
-                }, {
-                    ...prevOptions.series![1],
-                    data: [...dataVolume]
-                }]
-            } as Highcharts.Options;
-        });
+        setOptions((prevOptions: Highcharts.Options) => ({
+            ...prevOptions,
+            series: [{
+                ...prevOptions.series![0],
+                data: [...data]
+            }, {
+                ...prevOptions.series![1],
+                data: [...dataVolume]
+            }]
+        } as Highcharts.Options));
     }, [bars]);
 
     return (

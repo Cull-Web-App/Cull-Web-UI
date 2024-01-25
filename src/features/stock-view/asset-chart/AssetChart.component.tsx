@@ -3,14 +3,19 @@ import './AssetChart.component.scss';
 import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts/highstock';
 import { IBar } from '../../../common';
+import { IRootPartition, selectBarsForSymbolFromTime } from '../../../state';
+import { useSelector } from 'react-redux';
 
 type AssetChartProps = AssetChartComponentProps;
 interface AssetChartComponentProps {
     symbol: string;
-    bars: IBar[];
+    start: Date;
+    granularity: string;
 }
 
-export const AssetChartComponent = ({ symbol, bars }: AssetChartProps) => {
+export const AssetChartComponent = ({ symbol, start, granularity }: AssetChartProps) => {
+    const bars = useSelector((state: IRootPartition) => selectBarsForSymbolFromTime(state, symbol, start.toISOString()));
+
     const [options, setOptions] = React.useState<Highcharts.Options>({
         credits: {
             enabled: false

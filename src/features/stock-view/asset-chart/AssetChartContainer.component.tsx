@@ -1,7 +1,9 @@
 import React, { memo, useEffect, useState } from 'react';
-import { TimeSetting } from '../../../common';
+import { IBar, TimeSetting } from '../../../common';
 import { Dropdown, Row } from 'react-bootstrap';
-import AssetChartWrapperComponent from './AssetChartWrapper.component';
+import { useSelector } from 'react-redux';
+import { IRootPartition, selectBarsForSymbolFromTime } from '../../../state';
+import AssetChartComponent from './AssetChart.component';
 
 type AssetChartContainerProps = AssetChartContainerComponentProps;
 interface AssetChartContainerComponentProps {
@@ -85,7 +87,7 @@ export const AssetChartContainerComponent = ({ symbol }: AssetChartContainerProp
                 </Dropdown>
             </Row>
             <Row>
-                <AssetChartWrapperComponent symbol={symbol} start={startDate} granularity={granularity}></AssetChartWrapperComponent>
+                <AssetChartComponent symbol={symbol} start={startDate} granularity={granularity}></AssetChartComponent>
             </Row>
         </div>
     );

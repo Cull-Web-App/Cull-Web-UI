@@ -1,49 +1,68 @@
-import React from 'react';
-import { findManyBar } from '../../state';
-import { connect } from 'react-redux';
-import { IBar } from '../../common';
-import CandleStickChartComponent from './candlestick-chart/CandlestickChart.component';
-import SearchBarComponent from 'features/right-panel/SearchBar.component';
+import React, { memo } from 'react';
+import { useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
+import { IRootPartition, selectAssetBySymbol } from '../../state';
+import { Col, Row, Tab, Tabs } from 'react-bootstrap';
+import PriceComponent from 'features/stock-card/Price.component';
+import PriceDifferentialComponent from 'features/right-panel/PriceDifferential.component';
+import MarketMakerMovesComponent from 'features/right-panel/MarketMakerMoves.component';
+import './StockView.component.scss';
+import AssetChartContainerComponent from './asset-chart/AssetChartContainer.component';
 
-type StockViewProps = StockViewDispatchProps & StockViewReduxProps;
-interface StockViewDispatchProps {
-    findMany: (({ symbol, from, to }: { symbol: string, from: Date, to: Date }) => void);
-}
-interface StockViewReduxProps {
-    barMap: Map<string, IBar[]>;
+type StockViewProps = StockViewComponentProps;
+interface StockViewComponentProps {
 }
 
-export const StockViewComponent = ({ barMap, findMany }: StockViewProps) => {
-    // set from to market open on 2023-12-02
-    // and to to market close on 2023-12-02
-    const from = new Date('2023-12-01T09:30:00.000Z');
-    const to = new Date('2023-12-01T16:00:00.000Z');
+export const StockViewComponent = ({ }: StockViewProps) => {
+    const [searchParams] = useSearchParams();
+
+    // Get the symbol from the search params
+    const symbol = searchParams.get('symbol') ?? '';
+    // Get the asset from the symbol
+    const asset = useSelector((state: IRootPartition) => selectAssetBySymbol(state, symbol));
+    if (symbol === '' || !asset) {
+        return (
+            <div>
+                <h1>Stock View</h1>
+            </div>
+        );
+    }
+
     return (
-        <div>
-            <h1>Stock View</h1>
+        <div className="stock-view-container">
+            <Row>
+                <Col>
+                    <h1>{asset.symbol}</h1>
+                    <h2>{asset.name}</h2>
+                </Col>
+                <Col>
+                    <Row>
+                        <PriceComponent symbol={asset.symbol}></PriceComponent>
+                    </Row>
+                    <Row>
+                        <PriceDifferentialComponent symbol={asset.symbol} displayPercent={true} displayAmount={true}></PriceDifferentialComponent>
+                    </Row>
+                    <Row>
+                        <MarketMakerMovesComponent symbol={asset.symbol}></MarketMakerMovesComponent>
+                    </Row>
+                </Col>
+            </Row>
+            <Row>
+                <Tabs defaultActiveKey="chart" id="stock-view-tabs" className="stock-view-tabs">
+                    <Tab eventKey="chart" title="Chart">
+                        <AssetChartContainerComponent symbol={asset.symbol}></AssetChartContainerComponent>
+                    </Tab>
+                    <Tab eventKey="news" title="News">
+                        <div className="panel-content" style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 100px)' }}>
+                            {/* Replace this with the component or elements you want to display for Running Strategies */}
+                            <div>News</div>
+                        </div>
+                    </Tab>
+                </Tabs>
+            </Row>
         </div>
-        // <div>
-        //     <h1>Stock View</h1>
-        //     <button onClick={() => findMany({ symbol: "AAPL", from, to })}>Find Many</button>
-        //     <CandleStickChartComponent bars={barMap.get("AAPL") ?? []} variant='dark' maxWidth={800} maxHeight={400} ></CandleStickChartComponent>
-        // </div>
     );
 }
 
-const mapStateToProps = (state: any): StockViewReduxProps => {
-    const { barMap } = state.bar;
-    return {
-        barMap: barMap
-    };
-}
 
-const mapDispatchToProps = (dispatch: any): StockViewDispatchProps => {
-    return {
-        findMany: ({ symbol, from, to }: { symbol: string, from: Date, to: Date }) => dispatch(findManyBar({ symbol, from, to })),
-    };
-}
-
-export default connect<StockViewReduxProps, StockViewDispatchProps>(
-    mapStateToProps,
-    mapDispatchToProps
-)(StockViewComponent);
+export default memo(StockViewComponent);

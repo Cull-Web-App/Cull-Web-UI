@@ -20,6 +20,27 @@ export const selectBarsForSymbol = createSelector(
     (barMap, symbol) => barMap.get(symbol) ?? []
 );
 
+export const selectBarsForSymbolSorted = createSelector(
+    selectBarsForSymbol,
+    (bars) => bars.sort((a, b) => new Date(a.timeUtc).getTime() - new Date(b.timeUtc).getTime())
+);
+
+export const selectBarsForSymbolInTimeRange = createSelector(
+    selectBarsForSymbolSorted,
+    (_: IRootPartition, symbol: string, start: string, end: string) => start,
+    (_: IRootPartition, symbol: string, start: string, end: string) => end,
+    (bars, start, end) => bars.filter((bar) => {
+        const time = new Date(bar.timeUtc);
+        return time >= new Date(start) && time <= new Date(end);
+    })
+);
+
+export const selectBarsForSymbolFromTime = createSelector(
+    selectBarsForSymbolSorted,
+    (_: IRootPartition, symbol: string, start: string) => start,
+    (bars, start) => bars.filter((bar) => new Date(bar.timeUtc) >= new Date(start))
+);
+
 export const selectSubscribedSymbolsBar = createSelector(
     selectBar,
     (bar) => bar.subscribedSymbols

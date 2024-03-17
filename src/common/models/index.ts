@@ -17,3 +17,4 @@ export * from './icalendar.model';
 export * from './calendar.model';
 export * from './imarket-maker-move.model';
 export * from './market-maker-move.model';
+export * from './time-setting.model';

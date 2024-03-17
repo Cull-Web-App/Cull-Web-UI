@@ -41,7 +41,6 @@ export const WatchListItemComponent = ({ symbol }: WatchListItemProps) => {
 
     const connectionStatus = useSelector(selectConnectionStatusBar);
     const bars = useSelector((state: IRootPartition) => selectBarsForSymbol(state, symbol));
-    const mmm = useSelector((state: IRootPartition) => selectMarketMakerMovesForSymbol(state, symbol));
     const subscriptionStatusBar = useSelector((state: IRootPartition) => selectSubscriptionStatusForSymbolBar(state, symbol));
     const subscriptionStatusMMM = useSelector((state: IRootPartition) => selectSubscriptionStatusForSymbolMMM(state, symbol));
 
@@ -99,10 +98,10 @@ export const WatchListItemComponent = ({ symbol }: WatchListItemProps) => {
                                 <PriceComponent symbol={symbol}></PriceComponent>
                             </Row>
                             <Row>
-                                <PriceDifferentialComponent symbol={symbol}></PriceDifferentialComponent>
+                                <PriceDifferentialComponent symbol={symbol} displayAmount={true} displayPercent={false}></PriceDifferentialComponent>
                             </Row>
                             <Row>
-                                <MarketMakerMovesComponent symbol={symbol} mmm={mmm}></MarketMakerMovesComponent>
+                                <MarketMakerMovesComponent symbol={symbol}></MarketMakerMovesComponent>
                             </Row>
                         </Col>
                     </Row>
